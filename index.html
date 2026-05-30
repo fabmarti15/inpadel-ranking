@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Inpadel – Ranking 2025</title>
+<title>Inpadel – Ranking 2026</title>
 <style>
 summary.player{list-style:none;-webkit-tap-highlight-color:transparent}
 summary.player::-webkit-details-marker{display:none}
@@ -18,14 +18,23 @@ summary.player::-webkit-details-marker{display:none}
   font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{margin:0;overflow-x:hidden;color:var(--i);background:radial-gradient(circle at 0 0,#1a7a4412,transparent 30rem),var(--bg)}
 .app{width:min(760px,100%);margin:auto;padding:10px}
 .card{background:var(--c);border:1px solid var(--l);border-radius:14px;box-shadow:var(--s);padding:clamp(16px,4vw,28px)}
 .panel{margin-top:18px}
+.brand-logo{display:flex;justify-content:center}
+.brand-logo-top{padding:0 0 12px}
+.brand-logo-bottom{padding:24px 0 10px}
+.brand-logo img{display:block;width:min(210px,58vw);height:auto;border-radius:8px}
 h1,h2,p{margin:0}
-h1{font-size:clamp(2.2rem,9vw,4rem);line-height:.9;letter-spacing:-.06em}
+h1{font-size:clamp(1.8rem,7vw,2.7rem);line-height:1;letter-spacing:0;text-align:center}
 h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .sub{color:var(--m);font-size:.92rem;margin-top:6px}
+.section-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+.section-tabs a{display:block;border:1px solid var(--l);border-radius:10px;background:#fafaf8;color:var(--i);padding:9px 8px;text-align:center;text-decoration:none;font-size:.82rem;font-weight:900}
+.section-tabs a:active{background:#1a7a440d;border-color:var(--g);color:var(--g)}
+#champions-section,#ranking-section{scroll-margin-top:10px}
 
 
 
@@ -34,6 +43,11 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .search-box input{min-width:0;flex:1;border:1px solid var(--l);border-radius:12px;background:#fafaf8;color:var(--i);font:inherit;font-size:1rem;font-weight:800;padding:12px 14px;outline:none}
 .search-box input:focus{border-color:var(--g);box-shadow:0 0 0 3px #1a7a4417}
 .search-box button{border:0;border-radius:12px;background:var(--g);color:#fff;font:inherit;font-size:.92rem;font-weight:950;padding:0 16px;cursor:pointer}
+.search-suggestions{display:none;margin-top:6px;border:1px solid var(--l);border-radius:10px;background:#fff;overflow:hidden}
+.search-suggestions.show{display:grid}
+.search-suggestion{border:0;border-bottom:1px solid var(--l);background:#fff;color:var(--i);padding:10px 12px;text-align:left;font:inherit;font-size:.86rem;font-weight:850;cursor:pointer}
+.search-suggestion:last-child{border-bottom:0}
+.search-suggestion:active{background:#1a7a440d;color:var(--g)}
 .search-msg{min-height:18px;color:var(--m);font-size:.78rem;font-weight:850;margin-top:8px}
 .player-wrap.search-hit>.player{box-shadow:inset 3px 0 0 var(--g)}
 .list{margin-top:18px}
@@ -42,17 +56,19 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .player.active{background:#1a7a440d;margin:0 -10px;padding:14px 10px;border-radius:12px;border-bottom:0}
 .rank{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:#ededed;font-weight:900;font-size:.72rem;flex-shrink:0}
 .r1{background:#FFF176}.r2{background:#e9e9e9}.r3{background:#f4dccb}
-.p-name{display:block;font-size:1rem;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.p-meta{display:flex;align-items:center;gap:6px;margin-top:5px;color:var(--m);font-size:.72rem;font-weight:850;flex-wrap:wrap}
+.p-name{display:block;font-size:1rem;font-weight:950;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-name::after{content:"  ·  Ver historial  ▾";color:#6f7470;font-size:.72rem;font-weight:750;white-space:nowrap}
+.player-wrap[open] .p-name::after{content:"  ·  Cerrar historial  ▴";color:#4f5551}
+.p-meta{display:flex;align-items:center;gap:4px 6px;margin-top:6px;color:var(--m);font-size:.72rem;font-weight:850;flex-wrap:wrap;line-height:1}
 .badge{display:inline-flex;align-items:center;gap:2px;padding:2px 7px;border-radius:99px;font-size:.67rem;font-weight:900}
 .bORO{background:#FFF9C4;color:#9a7c00}
 .bPLATA{background:#efefef;color:#666}
 .bBRONCE{background:#fdeede;color:#8B4513}
 .bMIMBRE{background:#f3ede2;color:#6b5232}
-.copa-tag{font-size:.7rem;font-weight:850;color:var(--m)}
+.copa-tag{display:inline-flex;align-items:center;gap:1px;font-size:.7rem;font-weight:850;color:var(--m)}
 .copa-tag b{color:var(--i);font-weight:950}
 .sep{color:var(--l);font-size:.7rem;font-weight:900;margin:0 1px}
-.pts{text-align:right;flex-shrink:0}
+.pts{min-width:48px;text-align:right;flex-shrink:0}
 .pts b{display:block;font-size:1rem;color:var(--g);line-height:1;font-weight:950}
 
 /* Detail / history */
@@ -136,15 +152,26 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 
 @media(max-width:440px){
   .sum{grid-template-columns:repeat(2,1fr)}
-  .player{grid-template-columns:36px 1fr auto;gap:8px}
+  .player{grid-template-columns:34px minmax(0,1fr) auto;gap:7px;align-items:start;padding:13px 0}
   .rank{width:32px;height:32px;font-size:.84rem}
-  .p-name{font-size:.94rem}
-  .pts b{font-size:1.08rem}
+  .p-name{font-size:.92rem;white-space:normal;overflow:visible;text-overflow:clip}
+  .p-name::after{font-size:.66rem}
+  .p-meta{gap:4px 5px;margin-top:6px}
+  .bar{width:46px;height:5px;flex-basis:46px}
+  .copa-tag{font-size:.66rem}
+  .sep{display:none}
+  .pts{min-width:46px;padding-top:2px}
+  .pts b{font-size:1rem}
 }
 @media(max-width:360px){
-  .player{gap:6px}
+  .player{grid-template-columns:30px minmax(0,1fr) auto;gap:6px}
   .rank{width:28px;height:28px;font-size:.78rem}
-  .p-name{font-size:.86rem}
+  .p-name{font-size:.85rem}
+  .p-name::after{font-size:.62rem}
+  .bar{width:40px;flex-basis:40px}
+  .copa-tag{font-size:.62rem}
+  .pts{min-width:42px}
+  .pts b{font-size:.94rem}
 }
 </style>
 </head>
@@ -153,12 +180,18 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 
   <!-- Header -->
   <section class="card">
-    <h1>Inpadel 🎾</h1>
-    <p class="sub">Ranking oficial · 2do Ciclo 2025</p>
+    <div class="brand-logo brand-logo-top">
+      <img src="./inpadel-center.svg" alt="Inpadel Center">
+    </div>
+    <h1>Ranking 2026</h1>
+    <nav class="section-tabs" aria-label="Secciones">
+      <a href="#champions-section">Campeones</a>
+      <a href="#ranking-section">Ranking</a>
+    </nav>
   </section>
 
   <!-- Campeones de cada fecha -->
-  <section class="card panel">
+  <section class="card panel" id="champions-section">
     <h2>Campeones de cada fecha</h2>
     <div class="date-scroll" id="date-scroll">
 <button class="date-btn sel" data-fecha="2026-05-20">20 de May</button><button class="date-btn" data-fecha="2026-05-13">13 de May</button><button class="date-btn" data-fecha="2026-05-06">6 de May</button><button class="date-btn" data-fecha="2026-04-29">29 de Abr</button><button class="date-btn" data-fecha="2026-04-22">22 de Abr</button><button class="date-btn" data-fecha="2026-04-15">15 de Abr</button><button class="date-btn" data-fecha="2026-04-08">8 de Abr</button><button class="date-btn" data-fecha="2026-04-01">1 de Abr</button><button class="date-btn" data-fecha="2026-03-25">25 de Mar</button><button class="date-btn" data-fecha="2026-03-18">18 de Mar</button><button class="date-btn" data-fecha="2026-03-11">11 de Mar</button><button class="date-btn" data-fecha="2026-02-25">25 de Feb</button><button class="date-btn" data-fecha="2026-02-18">18 de Feb</button><button class="date-btn" data-fecha="2026-02-11">11 de Feb</button><button class="date-btn" data-fecha="2026-02-04">4 de Feb</button><button class="date-btn" data-fecha="2026-01-28">28 de Ene</button><button class="date-btn" data-fecha="2026-01-21">21 de Ene</button><button class="date-btn" data-fecha="2026-01-14">14 de Ene</button><button class="date-btn" data-fecha="2026-01-07">7 de Ene</button><button class="date-btn" data-fecha="2025-12-29">29 de Dic</button><button class="date-btn" data-fecha="2025-12-22">22 de Dic</button><button class="date-btn" data-fecha="2025-12-17">17 de Dic</button><button class="date-btn" data-fecha="2025-03-04">4 de Mar</button>
@@ -250,6 +283,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
       <input id="player-search-input" type="search" placeholder="Buscar jugador" autocomplete="off">
       <button type="submit">Buscar</button>
     </form>
+    <div class="search-suggestions" id="player-search-suggestions"></div>
     <div class="search-msg" id="player-search-msg"></div>
     <div class="list" id="ranking">
 <details class="player-wrap">
@@ -9578,6 +9612,9 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
   </details>
     </div>
   </section>
+  <footer class="brand-logo brand-logo-bottom">
+    <img src="./inpadel-center.svg" alt="Inpadel Center">
+  </footer>
 </main>
 
 <script>
@@ -9860,33 +9897,73 @@ function setupPlayerSearch(){
   const form = document.getElementById('player-search');
   const input = document.getElementById('player-search-input');
   const msg = document.getElementById('player-search-msg');
-  if(!form || !input) return;
+  const suggestions = document.getElementById('player-search-suggestions');
+  if(!form || !input || !suggestions) return;
 
   const clean = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const players = [...document.querySelectorAll('.player-wrap')];
+  const playerName = player => player.querySelector('.player')?.dataset.n || '';
+  const findPlayers = q => players
+    .filter(player => clean(playerName(player)).includes(q))
+    .sort((a,b) => Number(clean(playerName(b)).startsWith(q)) - Number(clean(playerName(a)).startsWith(q)));
+
+  function hideSuggestions(){
+    suggestions.classList.remove('show');
+    suggestions.innerHTML = '';
+  }
+
+  function openPlayer(player){
+    document.querySelectorAll('.player-wrap.search-hit').forEach(x => x.classList.remove('search-hit'));
+    players.forEach(x => { if(x !== player) x.open = false; });
+    player.open = true;
+    player.classList.add('search-hit');
+    input.value = playerName(player);
+    if(msg) msg.textContent = playerName(player);
+    hideSuggestions();
+    player.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function renderSuggestions(){
+    const q = clean(input.value);
+    hideSuggestions();
+    if(!q) return;
+
+    findPlayers(q).slice(0,5).forEach(player => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'search-suggestion';
+      button.textContent = playerName(player);
+      button.addEventListener('click', () => openPlayer(player));
+      suggestions.appendChild(button);
+    });
+    if(suggestions.children.length) suggestions.classList.add('show');
+  }
 
   form.addEventListener('submit', e => {
     e.preventDefault();
     const q = clean(input.value);
-    document.querySelectorAll('.player-wrap.search-hit').forEach(x => x.classList.remove('search-hit'));
     if(!q){
       input.focus();
       return;
     }
 
-    const players = [...document.querySelectorAll('.player-wrap')];
-    const found = players.find(x => clean(x.querySelector('.player')?.dataset.n).startsWith(q))
-      || players.find(x => clean(x.querySelector('.player')?.dataset.n).includes(q));
+    const found = findPlayers(q)[0];
 
     if(!found){
       if(msg) msg.textContent = 'No encontré ese jugador.';
+      hideSuggestions();
       return;
     }
 
-    players.forEach(x => { if(x !== found) x.open = false; });
-    found.open = true;
-    found.classList.add('search-hit');
-    if(msg) msg.textContent = found.querySelector('.player')?.dataset.n || '';
-    found.scrollIntoView({behavior:'smooth', block:'start'});
+    openPlayer(found);
+  });
+
+  input.addEventListener('input', renderSuggestions);
+
+  input.addEventListener("keydown", e => {
+    if(e.key !== "Enter") return;
+    e.preventDefault();
+    form.querySelector("button[type=\"submit\"]")?.click();
   });
 }
 

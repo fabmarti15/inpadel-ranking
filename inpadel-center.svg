@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1230 770" width="1230" height="770">
+  <rect width="1230" height="770" fill="#000000"/>
+
+  <!-- Isometric building / court icon -->
+  <!-- Left blue face -->
+  <polygon points="245,150 560,55 560,455 245,355" fill="#2a7fc4"/>
+  <!-- White T on the blue face -->
+  <polygon points="270,200 535,128 535,165 420,197 420,400 385,390 385,207 270,238" fill="#ffffff"/>
+
+  <!-- Right white wall -->
+  <polygon points="575,55 885,150 885,455 695,455 695,255 790,255 790,430 855,430 855,170 605,95 605,455 575,455" fill="#ffffff"/>
+  <!-- Roof front edge -->
+  <polygon points="560,55 575,55 605,95 590,95" fill="#ffffff"/>
+
+  <!-- Wordmark: INPADEL -->
+  <text x="615" y="600" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="150"
+        letter-spacing="6" fill="#ffffff" text-anchor="middle" font-style="italic">INPADEL</text>
+
+  <!-- Wordmark: CENTER -->
+  <text x="615" y="715" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="105"
+        letter-spacing="22" fill="#8cc63f" text-anchor="middle" font-style="italic">CENTER</text>
+</svg>
