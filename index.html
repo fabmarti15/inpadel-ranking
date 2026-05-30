@@ -95,11 +95,12 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .bar span{display:block;height:100%;border-radius:999px;background:var(--g)}
 
 /* Results section - date selector */
-.date-scroll{display:flex;gap:8px;overflow-x:auto;padding:16px 0 4px;scrollbar-width:none;-ms-overflow-style:none}
-.date-scroll::-webkit-scrollbar{display:none}
-.date-btn{flex-shrink:0;padding:7px 14px;border:1px solid var(--l);border-radius:99px;background:#fafaf8;color:var(--m);font-size:.8rem;font-weight:850;cursor:pointer;transition:.12s;white-space:nowrap}
-.date-btn:hover{border-color:var(--g);color:var(--g)}
-.date-btn.sel{background:var(--g);border-color:var(--g);color:#fff}
+.date-picker{margin-top:14px}
+.date-picker label{display:block;margin-bottom:6px;color:var(--m);font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.date-select-wrap{position:relative}
+.date-select-wrap::after{content:"▾";position:absolute;right:14px;top:50%;translate:0 -54%;color:var(--g);font-size:1.25rem;font-weight:950;pointer-events:none}
+.date-select{width:100%;appearance:none;-webkit-appearance:none;border:2px solid #1a7a4455;border-radius:10px;background:#f8fbf9;color:var(--i);padding:13px 46px 13px 14px;font:inherit;font-size:1rem;font-weight:950;cursor:pointer;outline:none}
+.date-select:focus{border-color:var(--g);box-shadow:0 0 0 3px #1a7a4417}
 
 /* Copa blocks */
 .copa-blocks{display:grid;gap:12px;margin-top:14px}
@@ -190,11 +191,14 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
     </nav>
   </section>
 
-  <!-- Campeones de cada fecha -->
+  <!-- Campeones -->
   <section class="card panel" id="champions-section">
-    <h2>Campeones de cada fecha</h2>
-    <div class="date-scroll" id="date-scroll">
-<button class="date-btn sel" data-fecha="2026-05-20">20 de May</button><button class="date-btn" data-fecha="2026-05-13">13 de May</button><button class="date-btn" data-fecha="2026-05-06">6 de May</button><button class="date-btn" data-fecha="2026-04-29">29 de Abr</button><button class="date-btn" data-fecha="2026-04-22">22 de Abr</button><button class="date-btn" data-fecha="2026-04-15">15 de Abr</button><button class="date-btn" data-fecha="2026-04-08">8 de Abr</button><button class="date-btn" data-fecha="2026-04-01">1 de Abr</button><button class="date-btn" data-fecha="2026-03-25">25 de Mar</button><button class="date-btn" data-fecha="2026-03-18">18 de Mar</button><button class="date-btn" data-fecha="2026-03-11">11 de Mar</button><button class="date-btn" data-fecha="2026-02-25">25 de Feb</button><button class="date-btn" data-fecha="2026-02-18">18 de Feb</button><button class="date-btn" data-fecha="2026-02-11">11 de Feb</button><button class="date-btn" data-fecha="2026-02-04">4 de Feb</button><button class="date-btn" data-fecha="2026-01-28">28 de Ene</button><button class="date-btn" data-fecha="2026-01-21">21 de Ene</button><button class="date-btn" data-fecha="2026-01-14">14 de Ene</button><button class="date-btn" data-fecha="2026-01-07">7 de Ene</button><button class="date-btn" data-fecha="2025-12-29">29 de Dic</button><button class="date-btn" data-fecha="2025-12-22">22 de Dic</button><button class="date-btn" data-fecha="2025-12-17">17 de Dic</button><button class="date-btn" data-fecha="2025-03-04">4 de Mar</button>
+    <h2>Campeones</h2>
+    <div class="date-picker">
+      <label for="date-select">Seleccionar fecha</label>
+      <div class="date-select-wrap">
+        <select class="date-select" id="date-select" aria-label="Seleccionar fecha"></select>
+      </div>
     </div>
     <div id="fecha-result"><div class="copa-blocks"><div class="copa-block bl-ORO">
       <div class="copa-hdr ch-ORO">🏆 Copa Oro</div>
@@ -9833,18 +9837,19 @@ function renderDetail(nombre){
 
 /* ── Render dates section ────────────────────── */
 function renderDates(){
-  const el = document.getElementById('date-scroll');
+  const el = document.getElementById('date-select');
   if(!DATA.fechas.length){
-    el.innerHTML = '<p class="muted" style="font-size:.84rem;padding:14px 0">Resultados cargados.</p>';
+    el.innerHTML = '<option>Resultados cargados</option>';
+    el.disabled = true;
     document.getElementById('fecha-result').innerHTML = '';
     return;
   }
   const sorted = [...DATA.fechas].reverse();
   el.innerHTML = sorted.map(f =>
-    `<button class="date-btn" data-fecha="${f.fecha}">${fmtDate(f.fecha)}</button>`
+    `<option value="${f.fecha}">${fmtDate(f.fecha)}</option>`
   ).join('');
   // Auto-select most recent
-  el.querySelector('.date-btn').classList.add('sel');
+  el.value = sorted[0].fecha;
   document.getElementById('fecha-result').innerHTML = renderFechaResult(sorted[0].fecha);
 }
 
@@ -9885,12 +9890,8 @@ document.getElementById('ranking').addEventListener('click', e => {
   if(e.target.closest('.player-wrap')) return;
 });
 
-document.getElementById('date-scroll').addEventListener('click', e => {
-  const btn = e.target.closest('.date-btn');
-  if(!btn) return;
-  document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('sel'));
-  btn.classList.add('sel');
-  document.getElementById('fecha-result').innerHTML = renderFechaResult(btn.dataset.fecha);
+document.getElementById('date-select').addEventListener('change', e => {
+  document.getElementById('fecha-result').innerHTML = renderFechaResult(e.target.value);
 });
 
 function setupPlayerSearch(){
