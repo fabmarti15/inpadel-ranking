@@ -286,7 +286,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
   <!-- Reyes de cada copa -->
   <section class="card panel" id="reyes-section">
     <h2 style="text-align:center">👑 Reyes de cada copa</h2>
-    <p class="sub" style="text-align:center;margin-top:6px">Top 6 según copas ganadas 🏆</p>
+    <p class="sub" style="text-align:center;margin-top:6px">Top 10 según copas ganadas 🏆</p>
     <div class="reyes-tabs" id="reyes-tabs"></div>
     <div id="reyes-result" style="margin-top:12px"></div>
   </section>
@@ -5535,7 +5535,7 @@ function reyesRanking(c){
     }))
     .filter(p => p.won > 0)
     .sort((a,b) => b.won - a.won || b.played - a.played)
-    .slice(0,6);
+    .slice(0,10);
 }
 
 function renderReyesCopa(c){
