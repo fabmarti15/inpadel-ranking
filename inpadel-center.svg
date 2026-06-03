@@ -1,22 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1230 770" width="1230" height="770">
-  <rect width="1230" height="770" fill="#000000"/>
-
-  <!-- Isometric building / court icon -->
-  <!-- Left blue face -->
-  <polygon points="245,150 560,55 560,455 245,355" fill="#2a7fc4"/>
-  <!-- White T on the blue face -->
-  <polygon points="270,200 535,128 535,165 420,197 420,400 385,390 385,207 270,238" fill="#ffffff"/>
-
-  <!-- Right white wall -->
-  <polygon points="575,55 885,150 885,455 695,455 695,255 790,255 790,430 855,430 855,170 605,95 605,455 575,455" fill="#ffffff"/>
-  <!-- Roof front edge -->
-  <polygon points="560,55 575,55 605,95 590,95" fill="#ffffff"/>
-
-  <!-- Wordmark: INPADEL -->
-  <text x="615" y="600" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="150"
-        letter-spacing="6" fill="#ffffff" text-anchor="middle" font-style="italic">INPADEL</text>
-
-  <!-- Wordmark: CENTER -->
-  <text x="615" y="715" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="105"
-        letter-spacing="22" fill="#8cc63f" text-anchor="middle" font-style="italic">CENTER</text>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="1344" height="807" viewBox="0 0 1344 807">
+<path d="M0,0 L7,1 L43,12 L59,17 L77,23 L107,32 L138,42 L171,52 L196,60 L235,72 L263,81 L321,99 L343,106 L349,108 L350,267 L350,332 L341,336 L297,352 L259,366 L243,372 L241,372 L240,237 L197,227 L147,216 L129,211 L129,269 L131,269 L130,278 L129,413 L116,419 L79,434 L50,446 L21,458 L3,465 L0,465 Z " fill="#000000" transform="translate(677,20)"/>
+<path d="M0,0 L4,0 L4,357 L-2,356 L-46,338 L-83,323 L-119,308 L-143,299 L-160,293 L-164,291 L-164,48 L-141,41 L-107,31 L-82,24 L-3,1 Z " fill="#3FA0FF" transform="translate(654,128)"/>
+<path d="M0,0 L4,0 L4,84 L-17,91 L-38,97 L-74,108 L-97,115 L-130,125 L-159,134 L-183,141 L-202,147 L-225,154 L-246,160 L-282,171 L-311,180 L-342,189 L-345,189 L-345,109 L-336,105 L-314,98 L-272,85 L-243,76 L-170,53 L-99,31 L-64,20 L-35,11 Z " fill="#3FA0FF" transform="translate(654,20)"/>
+<path d="M0,0 L5,0 L5,227 L3,228 L-46,210 L-82,197 L-139,176 L-155,170 L-156,169 L-156,64 L-155,47 L-148,44 L-91,27 L-37,11 Z " fill="#3FA0FF" transform="translate(464,183)"/>
+<path d="M0,0 L173,0 L173,20 L172,21 L3,22 L-2,25 L-4,29 L-5,51 L173,51 L173,71 L172,72 L-4,72 L-4,92 L0,98 L3,99 L172,100 L173,101 L173,121 L0,121 L-10,117 L-18,110 L-22,105 L-25,99 L-26,94 L-26,27 L-23,18 L-17,10 L-10,4 Z " fill="#000000" transform="translate(976,532)"/>
+<path d="M0,0 L150,0 L162,3 L176,10 L188,21 L194,29 L199,40 L202,51 L202,70 L199,81 L195,90 L187,101 L179,109 L165,117 L157,120 L149,121 L0,121 L-5,117 L-7,113 L-7,8 L-3,2 Z M14,21 L14,100 L149,100 L159,97 L169,90 L175,83 L180,73 L181,69 L181,52 L177,41 L170,32 L161,25 L150,21 Z " fill="#000000" transform="translate(731,532)"/>
+<path d="M0,0 L140,0 L150,4 L157,9 L157,11 L159,11 L164,19 L166,25 L166,121 L146,121 L145,116 L145,91 L146,84 L-6,84 L-6,121 L-27,121 L-27,25 L-23,16 L-17,8 L-10,3 Z M1,21 L-5,26 L-6,28 L-6,63 L146,63 L146,32 L144,26 L138,21 Z " fill="#000000" transform="translate(542,532)"/>
+<path d="M0,0 L140,0 L152,5 L159,11 L165,22 L166,25 L166,69 L163,78 L157,86 L149,92 L141,95 L-6,95 L-6,121 L-28,121 L-27,25 L-23,16 L-17,8 L-10,3 Z M1,21 L-6,27 L-6,75 L133,75 L140,73 L145,67 L145,28 L140,22 L137,21 Z " fill="#000000" transform="translate(332,532)"/>
+<path d="M0,0 L9,0 L33,14 L53,25 L70,35 L81,41 L108,56 L129,68 L155,83 L173,93 L176,94 L176,2 L196,2 L196,117 L191,122 L190,123 L182,123 L166,114 L143,101 L120,88 L99,76 L76,63 L52,49 L41,43 L23,33 L16,29 L15,121 L14,122 L-6,122 L-6,7 L-3,2 Z " fill="#000000" transform="translate(63,531)"/>
+<path d="M0,0 L113,0 L113,13 L3,14 L0,15 L-1,18 L-1,32 L112,32 L113,33 L113,46 L-2,46 L-1,59 L2,63 L113,64 L113,78 L2,78 L-7,74 L-13,67 L-15,62 L-15,16 L-12,9 L-5,2 Z " fill="#000000" transform="translate(382,709)"/>
+<path d="M0,0 L113,0 L113,11 L112,13 L2,14 L-1,18 L-2,33 L2,32 L112,32 L113,34 L113,46 L-2,46 L-1,60 L2,63 L112,64 L113,66 L113,76 L112,78 L2,78 L-7,74 L-14,66 L-15,63 L-15,14 L-10,6 L-3,1 Z " fill="#000000" transform="translate(814,709)"/>
+<path d="M0,0 L20,0 L21,91 L24,97 L28,99 L160,100 L160,121 L27,121 L17,118 L9,112 L3,105 L0,97 L-1,91 L-1,1 Z " fill="#000000" transform="translate(1165,532)"/>
+<path d="M0,0 L95,0 L102,3 L107,6 L113,15 L115,22 L115,31 L111,41 L105,48 L100,51 L98,51 L105,59 L114,69 L112,73 L105,79 L99,74 L92,66 L83,57 L83,55 L81,55 L81,53 L2,53 L2,78 L-12,78 L-12,13 L-8,5 L-3,1 Z M3,13 L2,14 L2,40 L91,40 L97,37 L101,32 L101,21 L97,15 L92,13 Z " fill="#000000" transform="translate(949,709)"/>
+<path d="M0,0 L112,0 L112,13 L2,14 L-1,17 L-1,60 L2,63 L112,64 L112,78 L2,78 L-8,74 L-13,68 L-16,60 L-16,17 L-13,9 L-6,2 Z " fill="#000000" transform="translate(244,709)"/>
+<path d="M0,0 L6,0 L25,11 L48,24 L71,37 L87,46 L111,60 L112,60 L113,1 L126,1 L126,76 L123,79 L116,79 L93,66 L72,54 L62,48 L51,42 L26,28 L12,20 L9,19 L9,79 L-4,79 L-4,3 Z " fill="#000000" transform="translate(509,708)"/>
+<path d="M0,0 L142,0 L142,13 L78,13 L78,78 L65,78 L64,77 L64,13 L0,13 Z " fill="#000000" transform="translate(646,709)"/>
+<path d="M0,0 L20,0 L20,121 L0,121 Z " fill="#000000" transform="translate(20,532)"/>
 </svg>
