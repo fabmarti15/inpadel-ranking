@@ -104,6 +104,10 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 
 /* Copa blocks */
 .copa-blocks{display:grid;gap:12px;margin-top:14px}
+.reyes-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px}
+.reyes-tab{border:1px solid var(--l);border-radius:10px;background:#fafaf8;color:var(--i);padding:10px 3px;text-align:center;font:inherit;font-size:.8rem;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent;line-height:1}
+.reyes-tab.active{border-color:var(--g);background:#1a7a440d;color:var(--g)}
+.reyes-pts-sub{color:var(--m);font-weight:700;font-size:.72rem}
 .copa-block{border-radius:14px;overflow:hidden;border:1px solid transparent}
 .copa-hdr{padding:11px 16px;font-weight:900;font-size:.88rem;letter-spacing:.01em}
 
@@ -276,6 +280,15 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
           <span class="res-pts">0</span>
         </div>
     </div></div></div>
+  </section>
+
+
+  <!-- Reyes de cada copa -->
+  <section class="card panel" id="reyes-section">
+    <h2 style="text-align:center">👑 Reyes de cada copa</h2>
+    <p class="sub" style="text-align:center;margin-top:6px">Top 6 según copas ganadas 🏆</p>
+    <div class="reyes-tabs" id="reyes-tabs"></div>
+    <div id="reyes-result" style="margin-top:12px"></div>
   </section>
 
 
@@ -5505,6 +5518,61 @@ function renderFechaResult(fechaStr){
   }).join('')}</div>`;
 }
 
+/* ── Reyes de cada copa ──────────────────────── */
+const REYES_COPAS = [
+  {k:'ORO',    label:'Oro',    icon:'🥇'},
+  {k:'PLATA',  label:'Plata',  icon:'🥈'},
+  {k:'BRONCE', label:'Bronce', icon:'🥉'},
+  {k:'MIMBRE', label:'Mimbre', icon:'💩'}
+];
+
+function reyesRanking(c){
+  return DATA.players
+    .map(p => ({
+      nombre: p.nombre,
+      won:    (p.copasGanadas||{})[c] || 0,
+      played: (p.copasJugadas||{})[c] || 0
+    }))
+    .filter(p => p.won > 0)
+    .sort((a,b) => b.won - a.won || b.played - a.played)
+    .slice(0,6);
+}
+
+function renderReyesCopa(c){
+  const def  = REYES_COPAS.find(x => x.k === c);
+  const list = reyesRanking(c);
+  const medals = ['👑','🥈','🥉'];
+  const rows = list.length
+    ? list.map((p,i) =>
+        `<div class="res-row rr-${c}${i===0?' rr-champ':''}">
+          <span class="pos-icon">${medals[i] || (i+1)+'°'}</span>
+          <span class="res-name">${esc(p.nombre)}</span>
+          <span class="res-pts">${p.won} 🏆 <span class="reyes-pts-sub">· ${p.played} jug</span></span>
+        </div>`).join('')
+    : `<div class="res-row rr-${c}"><span class="pos-icon"></span><span class="res-name" style="color:var(--m);font-weight:700">Sin campeones aún</span><span class="res-pts"></span></div>`;
+  return `<div class="copa-blocks"><div class="copa-block bl-${c}">
+    <div class="copa-hdr ch-${c}">${def.icon} Reyes de ${def.label}</div>
+    ${rows}
+  </div></div>`;
+}
+
+function renderReyes(){
+  const tabs   = document.getElementById('reyes-tabs');
+  const result = document.getElementById('reyes-result');
+  if(!tabs || !result) return;
+  tabs.innerHTML = REYES_COPAS.map((x,i) =>
+    `<button type="button" class="reyes-tab${i===0?' active':''}" data-c="${x.k}">${x.icon} ${x.label}</button>`
+  ).join('');
+  result.innerHTML = renderReyesCopa('ORO');
+  tabs.addEventListener('click', e => {
+    const b = e.target.closest('.reyes-tab');
+    if(!b) return;
+    tabs.querySelectorAll('.reyes-tab').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    result.innerHTML = renderReyesCopa(b.dataset.c);
+  });
+}
+
 /* ── Events ──────────────────────────────────── */
 
 
@@ -5594,6 +5662,7 @@ function setupPlayerSearch(){
 /* Data embedded */
 renderRanking();
 renderDates();
+renderReyes();
 setupPlayerSearch();
 </script>
 </body>
