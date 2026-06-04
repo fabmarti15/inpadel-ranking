@@ -78,6 +78,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .box{padding:10px;border:1px solid var(--l);border-radius:12px;background:#fafaf8}
 .box small{display:block;color:var(--m);font-size:.6rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}
 .box b{font-size:1.08rem;font-weight:950;line-height:1}
+.box-sub{display:block;margin-top:5px;font-size:.64rem;font-weight:800;color:var(--m);line-height:1}
 .day-label{color:var(--m);font-size:.82rem;font-weight:950;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--l)}
 .entry{display:grid;grid-template-columns:28px 1fr auto;gap:6px 10px;align-items:center;padding:9px 11px;border:1px solid var(--l);border-radius:10px;background:#fff;margin-bottom:6px}
 .entry-icon{font-size:1.1rem;line-height:1;text-align:center}
@@ -5439,10 +5440,12 @@ function renderDetail(nombre){
   const player = DATA.players.find(p => norm(p.nombre) === norm(nombre));
 
   // Stats summary
+  const cg = (player && player.copasGanadas) || {};
+  const ganadas = (cg.ORO||0)+(cg.PLATA||0)+(cg.BRONCE||0)+(cg.MIMBRE||0);
   const statsHtml = player ? `<div class="sum">
     <div class="box"><small>Puntos</small><b>${player.puntaje.toLocaleString('es-CL')}</b></div>
     <div class="box"><small>Fechas</small><b>${player.fechasJugadas}</b></div>
-    <div class="box"><small>Efectividad</small><b>${player.efectividad}%</b></div>
+    <div class="box"><small>Efectividad</small><b>${player.efectividad}%</b><span class="box-sub">🏆 ${ganadas}/${player.fechasJugadas} ganadas</span></div>
     <div class="box"><small>Copas ${ICON['ORO']} ORO</small><b>${player.copas.ORO}</b></div>
   </div>` : '';
 
