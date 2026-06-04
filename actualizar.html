@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Actualizar Ranking · Inpadel</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#f4f4f1;--c:#fff;--i:#171717;--m:#73706c;--l:#e4e1dc;
+  --g:#1a7a44;--r:#c0392b;--s:0 18px 45px #1111;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--i);background:radial-gradient(circle at 0 0,#1a7a4412,transparent 30rem),var(--bg)}
+.app{width:min(680px,100%);margin:auto;padding:14px}
+.card{background:var(--c);border:1px solid var(--l);border-radius:16px;box-shadow:var(--s);padding:clamp(18px,4vw,30px);margin-top:16px}
+h1{font-size:1.6rem;margin:0;text-align:center}
+h2{font-size:1.1rem;margin:0 0 10px}
+.sub{color:var(--m);font-size:.9rem;text-align:center;margin:8px 0 0}
+label{display:block;font-weight:800;font-size:.85rem;margin:14px 0 6px}
+input[type=password],input[type=text]{width:100%;border:1px solid var(--l);border-radius:12px;background:#fafaf8;color:var(--i);font:inherit;font-size:1rem;font-weight:700;padding:13px 14px;outline:none}
+input:focus{border-color:var(--g);box-shadow:0 0 0 3px #1a7a4417}
+.btn{display:block;width:100%;border:0;border-radius:14px;color:#fff;font:inherit;font-size:1.05rem;font-weight:950;padding:16px;cursor:pointer;margin-top:16px;-webkit-tap-highlight-color:transparent}
+.btn-g{background:var(--g)}
+.btn-d{background:#222}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-file{background:#fff;color:var(--g);border:2px dashed var(--g)}
+.hidden{display:none}
+.muted{color:var(--m);font-size:.82rem;margin-top:8px;line-height:1.5}
+.note{background:#1a7a440d;border:1px solid #1a7a4433;border-radius:12px;padding:12px 14px;font-size:.85rem;line-height:1.55;margin-top:14px}
+.err{background:#c0392b12;border:1px solid #c0392b44;color:#922;border-radius:12px;padding:12px 14px;font-size:.88rem;margin-top:14px;font-weight:700}
+.ok{background:#1a7a4416;border:1px solid #1a7a4455;color:var(--g);border-radius:12px;padding:14px;font-size:1rem;margin-top:14px;font-weight:900;text-align:center}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{background:#fafaf8;border:1px solid var(--l);border-radius:12px;padding:12px;text-align:center}
+.stat small{display:block;color:var(--m);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.stat b{font-size:1.5rem}
+.fecha-big{text-align:center;font-size:1.2rem;font-weight:950;color:var(--g);margin:4px 0 0}
+.copa{border:1px solid var(--l);border-radius:12px;padding:10px 14px;margin-top:10px}
+.copa-h{font-weight:950;font-size:.95rem;margin-bottom:4px}
+.copa-w{font-size:.95rem;font-weight:700}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid #fff6;border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.row{display:flex;align-items:center;gap:8px}
+.toggle{font-size:.78rem;color:var(--g);font-weight:800;background:none;border:0;cursor:pointer;padding:0;margin-top:6px}
+.fname{font-size:.85rem;color:var(--m);text-align:center;margin-top:8px;word-break:break-all}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <!-- ░░ Panel ░░ -->
+  <section class="card" id="panel">
+    <h1>🎾 Actualizar Ranking</h1>
+    <p class="sub">Sube el Excel acumulado actualizado</p>
+
+    <div id="token-section">
+      <label for="token">Token de GitHub <span style="color:var(--m);font-weight:600">(se guarda en este equipo)</span></label>
+      <div class="row">
+        <input type="password" id="token" placeholder="github_pat_..." autocomplete="off">
+        <button class="btn btn-d" style="width:auto;margin:0;padding:13px 18px" id="save-token">Guardar</button>
+      </div>
+      <button class="toggle" id="token-toggle" type="button">¿Cómo creo el token? ▾</button>
+      <div class="note hidden" id="token-help">
+        1. Abre <b>github.com/settings/personal-access-tokens</b> → <b>Generate new token (fine-grained)</b>.<br>
+        2. En <b>Repository access</b> elige <b>Only select repositories</b> → <b>inpadel-ranking</b>.<br>
+        3. En <b>Permissions → Repository → Contents</b> elige <b>Read and write</b>.<br>
+        4. Genera el token (empieza con <code>github_pat_</code>), cópialo y pégalo aquí. Solo lo pegas una vez.
+      </div>
+    </div>
+
+    <label style="margin-top:20px">Excel acumulado</label>
+    <input type="file" id="file" accept=".xlsx,.xlsm" class="hidden">
+    <button class="btn btn-file" id="pick-btn">📄 Seleccionar Excel</button>
+    <div class="fname" id="fname"></div>
+
+    <div class="err hidden" id="panel-err"></div>
+
+    <!-- Vista previa -->
+    <div id="preview" class="hidden">
+      <hr style="border:0;border-top:1px solid var(--l);margin:22px 0">
+      <h2>Vista previa</h2>
+      <p class="fecha-big" id="pv-fecha"></p>
+      <div class="stats">
+        <div class="stat"><small>Jugadores</small><b id="pv-players"></b></div>
+        <div class="stat"><small>Fechas</small><b id="pv-fechas"></b></div>
+        <div class="stat"><small>Líder</small><b style="font-size:.95rem" id="pv-lider"></b></div>
+      </div>
+      <div id="pv-copas"></div>
+      <button class="btn btn-g" id="publish-btn">✅ Actualizar ranking</button>
+    </div>
+
+    <div class="ok hidden" id="success"></div>
+  </section>
+
+  <p class="muted" style="text-align:center">Inpadel · Ranking 2026</p>
+</main>
+
+<script>
+/* ═══════════════ CONFIG ═══════════════ */
+const CONFIG = {
+  OWNER: "fabmarti15",
+  REPO:  "inpadel-ranking",
+  BRANCH:"main",
+  PATH:  "index.html"
+};
+
+const $ = id => document.getElementById(id);
+
+/* ═══════════════ Token ═══════════════ */
+const TOKEN_KEY = 'inpadel_gh_token';
+function loadToken(){
+  const t = localStorage.getItem(TOKEN_KEY);
+  if(t){ $('token').value = t; }
+}
+$('save-token').onclick = () => {
+  const t = $('token').value.trim();
+  if(t){ localStorage.setItem(TOKEN_KEY, t); $('save-token').textContent='✓ Guardado'; setTimeout(()=>$('save-token').textContent='Guardar',1500); }
+};
+$('token-toggle').onclick = () => $('token-help').classList.toggle('hidden');
+
+/* ═══════════════ Helpers parser (idénticos a la página pública) ═══════════════ */
+function norm(s){ return String(s||'').trim().toLowerCase(); }
+function copa(pos){
+  if(pos<=4)  return {copa:'ORO',   rel:pos};
+  if(pos<=8)  return {copa:'PLATA', rel:pos-4};
+  if(pos<=12) return {copa:'BRONCE',rel:pos-8};
+  return           {copa:'MIMBRE',rel:pos-12};
+}
+
+function parseExcel(ab){
+  const wb = XLSX.read(ab, {type:'array', cellDates:true});
+  const players = parseConsolidado(wb);
+  const fechas  = parseHistorico(wb);
+  const timesIn  = {}, timesWon = {};
+  fechas.forEach(f => {
+    f.parejas.forEach(p => {
+      const {copa: c} = copa(p.pos);
+      const won = [1,5,9,13].includes(p.pos);
+      p.jugadores.forEach(j => {
+        const n = norm(j);
+        if(!timesIn[n])  timesIn[n]  = {ORO:0,PLATA:0,BRONCE:0,MIMBRE:0};
+        if(!timesWon[n]) timesWon[n] = {ORO:0,PLATA:0,BRONCE:0,MIMBRE:0};
+        timesIn[n][c]++;
+        if(won) timesWon[n][c]++;
+      });
+    });
+  });
+  players.forEach(p => {
+    const n = norm(p.nombre);
+    p.copasJugadas = timesIn[n]  || {ORO:0,PLATA:0,BRONCE:0,MIMBRE:0};
+    p.copasGanadas = timesWon[n] || {ORO:0,PLATA:0,BRONCE:0,MIMBRE:0};
+  });
+  return {players, fechas};
+}
+
+function parseConsolidado(wb){
+  const ws = wb.Sheets['Consolidado Ranking'];
+  if(!ws) return [];
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+  const out = [];
+  for(let i=1; i<rows.length; i++){
+    const r = rows[i];
+    if(!r[0] || isNaN(Number(r[0]))) continue;
+    const nombre = String(r[1]||'').trim();
+    if(!nombre) continue;
+    out.push({
+      rank:          Number(r[0]),
+      nombre,
+      puntaje:       Number(r[41])||0,
+      fechasJugadas: Number(r[42])||0,
+      efectividad:   r[43] ? Math.round(r[43]*1000)/10 : 0,
+      copas:{
+        ORO:    Number(r[45])||0,
+        PLATA:  Number(r[46])||0,
+        BRONCE: Number(r[47])||0,
+        MIMBRE: Number(r[48])||0
+      }
+    });
+  }
+  return out;
+}
+
+function parseHistorico(wb){
+  const ws = wb.Sheets['Historico Fechas'];
+  if(!ws) return [];
+  const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:null, raw:true});
+  const fechas = [];
+  const totalCols = (rows[0]||[]).length;
+  for(let col=0; col<totalCols; col+=5){
+    const label = rows[1] ? rows[1][col+1] : null;
+    if(!label) continue;
+    if(String(label).toLowerCase().includes('master')) continue;
+    let fechaStr;
+    if(label instanceof Date){
+      fechaStr = label.toISOString().slice(0,10);
+    } else if(typeof label === 'number'){
+      try{
+        const d = XLSX.SSF.parse_date_code(label);
+        fechaStr = `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+      }catch{ continue }
+    } else {
+      fechaStr = String(label).slice(0,10);
+    }
+    if(!/^\d{4}-\d{2}-\d{2}/.test(fechaStr)) continue;
+    const pairMap = {};
+    for(let row=2; row<rows.length; row++){
+      const r = rows[row];
+      if(!r) continue;
+      const pos    = r[col];
+      const nombre = r[col+1];
+      const puntos = r[col+2];
+      if(pos==null || nombre==null) continue;
+      const posN = Number(pos);
+      if(isNaN(posN) || posN<1 || posN>16) continue;
+      const n = String(nombre).trim();
+      if(!n) continue;
+      if(!pairMap[posN]) pairMap[posN] = {pos:posN, jugadores:[], puntos:Number(puntos)||0};
+      if(pairMap[posN].jugadores.length < 2) pairMap[posN].jugadores.push(n);
+    }
+    const parejas = Object.values(pairMap)
+      .filter(p => p.jugadores.length >= 1)
+      .sort((a,b) => a.pos - b.pos);
+    if(parejas.length) fechas.push({fecha:fechaStr, parejas});
+  }
+  return fechas.sort((a,b) => a.fecha.localeCompare(b.fecha));
+}
+
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function fmtDate(str){ const [,m,d]=str.split('-').map(Number); return `${d} de ${MESES[m-1]}`; }
+
+/* ═══════════════ Carga de archivo + vista previa ═══════════════ */
+let NEW_DATA = null;
+
+$('pick-btn').onclick = () => $('file').click();
+$('file').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  resetMsgs();
+  $('fname').textContent = '⏳ Leyendo ' + file.name + '…';
+  try{
+    const ab = await file.arrayBuffer();
+    const data = parseExcel(ab);
+    if(!data.players.length) throw new Error('No se encontraron jugadores en la hoja "Consolidado Ranking".');
+    if(!data.fechas.length)  throw new Error('No se encontraron fechas en la hoja "Historico Fechas".');
+    NEW_DATA = data;
+    $('fname').textContent = '📄 ' + file.name;
+    showPreview(data);
+  }catch(err){
+    $('fname').textContent = '';
+    showErr('No pude leer el Excel: ' + err.message);
+  }
+});
+
+function showPreview(data){
+  const fechas = [...data.fechas].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const last = fechas[fechas.length-1];
+  $('pv-fecha').textContent = '📅 Última fecha: ' + fmtDate(last.fecha);
+  $('pv-players').textContent = data.players.length;
+  $('pv-fechas').textContent = data.fechas.length;
+  $('pv-lider').textContent = data.players[0] ? data.players[0].nombre : '—';
+
+  const byPos = {}; last.parejas.forEach(p => byPos[p.pos]=p);
+  const champs = [
+    {k:'🏆 Copa Oro',   pos:1},
+    {k:'🥈 Copa Plata', pos:5},
+    {k:'🥉 Copa Bronce',pos:9},
+    {k:'💩 Copa Mimbre',pos:13}
+  ];
+  $('pv-copas').innerHTML = champs.map(c => {
+    const p = byPos[c.pos];
+    const w = p ? p.jugadores.join(' · ') : '—';
+    return `<div class="copa"><div class="copa-h">${c.k}</div><div class="copa-w">🏆 ${w}</div></div>`;
+  }).join('');
+
+  $('preview').classList.remove('hidden');
+}
+
+/* ═══════════════ Publicar en GitHub ═══════════════ */
+function b64encode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+function b64decode(b64){
+  const bin = atob(b64.replace(/\n/g,''));
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+$('publish-btn').onclick = async () => {
+  const token = (localStorage.getItem(TOKEN_KEY) || $('token').value).trim();
+  if(!token){ showErr('Falta el token de GitHub. Pégalo arriba y toca Guardar.'); return; }
+  if(!NEW_DATA){ showErr('Primero selecciona un Excel.'); return; }
+
+  resetMsgs();
+  const btn = $('publish-btn');
+  btn.disabled = true;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span class="spin"></span>Publicando…';
+
+  const api = `https://api.github.com/repos/${CONFIG.OWNER}/${CONFIG.REPO}/contents/${CONFIG.PATH}`;
+  const headers = { 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json' };
+
+  try{
+    // 1) Traer index.html actual
+    const getRes = await fetch(`${api}?ref=${CONFIG.BRANCH}`, {headers});
+    if(!getRes.ok) throw new Error(await ghError(getRes, 'leer index.html'));
+    const getJson = await getRes.json();
+    const html = b64decode(getJson.content);
+
+    // 2) Reemplazar SOLO la línea `let DATA = {...};` (diseño intacto)
+    const newLine = 'let DATA = ' + JSON.stringify(NEW_DATA) + ';';
+    if(!/^let DATA = .*;\s*$/m.test(html)) throw new Error('No encontré la línea de datos en index.html. ¿Cambió el formato?');
+    const updated = html.replace(/^let DATA = .*;\s*$/m, newLine);
+    if(updated === html) throw new Error('Los datos ya estaban idénticos (sin cambios que publicar).');
+
+    // 3) Subir cambio
+    const fechas = [...NEW_DATA.fechas].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    const last = fechas[fechas.length-1];
+    const putRes = await fetch(api, {
+      method:'PUT', headers,
+      body: JSON.stringify({
+        message: `Actualizar ranking — ${fmtDate(last.fecha)} (${NEW_DATA.players.length} jugadores, ${NEW_DATA.fechas.length} fechas)`,
+        content: b64encode(updated),
+        sha: getJson.sha,
+        branch: CONFIG.BRANCH
+      })
+    });
+    if(!putRes.ok) throw new Error(await ghError(putRes, 'publicar'));
+
+    $('preview').classList.add('hidden');
+    $('success').classList.remove('hidden');
+    $('success').innerHTML = '✅ Publicado correctamente<br><span style="font-weight:600;font-size:.85rem;color:var(--m)">La página se actualiza en ~1 minuto.</span><br><a href="https://fabmarti15.github.io/inpadel-ranking/?v='+Date.now()+'" target="_blank" style="color:var(--g);font-size:.9rem">Ver página pública →</a>';
+  }catch(err){
+    showErr(err.message);
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
+};
+
+async function ghError(res, accion){
+  let detail = '';
+  try{ const j = await res.json(); detail = j.message || ''; }catch{}
+  if(res.status===401) return 'Token inválido o vencido al ' + accion + '. Revisa el token de GitHub.';
+  if(res.status===403) return 'El token no tiene permiso de escritura (Contents: Read and write) sobre el repo.';
+  if(res.status===404) return 'No encontré el repositorio o el archivo. Revisa OWNER/REPO/PATH.';
+  if(res.status===409) return 'Conflicto: alguien cambió el archivo. Vuelve a seleccionar el Excel e intenta de nuevo.';
+  return `Error al ${accion} (HTTP ${res.status}). ${detail}`;
+}
+
+/* ═══════════════ UI utils ═══════════════ */
+function showErr(m){ const e=$('panel-err'); e.textContent='⚠️ '+m; e.classList.remove('hidden'); }
+function resetMsgs(){ $('panel-err').classList.add('hidden'); $('success').classList.add('hidden'); }
+
+/* Cargar token guardado al abrir */
+loadToken();
+</script>
+</body>
+</html>
