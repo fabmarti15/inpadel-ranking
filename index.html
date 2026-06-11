@@ -190,11 +190,6 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
       <img src="./inpadel-center.svg" alt="Inpadel Center">
     </div>
     <h1 id="page-title">Ranking 2026</h1>
-    <div class="reyes-tabs" id="season-tabs" style="grid-template-columns:repeat(3,1fr);max-width:360px;margin:12px auto 0" aria-label="Temporada">
-      <button type="button" class="reyes-tab" data-s="hist">📚 Histórico</button>
-      <button type="button" class="reyes-tab active" data-s="2026">2026</button>
-      <button type="button" class="reyes-tab" data-s="2025">2025</button>
-    </div>
     <nav class="section-tabs" aria-label="Secciones">
       <a href="#reyes-section">Reyes</a>
       <a href="#champions-section">Campeones</a>
@@ -308,6 +303,11 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
     </form>
     <div class="search-suggestions" id="player-search-suggestions"></div>
     <div class="search-msg" id="player-search-msg"></div>
+    <div class="reyes-tabs" id="season-tabs" style="grid-template-columns:repeat(3,1fr);margin:10px 0 14px" aria-label="Temporada">
+      <button type="button" class="reyes-tab active" data-s="2026">2026</button>
+      <button type="button" class="reyes-tab" data-s="2025">2025</button>
+      <button type="button" class="reyes-tab" data-s="hist">📚 Histórico</button>
+    </div>
     <div class="list" id="ranking"><details class="player-wrap">
     <summary class="player" data-n="Chris Zapata">
       <span class="rank r1">1</span>
@@ -5621,7 +5621,7 @@ function renderReyesCopa(c){
         `<div class="res-row rr-${c}${i===0?' rr-champ':''}">
           <span class="pos-icon">${medals[i] || (i+1)+'°'}</span>
           <span class="res-name">${esc(p.nombre)}</span>
-          <span class="res-pts">${p.won} ${c==='MIMBRE'?'💩':'🏆'} <span class="reyes-pts-sub">· ${p.played} ${c==='MIMBRE'?(p.played===1?'fecha':'fechas'):'jug'}</span></span>
+          <span class="res-pts">${p.won} ${c==='MIMBRE'?'💩':'🏆'} <span class="reyes-pts-sub">· ${p.played} ${p.played===1?'fecha':'fechas'}</span></span>
         </div>`).join('')
     : `<div class="res-row rr-${c}"><span class="pos-icon"></span><span class="res-name" style="color:var(--m);font-weight:700">Sin campeones aún</span><span class="res-pts"></span></div>`;
   return `<div class="copa-blocks"><div class="copa-block bl-${c}">
@@ -5636,11 +5636,11 @@ function renderReyes(){
   const sub    = document.getElementById('reyes-sub');
   if(!tabs || !result) return;
   const setSub = c => { if(sub) sub.textContent = (c==='MIMBRE' ? 'Top 10 según últimos lugares de cada fecha 💩' : 'Top 10 según copas ganadas 🏆') + ' · todas las temporadas' };
-  tabs.innerHTML = REYES_COPAS.map(x =>
-    `<button type="button" class="reyes-tab${x.k==='MIMBRE'?' active':''}" data-c="${x.k}">${x.icon} ${x.label}</button>`
+  tabs.innerHTML = REYES_COPAS.map((x,i) =>
+    `<button type="button" class="reyes-tab${i===0?' active':''}" data-c="${x.k}">${x.icon} ${x.label}</button>`
   ).join('');
-  result.innerHTML = renderReyesCopa('MIMBRE');
-  setSub('MIMBRE');
+  result.innerHTML = renderReyesCopa('ORO');
+  setSub('ORO');
   tabs.addEventListener('click', e => {
     const b = e.target.closest('.reyes-tab');
     if(!b) return;
