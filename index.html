@@ -287,7 +287,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
   <!-- Reyes de cada copa -->
   <section class="card panel" id="reyes-section">
     <h2 style="text-align:center">👑 Reyes de cada copa</h2>
-    <p class="sub" style="text-align:center;margin-top:6px">Top 10 según copas ganadas 🏆</p>
+    <p class="sub" id="reyes-sub" style="text-align:center;margin-top:6px">Top 10 según copas ganadas 🏆</p>
     <div class="reyes-tabs" id="reyes-tabs"></div>
     <div id="reyes-result" style="margin-top:12px"></div>
   </section>
@@ -5529,6 +5529,21 @@ const REYES_COPAS = [
 ];
 
 function reyesRanking(c){
+  if(c === 'MIMBRE'){
+    // Rey de Mimbre = el que más veces quedó último de toda la fecha (perdió todos sus partidos).
+    const ultimos = {};
+    (DATA.fechas||[]).forEach(f => {
+      const last = f.parejas.reduce((a,b) => b.pos > a.pos ? b : a);
+      if(last.pos < 13) return; // solo cuenta si el último cayó en copa Mimbre
+      last.jugadores.forEach(j => { ultimos[j] = (ultimos[j]||0) + 1 });
+    });
+    const fechasDe = {};
+    DATA.players.forEach(p => { fechasDe[p.nombre] = p.fechasJugadas || 0 });
+    return Object.keys(ultimos)
+      .map(nombre => ({ nombre, won: ultimos[nombre], played: fechasDe[nombre] || 0 }))
+      .sort((a,b) => b.won - a.won || a.played - b.played)
+      .slice(0,10);
+  }
   return DATA.players
     .map(p => ({
       nombre: p.nombre,
@@ -5549,7 +5564,7 @@ function renderReyesCopa(c){
         `<div class="res-row rr-${c}${i===0?' rr-champ':''}">
           <span class="pos-icon">${medals[i] || (i+1)+'°'}</span>
           <span class="res-name">${esc(p.nombre)}</span>
-          <span class="res-pts">${p.won} 🏆 <span class="reyes-pts-sub">· ${p.played} jug</span></span>
+          <span class="res-pts">${p.won} ${c==='MIMBRE'?'💩':'🏆'} <span class="reyes-pts-sub">· ${p.played} ${c==='MIMBRE'?(p.played===1?'fecha':'fechas'):'jug'}</span></span>
         </div>`).join('')
     : `<div class="res-row rr-${c}"><span class="pos-icon"></span><span class="res-name" style="color:var(--m);font-weight:700">Sin campeones aún</span><span class="res-pts"></span></div>`;
   return `<div class="copa-blocks"><div class="copa-block bl-${c}">
@@ -5561,17 +5576,21 @@ function renderReyesCopa(c){
 function renderReyes(){
   const tabs   = document.getElementById('reyes-tabs');
   const result = document.getElementById('reyes-result');
+  const sub    = document.getElementById('reyes-sub');
   if(!tabs || !result) return;
+  const setSub = c => { if(sub) sub.textContent = c==='MIMBRE' ? 'Top 10 según últimos lugares de cada fecha 💩' : 'Top 10 según copas ganadas 🏆' };
   tabs.innerHTML = REYES_COPAS.map((x,i) =>
     `<button type="button" class="reyes-tab${i===0?' active':''}" data-c="${x.k}">${x.icon} ${x.label}</button>`
   ).join('');
   result.innerHTML = renderReyesCopa('ORO');
+  setSub('ORO');
   tabs.addEventListener('click', e => {
     const b = e.target.closest('.reyes-tab');
     if(!b) return;
     tabs.querySelectorAll('.reyes-tab').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
     result.innerHTML = renderReyesCopa(b.dataset.c);
+    setSub(b.dataset.c);
   });
 }
 
