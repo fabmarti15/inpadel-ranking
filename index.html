@@ -5520,7 +5520,7 @@ function renderRankChart(nombre){
       <circle cx="${X(bi).toFixed(1)}" cy="${Y(best).toFixed(1)}" r="4" fill="var(--g)" vector-effect="non-scaling-stroke"/>
       <circle cx="${X(n-1).toFixed(1)}" cy="${Y(cur).toFixed(1)}" r="3.5" fill="#fff" stroke="var(--g)" stroke-width="2" vector-effect="non-scaling-stroke"/>
     </svg>
-    <div class="rank-evo-ft"><span>${fmtDateY(series[0].fecha)}</span><span>Actual #${cur}</span></div>
+    <div class="rank-evo-ft"><span>Desde ${fmtDate(series[0].fecha)} ${series[0].fecha.slice(0,4)}</span><span>Actual #${cur}</span></div>
   </div>`;
 }
 
