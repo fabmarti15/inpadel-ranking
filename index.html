@@ -79,6 +79,11 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .box small{display:block;color:var(--m);font-size:.6rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}
 .box b{font-size:1.08rem;font-weight:950;line-height:1}
 .box-sub{display:block;margin-top:5px;font-size:.64rem;font-weight:800;color:var(--m);line-height:1}
+.rank-evo{margin:2px 0 16px}
+.rank-evo-hd{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:900;color:var(--i);margin-bottom:7px}
+.rank-best{font-size:.72rem;font-weight:900;color:var(--g);background:#1a7a440d;border:1px solid #1a7a4433;border-radius:8px;padding:3px 9px}
+.rank-svg{display:block;width:100%;height:64px;background:#fafaf8;border:1px solid var(--l);border-radius:12px}
+.rank-evo-ft{display:flex;justify-content:space-between;font-size:.68rem;font-weight:800;color:var(--m);margin-top:6px}
 .day-label{color:var(--m);font-size:.82rem;font-weight:950;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--l)}
 .entry{display:grid;grid-template-columns:28px 1fr auto;gap:6px 10px;align-items:center;padding:9px 11px;border:1px solid var(--l);border-radius:10px;background:#fff;margin-bottom:6px}
 .entry-icon{font-size:1.1rem;line-height:1;text-align:center}
@@ -5461,6 +5466,64 @@ function playerHistory(nombre){
     .reverse();
 }
 
+/* ── Efectividad por posición ─────────────────── */
+// Cada fecha: 1° lugar = 100%, último = 0%, lineal. El % del jugador = promedio.
+function posEff(fechas, nombre){
+  const k = norm(nombre);
+  let s = 0, n = 0;
+  (fechas||[]).forEach(f => {
+    const N = f.parejas.reduce((m,p) => p.pos > m ? p.pos : m, 0);
+    if(N < 2) return;
+    const pair = f.parejas.find(p => p.jugadores.some(j => norm(j) === k));
+    if(!pair) return;
+    s += (N - pair.pos) / (N - 1) * 100;
+    n++;
+  });
+  return n ? Math.round(s / n * 10) / 10 : 0;
+}
+
+/* ── Historial de puesto en el ranking ─────────── */
+// Reconstruye el puesto de cada jugador fecha a fecha (puntaje acumulado), histórico total.
+let _rankHistCache = null;
+function rankHistory(){
+  if(_rankHistCache) return _rankHistCache;
+  const fechas = [...DATA_HIST.fechas].sort((a,b) => a.fecha.localeCompare(b.fecha));
+  const cum = {}, per = {};
+  fechas.forEach(f => {
+    f.parejas.forEach(p => p.jugadores.forEach(j => {
+      const k = norm(j);
+      cum[k] = (cum[k]||0) + (p.puntos||0);
+    }));
+    const order = Object.keys(cum).sort((a,b) => cum[b] - cum[a]);
+    order.forEach((k,i) => { (per[k] = per[k]||[]).push({fecha:f.fecha, rank:i+1}); });
+  });
+  _rankHistCache = per;
+  return per;
+}
+
+function renderRankChart(nombre){
+  const series = rankHistory()[norm(nombre)] || [];
+  if(series.length < 2) return '';
+  const ranks = series.map(s => s.rank);
+  const best = Math.min(...ranks), worst = Math.max(...ranks), cur = ranks[ranks.length-1];
+  const bi = ranks.indexOf(best);
+  const n = series.length;
+  const W = 300, H = 64, padX = 10, padT = 12, padB = 12;
+  const pw = W - 2*padX, ph = H - padT - padB, span = Math.max(1, worst - best);
+  const X = i => padX + (n===1 ? pw/2 : i/(n-1)*pw);
+  const Y = r => padT + (r - best)/span*ph;       // mejor puesto arriba
+  const d = series.map((s,i) => (i?'L':'M') + X(i).toFixed(1) + ',' + Y(s.rank).toFixed(1)).join(' ');
+  return `<div class="rank-evo">
+    <div class="rank-evo-hd">📈 Evolución del puesto <span class="rank-best">Mejor: #${best}</span></div>
+    <svg viewBox="0 0 ${W} ${H}" class="rank-svg" preserveAspectRatio="none">
+      <path d="${d}" fill="none" stroke="var(--g)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <circle cx="${X(bi).toFixed(1)}" cy="${Y(best).toFixed(1)}" r="4" fill="var(--g)" vector-effect="non-scaling-stroke"/>
+      <circle cx="${X(n-1).toFixed(1)}" cy="${Y(cur).toFixed(1)}" r="3.5" fill="#fff" stroke="var(--g)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div class="rank-evo-ft"><span>${fmtDateY(series[0].fecha)}</span><span>Actual #${cur}</span></div>
+  </div>`;
+}
+
 /* ── Render ranking ──────────────────────────── */
 function renderRanking(){
   const el = document.getElementById('ranking');
@@ -5482,7 +5545,7 @@ function renderRanking(){
       <span class="rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${p.rank}</span>
       <span>
         <span class="p-name">${esc(p.nombre)}</span>
-        <span class="p-meta"><span class="bar"><span style="width:${p.efectividad}%"></span></span>${copaMeta || '<span style="color:var(--m);font-size:.72rem">Sin copas aún</span>'}</span>
+        <span class="p-meta"><span class="bar"><span style="width:${posEff(DATA.fechas, p.nombre)}%"></span></span>${copaMeta || '<span style="color:var(--m);font-size:.72rem">Sin copas aún</span>'}</span>
       </span>
       <span class="pts"><b>${p.puntaje.toLocaleString('es-CL')}</b></span>
     </summary>
@@ -5497,13 +5560,12 @@ function renderDetail(nombre){
   const hist = playerHistory(nombre);
   const player = DATA_HIST.players.find(p => norm(p.nombre) === norm(nombre));
 
-  // Stats summary
-  const cg = (player && player.copasGanadas) || {};
-  const ganadas = (cg.ORO||0)+(cg.PLATA||0)+(cg.BRONCE||0)+(cg.MIMBRE||0);
+  // Stats summary — Efectividad = promedio de posición (1°=100% ... último=0%), histórico total.
+  const efPos = posEff(DATA_HIST.fechas, nombre);
   const statsHtml = player ? `<div class="sum">
     <div class="box"><small>Puntos</small><b>${player.puntaje.toLocaleString('es-CL')}</b></div>
     <div class="box"><small>Fechas</small><b>${player.fechasJugadas}</b></div>
-    <div class="box"><small>Efectividad</small><b>${player.efectividad}%</b><span class="box-sub">🏆 ${ganadas}/${player.fechasJugadas} ganadas</span></div>
+    <div class="box"><small>Efectividad</small><b>${efPos}%</b></div>
     <div class="box"><small>Copas ${ICON['ORO']} ORO</small><b>${player.copas.ORO}</b></div>
   </div>` : '';
 
@@ -5527,6 +5589,7 @@ function renderDetail(nombre){
   return `<div class="detail">
     <div class="hist-title">Historial de ${esc(nombre)} · todas las temporadas</div>
     ${statsHtml}
+    ${renderRankChart(nombre)}
     ${histHtml}
   </div>`;
 }
