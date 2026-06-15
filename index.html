@@ -85,6 +85,8 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .rank-svg{display:block;width:100%;height:auto;background:#fafaf8;border:1px solid var(--l);border-radius:12px}
 .rank-evo-ft{display:flex;justify-content:space-between;font-size:.68rem;font-weight:800;color:var(--m);margin-top:6px}
 .ranktype-desc{font-size:.74rem;color:var(--m);font-weight:700;line-height:1.35;margin:0 0 12px;min-height:2.5em}
+.plink{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-decoration-color:rgba(26,122,68,.55);text-underline-offset:2px;-webkit-tap-highlight-color:transparent}
+.plink:active{color:var(--g)}
 .day-label{color:var(--m);font-size:.82rem;font-weight:950;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--l)}
 .entry{display:grid;grid-template-columns:28px 1fr auto;gap:6px 10px;align-items:center;padding:9px 11px;border:1px solid var(--l);border-radius:10px;background:#fff;margin-bottom:6px}
 .entry-icon{font-size:1.1rem;line-height:1;text-align:center}
@@ -195,7 +197,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
     <div class="brand-logo brand-logo-top">
       <img src="./inpadel-center.svg" alt="Inpadel Center">
     </div>
-    <h1 id="page-title">Ranking 2026</h1>
+    <h1 id="page-title">Ranking Histórico</h1>
     <nav class="section-tabs" aria-label="Secciones">
       <a href="#reyes-section">Reyes</a>
       <a href="#champions-section">Campeones</a>
@@ -310,8 +312,8 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
     <div class="search-suggestions" id="player-search-suggestions"></div>
     <div class="search-msg" id="player-search-msg"></div>
     <div class="reyes-tabs" id="view-tabs" style="grid-template-columns:repeat(2,1fr);margin:10px 0 6px" aria-label="Ranking">
-      <button type="button" class="reyes-tab active" data-v="2026">🏆 Ranking 2026</button>
-      <button type="button" class="reyes-tab" data-v="hist">📊 Ranking Histórico</button>
+      <button type="button" class="reyes-tab" data-v="2026">🏆 Ranking 2026</button>
+      <button type="button" class="reyes-tab active" data-v="hist">📊 Ranking Histórico</button>
     </div>
     <p class="ranktype-desc" id="view-desc"></p>
     <div class="list" id="ranking"><details class="player-wrap">
@@ -5678,7 +5680,7 @@ function renderDetail(nombre, currentRank){
         <span class="entry-icon">${ICON[e.copa]}</span>
         <span class="entry-info">
           <div class="entry-title">${LABEL[e.copa]} · ${POS_LABEL[e.rel-1]||e.rel+'°'} lugar</div>
-          ${e.partner ? `<div class="entry-sub">con ${esc(e.partner)}</div>` : ''}
+          ${e.partner ? `<div class="entry-sub">con ${plink(e.partner)}</div>` : ''}
         </span>
         <span class="entry-pts">+${e.puntos} pts</span>
       </div>`).join('')}`
@@ -5731,7 +5733,7 @@ function renderFechaResult(fechaStr){
       ${pairs.map(({pair,icon,rel}) =>
         `<div class="res-row rr-${b.key}${rel===1?' rr-champ':''}">
           <span class="pos-icon">${icon}</span>
-          <span class="res-name">${pair.jugadores.map(j=>esc(j)).join(' · ')}</span>
+          <span class="res-name">${pair.jugadores.map(j=>plink(j)).join(' · ')}</span>
           <span class="res-pts">${pair.puntos}</span>
         </div>`
       ).join('')}
@@ -5771,7 +5773,7 @@ function reyesRanking(c){
       played: (p.copasJugadas||{})[c] || 0
     }))
     .filter(p => p.won > 0)
-    .sort((a,b) => b.won - a.won || b.played - a.played)
+    .sort((a,b) => b.won - a.won || a.played - b.played)
     .slice(0,10);
 }
 
@@ -5783,7 +5785,7 @@ function renderReyesCopa(c){
     ? list.map((p,i) =>
         `<div class="res-row rr-${c}${i===0?' rr-champ':''}">
           <span class="pos-icon">${medals[i] || (i+1)+'°'}</span>
-          <span class="res-name">${esc(p.nombre)}</span>
+          <span class="res-name">${plink(p.nombre)}</span>
           <span class="res-pts">${p.won} ${c==='MIMBRE'?'💩':'🏆'} <span class="reyes-pts-sub">· ${p.played} ${p.played===1?'fecha':'fechas'}</span></span>
         </div>`).join('')
     : `<div class="res-row rr-${c}"><span class="pos-icon"></span><span class="res-name" style="color:var(--m);font-weight:700">Sin campeones aún</span><span class="res-pts"></span></div>`;
@@ -5835,7 +5837,7 @@ const VIEWS = {
   'hist': {season:'hist', type:'elo', title:'Ranking Histórico',
     desc:'📊 Sube o baja según a quién le ganas o pierdes cada fecha (le ganas a quien quedó debajo). Subes más si superas a jugadores con mejor ranking. No depende de cuántas fechas juegues.'}
 };
-let VIEW = '2026';
+let VIEW = 'hist';   // Histórico por defecto (el de desempeño)
 function setView(v){
   if(!VIEWS[v]) return;
   VIEW = v;
@@ -5858,6 +5860,25 @@ function setView(v){
   tabs.addEventListener('pointerover', e => { const b = e.target.closest('.reyes-tab'); if(b) desc.textContent = VIEWS[b.dataset.v].desc; });
   tabs.addEventListener('pointerout', () => { desc.textContent = VIEWS[VIEW].desc; });
 })();
+
+/* ── Nombre clickeable → abre la tarjeta del jugador ── */
+function plink(name){ return `<span class="plink" data-go="${esc(name)}">${esc(name)}</span>`; }
+function openPlayerByName(name){
+  const nn = norm(name);
+  const find = () => [...document.querySelectorAll('#ranking .player-wrap')].find(w => norm(w.querySelector('.player')?.dataset.n) === nn);
+  let el = find();
+  if(!el && VIEW !== 'hist'){ setView('hist'); el = find(); }   // si no está en la vista, salto a Histórico
+  if(!el) return;
+  document.querySelectorAll('.player-wrap[open]').forEach(x => { if(x !== el) x.open = false; });
+  el.open = true;
+  el.classList.add('search-hit');
+  setTimeout(() => el.classList.remove('search-hit'), 2200);
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('.plink');
+  if(a){ e.preventDefault(); e.stopPropagation(); openPlayerByName(a.dataset.go); }
+});
 
 function setupPlayerSearch(){
   const form = document.getElementById('player-search');
@@ -5935,9 +5956,8 @@ function setupPlayerSearch(){
 }
 
 /* Data embedded */
-renderRanking();
-renderDates();
 renderReyes();
+setView('hist');     // render inicial: Ranking Histórico por defecto (setea DATA + renderRanking + renderDates)
 setupPlayerSearch();
 </script>
 </body>
