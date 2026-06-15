@@ -82,7 +82,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .rank-evo{margin:2px 0 16px}
 .rank-evo-hd{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:900;color:var(--i);margin-bottom:7px}
 .rank-best{font-size:.72rem;font-weight:900;color:var(--g);background:#1a7a440d;border:1px solid #1a7a4433;border-radius:8px;padding:3px 9px}
-.rank-svg{display:block;width:100%;height:64px;background:#fafaf8;border:1px solid var(--l);border-radius:12px}
+.rank-svg{display:block;width:100%;height:auto;background:#fafaf8;border:1px solid var(--l);border-radius:12px}
 .rank-evo-ft{display:flex;justify-content:space-between;font-size:.68rem;font-weight:800;color:var(--m);margin-top:6px}
 .ranktype-desc{font-size:.74rem;color:var(--m);font-weight:700;line-height:1.35;margin:0 0 12px;min-height:2.5em}
 .day-label{color:var(--m);font-size:.82rem;font-weight:950;margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--l)}
@@ -309,16 +309,11 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
     </form>
     <div class="search-suggestions" id="player-search-suggestions"></div>
     <div class="search-msg" id="player-search-msg"></div>
-    <div class="reyes-tabs" id="ranktype-tabs" style="grid-template-columns:repeat(2,1fr);margin:10px 0 6px" aria-label="Tipo de ranking">
-      <button type="button" class="reyes-tab active" data-t="inpadel">🏆 Inpadel</button>
-      <button type="button" class="reyes-tab" data-t="elo">📊 ELO</button>
+    <div class="reyes-tabs" id="view-tabs" style="grid-template-columns:repeat(2,1fr);margin:10px 0 6px" aria-label="Ranking">
+      <button type="button" class="reyes-tab active" data-v="2026">🏆 Ranking 2026</button>
+      <button type="button" class="reyes-tab" data-v="hist">📊 Ranking Histórico</button>
     </div>
-    <p class="ranktype-desc" id="ranktype-desc"></p>
-    <div class="reyes-tabs" id="season-tabs" style="grid-template-columns:repeat(3,1fr);margin:0 0 14px" aria-label="Temporada">
-      <button type="button" class="reyes-tab active" data-s="2026">2026</button>
-      <button type="button" class="reyes-tab" data-s="2025">2025</button>
-      <button type="button" class="reyes-tab" data-s="hist">📚 Histórico</button>
-    </div>
+    <p class="ranktype-desc" id="view-desc"></p>
     <div class="list" id="ranking"><details class="player-wrap">
     <summary class="player" data-n="Chris Zapata">
       <span class="rank r1">1</span>
@@ -5554,6 +5549,19 @@ function rankSeriesFor(nombre){
 }
 
 /* ── Gráfico de evolución del puesto ───────────── */
+// Curva suave (Catmull-Rom → bézier) para una línea más fluida.
+function smoothPath(pts){
+  if(pts.length < 2) return '';
+  let d = 'M' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
+  for(let i=0;i<pts.length-1;i++){
+    const p0 = pts[i-1]||pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2]||p2;
+    const c1x = p1[0] + (p2[0]-p0[0])/6, c1y = p1[1] + (p2[1]-p0[1])/6;
+    const c2x = p2[0] - (p3[0]-p1[0])/6, c2y = p2[1] - (p3[1]-p1[1])/6;
+    d += ' C' + c1x.toFixed(1)+','+c1y.toFixed(1)+' '+c2x.toFixed(1)+','+c2y.toFixed(1)+' '+p2[0].toFixed(1)+','+p2[1].toFixed(1);
+  }
+  return d;
+}
+let _gradId = 0;
 // Se ancla al ranking activo: el último punto = el puesto oficial actual (coincide con el badge).
 function renderRankChart(nombre, currentRank){
   const series = rankSeriesFor(nombre).slice();
@@ -5563,21 +5571,33 @@ function renderRankChart(nombre, currentRank){
   const best = Math.min(...ranks), worst = Math.max(...ranks), cur = ranks[ranks.length-1];
   const bi = ranks.indexOf(best);
   const n = series.length;
-  const W = 300, H = 64, padX = 10, padT = 12, padB = 12;
-  const pw = W - 2*padX, ph = H - padT - padB, span = Math.max(1, worst - best);
-  const X = i => padX + (n===1 ? pw/2 : i/(n-1)*pw);
+  const W = 320, H = 86, padL = 12, padR = 12, padT = 24, padB = 16;
+  const pw = W - padL - padR, ph = H - padT - padB, span = Math.max(1, worst - best);
+  const X = i => padL + (n===1 ? pw/2 : i/(n-1)*pw);
   const Y = r => padT + (r - best)/span*ph;       // mejor puesto arriba
-  const d = series.map((s,i) => (i?'L':'M') + X(i).toFixed(1) + ',' + Y(s.rank).toFixed(1)).join(' ');
-  const tipo = RANKTYPE === 'elo' ? 'ELO' : 'Inpadel';
-  const scope = SEASON === 'hist' ? 'Histórico' : SEASON;
+  const baseY = padT + ph;
+  const clampX = x => Math.min(Math.max(x, padL+12), W-padL-12);
+  const pts = series.map((s,i) => [X(i), Y(s.rank)]);
+  const line = smoothPath(pts);
+  const area = line + ` L${X(n-1).toFixed(1)},${baseY.toFixed(1)} L${X(0).toFixed(1)},${baseY.toFixed(1)} Z`;
+  const gid = 'rg' + (_gradId++);
+  const bx = X(bi), byy = Y(best), lx = X(n-1), ly = Y(cur);
   return `<div class="rank-evo">
-    <div class="rank-evo-hd">📈 Evolución del puesto <span class="rank-best">Mejor: #${best}</span></div>
-    <svg viewBox="0 0 ${W} ${H}" class="rank-svg" preserveAspectRatio="none">
-      <path d="${d}" fill="none" stroke="var(--g)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-      <circle cx="${X(bi).toFixed(1)}" cy="${Y(best).toFixed(1)}" r="4" fill="var(--g)" vector-effect="non-scaling-stroke"/>
-      <circle cx="${X(n-1).toFixed(1)}" cy="${Y(cur).toFixed(1)}" r="3.5" fill="#fff" stroke="var(--g)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+    <div class="rank-evo-hd">📈 Evolución del puesto</div>
+    <svg viewBox="0 0 ${W} ${H}" class="rank-svg" role="img">
+      <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1a7a44" stop-opacity="0.30"/>
+        <stop offset="1" stop-color="#1a7a44" stop-opacity="0"/>
+      </linearGradient></defs>
+      <line x1="${padL}" y1="${byy.toFixed(1)}" x2="${(W-padR).toFixed(1)}" y2="${byy.toFixed(1)}" stroke="#1a7a44" stroke-width="1" stroke-dasharray="3 4" opacity="0.4"/>
+      <path d="${area}" fill="url(#${gid})" stroke="none"/>
+      <path d="${line}" fill="none" stroke="#1a7a44" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="4" fill="#fff" stroke="#1a7a44" stroke-width="2.4"/>
+      <text x="${clampX(lx).toFixed(1)}" y="${Math.max(ly-8,9).toFixed(1)}" font-size="11.5" font-weight="900" fill="#1a7a44" text-anchor="middle">#${cur}</text>
+      <text x="${bx.toFixed(1)}" y="${byy.toFixed(1)}" font-size="15" fill="#e3a008" text-anchor="middle" dominant-baseline="central">★</text>
+      <text x="${clampX(bx).toFixed(1)}" y="${Math.max(byy-9,9).toFixed(1)}" font-size="11.5" font-weight="900" fill="#b8860b" text-anchor="middle">Mejor #${best}</text>
     </svg>
-    <div class="rank-evo-ft"><span>Ranking ${tipo} · ${scope}</span><span>Actual #${cur}</span></div>
+    <div class="rank-evo-ft"><span>Desde ${fmtDate(series[0].fecha)} ${series[0].fecha.slice(0,4)}</span></div>
   </div>`;
 }
 
@@ -5794,42 +5814,37 @@ document.getElementById('date-select').addEventListener('change', e => {
   document.getElementById('fecha-result').innerHTML = renderFechaResult(e.target.value);
 });
 
-/* ── Selector de temporada ───────────────────── */
-function setSeason(s){
-  if(!SEASONS[s] || s === SEASON) return;
-  SEASON = s;
-  DATA = SEASONS[s].data;
-  document.getElementById('page-title').textContent = SEASONS[s].title;
-  document.querySelectorAll('#season-tabs .reyes-tab').forEach(b => b.classList.toggle('active', b.dataset.s === s));
+/* ── Selector de ranking (2 vistas) ──────────── */
+// "2026" = puntos Inpadel de la temporada. "hist" = ranking acumulado de todas las
+// temporadas, calculado por desempeño (sube/baja según a quién le ganas; ver descripción).
+const VIEWS = {
+  '2026': {season:'2026', type:'inpadel', title:'Ranking 2026',
+    desc:'🏆 Ranking oficial: suma de puntos según tu posición en cada fecha. Premia jugar y acumular.'},
+  'hist': {season:'hist', type:'elo', title:'Ranking Histórico',
+    desc:'📊 Sube o baja según a quién le ganas o pierdes cada fecha (le ganas a quien quedó debajo). Subes más si superas a jugadores con mejor ranking. No depende de cuántas fechas juegues.'}
+};
+let VIEW = '2026';
+function setView(v){
+  if(!VIEWS[v]) return;
+  VIEW = v;
+  SEASON = VIEWS[v].season;
+  RANKTYPE = VIEWS[v].type;
+  DATA = SEASONS[SEASON].data;
+  document.getElementById('page-title').textContent = VIEWS[v].title;
+  document.querySelectorAll('#view-tabs .reyes-tab').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+  document.getElementById('view-desc').textContent = VIEWS[v].desc;
   renderRanking();
   renderDates();
 }
-document.getElementById('season-tabs').addEventListener('click', e => {
-  const b = e.target.closest('.reyes-tab');
-  if(b) setSeason(b.dataset.s);
-});
-
-/* ── Selector de tipo de ranking ─────────────── */
-const RANKTYPE_DESC = {
-  inpadel: '🏆 Ranking oficial: suma de puntos según tu posición en cada fecha. Premia jugar y acumular.',
-  elo: '📊 ELO por posición: parte en 1000 y sube o baja según a quién le ganas o pierdes cada fecha (le ganas a quien quedó debajo). Subes más si superas a jugadores con mejor ELO. No depende de cuántas fechas juegues.'
-};
-function setRankType(t){
-  if(!RANKTYPE_DESC[t]) return;
-  RANKTYPE = t;
-  document.querySelectorAll('#ranktype-tabs .reyes-tab').forEach(b => b.classList.toggle('active', b.dataset.t === t));
-  document.getElementById('ranktype-desc').textContent = RANKTYPE_DESC[t];
-  renderRanking();
-}
-(function setupRankType(){
-  const tabs = document.getElementById('ranktype-tabs');
-  const desc = document.getElementById('ranktype-desc');
+(function setupView(){
+  const tabs = document.getElementById('view-tabs');
+  const desc = document.getElementById('view-desc');
   if(!tabs || !desc) return;
-  desc.textContent = RANKTYPE_DESC[RANKTYPE];
-  tabs.addEventListener('click', e => { const b = e.target.closest('.reyes-tab'); if(b) setRankType(b.dataset.t); });
-  // Tooltip: al pasar el mouse o el dedo, muestra la descripción de ese botón; al salir vuelve al activo.
-  tabs.addEventListener('pointerover', e => { const b = e.target.closest('.reyes-tab'); if(b) desc.textContent = RANKTYPE_DESC[b.dataset.t]; });
-  tabs.addEventListener('pointerout', () => { desc.textContent = RANKTYPE_DESC[RANKTYPE]; });
+  desc.textContent = VIEWS[VIEW].desc;
+  tabs.addEventListener('click', e => { const b = e.target.closest('.reyes-tab'); if(b) setView(b.dataset.v); });
+  // Tooltip: al pasar el mouse o el dedo, muestra la descripción de ese botón; al salir vuelve a la activa.
+  tabs.addEventListener('pointerover', e => { const b = e.target.closest('.reyes-tab'); if(b) desc.textContent = VIEWS[b.dataset.v].desc; });
+  tabs.addEventListener('pointerout', () => { desc.textContent = VIEWS[VIEW].desc; });
 })();
 
 function setupPlayerSearch(){
