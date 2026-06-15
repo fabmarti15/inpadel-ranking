@@ -5582,6 +5582,18 @@ function renderRankChart(nombre, currentRank){
   const area = line + ` L${X(n-1).toFixed(1)},${baseY.toFixed(1)} L${X(0).toFixed(1)},${baseY.toFixed(1)} Z`;
   const gid = 'rg' + (_gradId++);
   const bx = X(bi), byy = Y(best), lx = X(n-1), ly = Y(cur);
+  // Mantiene la etiqueta dentro del gráfico considerando su ancho (evita que se corte en el borde).
+  const clampLab = (x, txt) => { const hw = String(txt).length*3.3 + 3; return Math.min(Math.max(x, padL+hw), W-padR-hw); };
+  // Anti-colisión: el "actual" siempre va a la derecha; si el "Mejor" cae cerca (o es el mismo puesto)
+  // se separan en vertical o se muestra solo "Mejor" (en celular se encimaban).
+  const bestTxt = 'Mejor #' + best, curTxt = '#' + cur;
+  const nearCurrent = bx > W*0.55 || Math.abs(bx - lx) < 52;
+  let curLabel = '';
+  if(!(nearCurrent && cur === best)){
+    let cy = nearCurrent ? ly + 15 : (ly - 9 < 10 ? ly + 15 : ly - 9);
+    cy = Math.min(Math.max(cy, 10), H - 3);
+    curLabel = `<text x="${clampLab(lx,curTxt).toFixed(1)}" y="${cy.toFixed(1)}" font-size="11.5" font-weight="900" fill="#1a7a44" text-anchor="middle">${curTxt}</text>`;
+  }
   return `<div class="rank-evo">
     <div class="rank-evo-hd">📈 Evolución del puesto</div>
     <svg viewBox="0 0 ${W} ${H}" class="rank-svg" role="img">
@@ -5593,9 +5605,9 @@ function renderRankChart(nombre, currentRank){
       <path d="${area}" fill="url(#${gid})" stroke="none"/>
       <path d="${line}" fill="none" stroke="#1a7a44" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
       <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="4" fill="#fff" stroke="#1a7a44" stroke-width="2.4"/>
-      <text x="${clampX(lx).toFixed(1)}" y="${Math.max(ly-8,9).toFixed(1)}" font-size="11.5" font-weight="900" fill="#1a7a44" text-anchor="middle">#${cur}</text>
+      ${curLabel}
       <text x="${bx.toFixed(1)}" y="${byy.toFixed(1)}" font-size="15" fill="#e3a008" text-anchor="middle" dominant-baseline="central">★</text>
-      <text x="${clampX(bx).toFixed(1)}" y="${Math.max(byy-9,9).toFixed(1)}" font-size="11.5" font-weight="900" fill="#b8860b" text-anchor="middle">Mejor #${best}</text>
+      <text x="${clampLab(bx,bestTxt).toFixed(1)}" y="${Math.max(byy-9,9).toFixed(1)}" font-size="11.5" font-weight="900" fill="#b8860b" text-anchor="middle">${bestTxt}</text>
     </svg>
     <div class="rank-evo-ft"><span>Desde ${fmtDate(series[0].fecha)} ${series[0].fecha.slice(0,4)}</span></div>
   </div>`;
