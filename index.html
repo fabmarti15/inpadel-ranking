@@ -83,13 +83,20 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .ver-mas{display:block;width:100%;margin:8px 0 2px;padding:10px;border:1px dashed var(--l);border-radius:10px;background:#fff;color:var(--g);font-weight:900;font-size:.82rem;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
 .ver-mas:hover{background:#f6f8f7}
 .ver-mas:active{transform:scale(.99)}
-.nivel{margin:2px 0 16px}
-.nivel-hd{font-size:.6rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--m);margin-bottom:6px}
-.nivel-bar{display:flex;gap:2px;height:24px;border-radius:9px;overflow:hidden;background:var(--l)}
-.nivel-seg{position:relative;min-width:3px}
-.nivel-win{position:absolute;left:0;top:0;bottom:0}
-.nivel-lg{display:flex;flex-wrap:wrap;gap:9px;margin-top:9px;font-size:.82rem;font-weight:850;color:var(--i)}
-.nivel-lg .sep{color:var(--l);font-weight:900}
+.nivel{margin:2px 0 18px}
+.nivel-hd{font-size:.6rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--m);margin-bottom:10px}
+.nivel-row{display:grid;grid-template-columns:74px 1fr 56px;align-items:center;gap:10px;margin-bottom:9px}
+.nivel-lbl{font-size:.82rem;font-weight:850;white-space:nowrap}
+.nivel-track{position:relative;height:18px;border-radius:5px;background:var(--l)}
+.nivel-meas{position:absolute;left:0;top:50%;transform:translateY(-50%);height:9px;background:var(--g);border-radius:5px}
+.nivel-tick{position:absolute;top:1px;bottom:1px;width:3px;background:#222;border-radius:2px;transform:translateX(-50%)}
+.nivel-val{font-size:.78rem;font-weight:850;text-align:right;line-height:1.25}
+.nivel-val small{color:var(--m);font-weight:800;font-size:.72rem}
+.nivel-axis{position:relative;height:13px}
+.nivel-axis span{position:absolute;transform:translateX(-50%);font-size:.6rem;color:var(--m);font-weight:800}
+.nivel-cap{font-size:.7rem;color:var(--m);margin-top:9px}
+.nivel-cap-bar{display:inline-block;width:16px;height:7px;background:var(--g);border-radius:3px;vertical-align:middle}
+.nivel-cap-tick{display:inline-block;width:3px;height:12px;background:#222;border-radius:2px;vertical-align:middle}
 .rank-evo{margin:2px 0 16px}
 .rank-evo-hd{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:900;color:var(--i);margin-bottom:7px}
 .rank-best{font-size:.72rem;font-weight:900;color:var(--g);background:#1a7a440d;border:1px solid #1a7a4433;border-radius:8px;padding:3px 9px}
@@ -5679,30 +5686,36 @@ function toggleHist(btn){
   }
 }
 
-/* ── Barra de nivel por copa (ancho = fechas jugadas · relleno fuerte = ganadas) ── */
-const NIVEL_COL = {
-  ORO:    {l:'#EFE6C8', s:'#CBA94E'},
-  PLATA:  {l:'#E6E9EC', s:'#AAB3BD'},
-  BRONCE: {l:'#E9DAC9', s:'#C49069'},
-  MIMBRE: {l:'#DCD0BE', s:'#9A8266'}
-};
+/* ── Nivel por copa · bullet chart ──────────────── */
+// Una fila por copa. Barra verde = copas ganadas; marca negra | = veces que jugó esa copa
+// (el "techo"). Escala compartida 0..nice para comparar entre copas.
 const NIVEL_ORD = ['ORO','PLATA','BRONCE','MIMBRE'];
+const NIVEL_NAME = {ORO:'Oro', PLATA:'Plata', BRONCE:'Bronce', MIMBRE:'Mimbre'};
 function nivelBar(player){
   const J = player.copasJugadas || {}, G = player.copasGanadas || {};
   const cups = NIVEL_ORD.filter(k => (J[k]||0) > 0);
-  const total = cups.reduce((a,k) => a + J[k], 0);
-  if(!total) return '';
-  const segs = cups.map(k => {
-    const j = J[k], g = G[k]||0;
-    return `<div class="nivel-seg" style="flex:${j/total*100};background:${NIVEL_COL[k].l}" title="${LABEL[k]}: ganó ${g} de ${j}">
-      <div class="nivel-win" style="width:${g/j*100}%;background:${NIVEL_COL[k].s}"></div>
+  if(!cups.length) return '';
+  const maxJ = Math.max(...cups.map(k => J[k]));
+  const nice = Math.max(10, Math.ceil(maxJ/10)*10);
+  const step = nice > 60 ? 20 : 10;
+  const rows = cups.map(k => {
+    const j = J[k], g = G[k]||0, pct = Math.round(g/j*100);
+    return `<div class="nivel-row">
+      <span class="nivel-lbl">${ICON[k]} ${NIVEL_NAME[k]}</span>
+      <span class="nivel-track" title="${NIVEL_NAME[k]}: ganó ${g} de ${j} (${pct}%)">
+        <span class="nivel-meas" style="width:${g/nice*100}%"></span>
+        <span class="nivel-tick" style="left:${Math.min(100, j/nice*100)}%"></span>
+      </span>
+      <span class="nivel-val">${g}/${j}<br><small>${pct}%</small></span>
     </div>`;
   }).join('');
-  const lg = cups.map(k => `<span>${ICON[k]} ${G[k]||0}/${J[k]}</span>`).join('<span class="sep">·</span>');
+  let ax = '';
+  for(let v=0; v<=nice; v+=step) ax += `<span style="left:${v/nice*100}%">${v}</span>`;
   return `<div class="nivel">
     <div class="nivel-hd">Nivel por copa</div>
-    <div class="nivel-bar">${segs}</div>
-    <div class="nivel-lg">${lg}</div>
+    ${rows}
+    <div class="nivel-row"><span></span><div class="nivel-axis">${ax}</div><span></span></div>
+    <div class="nivel-cap"><span class="nivel-cap-bar"></span> ganó · <span class="nivel-cap-tick"></span> jugó</div>
   </div>`;
 }
 
