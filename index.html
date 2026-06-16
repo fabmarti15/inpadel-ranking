@@ -79,6 +79,10 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .box small{display:block;color:var(--m);font-size:.6rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px}
 .box b{font-size:1.08rem;font-weight:950;line-height:1}
 .box-sub{display:block;margin-top:5px;font-size:.64rem;font-weight:800;color:var(--m);line-height:1}
+.box-name{display:block;font-size:.86rem;font-weight:950;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ver-mas{display:block;width:100%;margin:8px 0 2px;padding:10px;border:1px dashed var(--l);border-radius:10px;background:#fff;color:var(--g);font-weight:900;font-size:.82rem;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.ver-mas:hover{background:#f6f8f7}
+.ver-mas:active{transform:scale(.99)}
 .rank-evo{margin:2px 0 16px}
 .rank-evo-hd{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:900;color:var(--i);margin-bottom:7px}
 .rank-best{font-size:.72rem;font-weight:900;color:var(--g);background:#1a7a440d;border:1px solid #1a7a4433;border-radius:8px;padding:3px 9px}
@@ -5638,7 +5642,7 @@ function renderRanking(){
       {k:'BRONCE',label:'Bronce',icon:'🥉'},
       {k:'MIMBRE',label:'Mimbre',icon:'💩'}
     ].filter(c => (p.copasJugadas||{})[c.k] > 0)
-     .map(c => `<span class="copa-tag">${c.icon} <b>${(p.copasGanadas||{})[c.k]||0}/${(p.copasJugadas||{})[c.k]}</b></span>`)
+     .map(c => `<span class="copa-tag" title="${c.label}: copas ganadas / jugadas">${c.icon} <b>${(p.copasGanadas||{})[c.k]||0}/${(p.copasJugadas||{})[c.k]}</b></span>`)
      .join('<span class="sep">·</span>');
     return `<details class="player-wrap">
     <summary class="player" data-n="${esc(p.nombre)}">
@@ -5654,26 +5658,53 @@ function renderRanking(){
   }).join('');
 }
 
+/* ── Botón "ver más / ver menos" de las fechas ── */
+function toggleHist(btn){
+  const more = btn.previousElementSibling;
+  if(!more) return;
+  if(more.hasAttribute('hidden')){
+    more.removeAttribute('hidden');
+    btn.textContent = 'Ver menos ▴';
+  } else {
+    more.setAttribute('hidden','');
+    const n = +btn.dataset.more;
+    btn.textContent = 'Ver ' + n + ' fecha' + (n>1?'s':'') + ' más ▾';
+  }
+}
+
 /* ── Render player detail ────────────────────── */
 function renderDetail(nombre, currentRank){
   // Stats y fechas siempre del histórico total, sin importar la temporada elegida.
   const hist = playerHistory(nombre);
   const player = DATA_HIST.players.find(p => norm(p.nombre) === norm(nombre));
 
-  // Stats summary — Efectividad = promedio de posición (1°=100% ... último=0%), histórico total.
+  // Stats summary — sin "Puntos" (ya sale en la fila de arriba) y sin copas (también arriba).
+  // Efectividad = promedio de posición (1°=100% ... último=0%), histórico total.
   const efPos = posEff(DATA_HIST.fechas, nombre);
+
+  // Mejor puesto: del ranking activo, coherente con el gráfico de evolución de abajo.
+  const _rs = rankSeriesFor(nombre).slice();
+  if(currentRank && _rs.length) _rs[_rs.length-1] = {rank: currentRank};
+  const mejorPuesto = _rs.length ? Math.min(..._rs.map(s => s.rank)) : (currentRank || null);
+
+  // Compañero más frecuente (histórico total).
+  const _pc = {};
+  hist.forEach(e => { if(e.partner) _pc[e.partner] = (_pc[e.partner] || 0) + 1; });
+  let topPartner = '', topN = 0;
+  Object.keys(_pc).forEach(nm => { if(_pc[nm] > topN){ topN = _pc[nm]; topPartner = nm; } });
+
   const statsHtml = player ? `<div class="sum">
-    <div class="box"><small>Puntos</small><b>${player.puntaje.toLocaleString('es-CL')}</b></div>
     <div class="box"><small>Fechas</small><b>${player.fechasJugadas}</b></div>
     <div class="box"><small>Efectividad</small><b>${efPos}%</b></div>
-    <div class="box"><small>Copas ${ICON['ORO']} ORO</small><b>${player.copas.ORO}</b></div>
+    <div class="box"><small>📈 Mejor puesto</small><b>${mejorPuesto ? mejorPuesto + '°' : '—'}</b></div>
+    <div class="box"><small>🤝 Compañero top</small>${topPartner ? `<b class="box-name">${plink(topPartner)}</b><span class="box-sub">${topN} fecha${topN>1?'s':''} juntos</span>` : '<b>—</b>'}</div>
   </div>` : '';
 
   // Group by date
   const byDate = {};
   hist.forEach(e => (byDate[e.fecha] = byDate[e.fecha]||[]).push(e));
 
-  const histHtml = Object.entries(byDate).map(([fecha, entries]) =>
+  const dayGroups = Object.entries(byDate).map(([fecha, entries]) =>
     `<div class="day-label">${fmtDate(fecha)} ${fecha.slice(0,4)}</div>
      ${entries.map(e => `
       <div class="entry e${e.copa}">
@@ -5684,7 +5715,21 @@ function renderDetail(nombre, currentRank){
         </span>
         <span class="entry-pts">+${e.puntos} pts</span>
       </div>`).join('')}`
-  ).join('') || '<p style="color:var(--m);font-size:.85rem;margin:8px 0">Sin historial de fechas disponible.</p>';
+  );
+
+  // Por defecto solo las últimas 3 fechas; el resto detrás de un botón "ver más".
+  const VIS = 3;
+  let histHtml;
+  if(!dayGroups.length){
+    histHtml = '<p style="color:var(--m);font-size:.85rem;margin:8px 0">Sin historial de fechas disponible.</p>';
+  } else if(dayGroups.length <= VIS){
+    histHtml = dayGroups.join('');
+  } else {
+    const restN = dayGroups.length - VIS;
+    histHtml = dayGroups.slice(0, VIS).join('')
+      + `<div class="hist-more" hidden>${dayGroups.slice(VIS).join('')}</div>`
+      + `<button type="button" class="ver-mas" data-more="${restN}" onclick="toggleHist(this)">Ver ${restN} fecha${restN>1?'s':''} más ▾</button>`;
+  }
 
   return `<div class="detail">
     <div class="hist-title">Historial de ${esc(nombre)} · todas las temporadas</div>
