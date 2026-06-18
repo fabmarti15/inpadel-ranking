@@ -206,6 +206,18 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .res-name{font-size:.84rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .res-pts{font-size:.82rem;font-weight:950;color:var(--g);white-space:nowrap;text-align:right}
 .rr-MIMBRE .res-pts{color:#9ca3af}
+.rc-card{position:relative;border-radius:14px;overflow:hidden;border:1px solid #6e5d42}
+.rc-hdr{background:repeating-linear-gradient(45deg,#8A7757,#8A7757 7px,#7b6a4c 7px,#7b6a4c 14px);color:#fff;padding:12px 16px;font-weight:900;font-size:.9rem;text-shadow:0 1px 2px #0004}
+.rc-sub{background:#efe9e0;color:#6e5d42;font-size:.72rem;font-weight:700;padding:7px 16px;border-bottom:1px solid #e3dccd}
+.rc-sub b{color:#5a4a30}
+.rc-row{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 14px;background:#faf7f1;border-bottom:1px solid #ece5d8}
+.rc-row:last-child{border-bottom:0}
+.rc-king{background:#f0e7d6}
+.rc-pos{font-size:1.05rem;text-align:center;line-height:1}
+.rc-name{font-weight:800;color:#5a4a30;min-width:0;line-height:1.25}
+.rc-king .rc-name{font-weight:950}
+.rc-tag{display:inline-block;background:#8A7757;color:#fff;font-size:.58rem;font-weight:900;letter-spacing:.04em;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle;text-transform:uppercase}
+.rc-pts{font-size:.8rem;font-weight:900;color:#8a6b4a;white-space:nowrap;text-align:right}
 
 /* Empty */
 .empty{text-align:center;padding:48px 20px;color:var(--m)}
@@ -5954,13 +5966,34 @@ function reyesRanking(c){
 function renderReyesCopa(c){
   const def  = REYES_COPAS.find(x => x.k === c);
   const list = reyesRanking(c);
+
+  // Mimbre = Rey Chupa: el que más veces quedó último (perdió todo). Tema caca + moscas.
+  if(c === 'MIMBRE'){
+    const rows = list.length
+      ? list.map((p,i) => {
+          const king = i === 0;
+          return `<div class="rc-row${king?' rc-king':''}">
+            ${king ? NIVEL_FLIES : ''}
+            <span class="rc-pos">${king ? '👑💩' : '💩'}</span>
+            <span class="rc-name">${plink(p.nombre)}${king ? ' <span class="rc-tag">Rey Chupa</span>' : ''}</span>
+            <span class="rc-pts">${p.won} ${p.won===1?'vez':'veces'} último<span class="reyes-pts-sub"> · ${p.played} ${p.played===1?'fecha':'fechas'}</span></span>
+          </div>`;
+        }).join('')
+      : `<div class="rc-row"><span class="rc-pos">🛡️</span><span class="rc-name">Nadie ha sido rey chupa aún</span><span class="rc-pts"></span></div>`;
+    return `<div class="copa-blocks"><div class="rc-card">
+      <div class="rc-hdr">💩 Rey Chupa 🪰</div>
+      <div class="rc-sub">El que más veces quedó <b>último</b> en Mimbre — o sea, perdió todo</div>
+      ${rows}
+    </div></div>`;
+  }
+
   const medals = ['👑','🥈','🥉'];
   const rows = list.length
     ? list.map((p,i) =>
         `<div class="res-row rr-${c}${i===0?' rr-champ':''}">
           <span class="pos-icon">${medals[i] || (i+1)+'°'}</span>
           <span class="res-name">${plink(p.nombre)}</span>
-          <span class="res-pts">${p.won} ${c==='MIMBRE'?'💩':'🏆'} <span class="reyes-pts-sub">· ${p.played} ${p.played===1?'fecha':'fechas'}</span></span>
+          <span class="res-pts">${p.won} 🏆 <span class="reyes-pts-sub">· ${p.played} ${p.played===1?'fecha':'fechas'}</span></span>
         </div>`).join('')
     : `<div class="res-row rr-${c}"><span class="pos-icon"></span><span class="res-name" style="color:var(--m);font-weight:700">Sin campeones aún</span><span class="res-pts"></span></div>`;
   return `<div class="copa-blocks"><div class="copa-block bl-${c}">
@@ -5974,7 +6007,7 @@ function renderReyes(){
   const result = document.getElementById('reyes-result');
   const sub    = document.getElementById('reyes-sub');
   if(!tabs || !result) return;
-  const setSub = c => { if(sub) sub.textContent = (c==='MIMBRE' ? 'Top 10 según últimos lugares de cada fecha 💩' : 'Top 10 según copas ganadas 🏆') + ' · todas las temporadas' };
+  const setSub = c => { if(sub) sub.textContent = (c==='MIMBRE' ? 'Top 10 · los que más veces quedaron últimos (rey chupa) 💩' : 'Top 10 según copas ganadas 🏆') + ' · todas las temporadas' };
   tabs.innerHTML = REYES_COPAS.map((x,i) =>
     `<button type="button" class="reyes-tab${i===0?' active':''}" data-c="${x.k}">${x.icon} ${x.label}</button>`
   ).join('');
