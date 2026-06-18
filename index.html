@@ -84,26 +84,34 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .ver-mas{display:block;width:100%;margin:8px 0 2px;padding:10px;border:1px dashed var(--l);border-radius:10px;background:#fff;color:var(--g);font-weight:900;font-size:.82rem;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
 .ver-mas:hover{background:#f6f8f7}
 .ver-mas:active{transform:scale(.99)}
-.nivel{margin:2px 0 18px}
-.nivel-hd{font-size:.6rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--m);margin-bottom:10px}
-.nivel-row{display:grid;grid-template-columns:74px 1fr 56px;align-items:center;gap:10px;margin-bottom:9px}
-.nivel-lbl{font-size:.82rem;font-weight:850;white-space:nowrap}
-.nivel-track{position:relative;height:18px;border-radius:5px;background:var(--l)}
-.nivel-meas{position:absolute;left:0;top:50%;transform:translateY(-50%);height:9px;background:var(--g);border-radius:5px}
-.nivel-tick{position:absolute;top:1px;bottom:1px;width:3px;background:#222;border-radius:2px;transform:translateX(-50%)}
-.nivel-val{font-size:.78rem;font-weight:850;text-align:right;line-height:1.25}
-.nivel-val small{color:var(--m);font-weight:800;font-size:.72rem}
-.nivel-axis{position:relative;height:13px}
-.nivel-axis span{position:absolute;transform:translateX(-50%);font-size:.6rem;color:var(--m);font-weight:800}
-.nivel-cap{font-size:.7rem;color:var(--m);margin-top:9px}
-.nivel-cap-bar{display:inline-block;width:16px;height:7px;background:var(--g);border-radius:3px;vertical-align:middle}
-.nivel-cap-tick{display:inline-block;width:3px;height:12px;background:#222;border-radius:2px;vertical-align:middle}
-.nivel-track{cursor:pointer}
+.nivel{margin:6px 0 18px}
+.nivel-track{cursor:pointer;border-radius:8px}
+.nivel-track:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+.nv-titular{display:inline-flex;align-items:center;gap:6px;font-size:1.02rem;font-weight:950;margin-bottom:11px;position:relative}
+.nivel-bar{display:flex;height:11px;border-radius:7px;overflow:hidden;gap:2px}
+.nv-seg{display:block;border-radius:3px}
+.nv-gold{background:linear-gradient(110deg,#D9970F 0%,#F7DE7B 22%,#FFF7D6 38%,#F7DE7B 54%,#D9970F 78%,#F2D469 100%);background-size:240% 100%;animation:nvshine 2.6s linear infinite}
+.nv-mimbre{background:repeating-linear-gradient(45deg,#8A7757,#8A7757 5px,#7b6a4c 5px,#7b6a4c 10px)}
+@keyframes nvshine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.nv-pal-lbl{font-size:.58rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--m);margin:13px 0 7px}
+.nv-pal-row{display:flex;flex-wrap:wrap;gap:7px}
+.nv-pal{position:relative;width:46px;height:46px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 7px rgba(0,0,0,.13)}
+.nv-pal-t{font-size:14px;line-height:1}
+.nv-pal-n{font-size:.95rem;font-weight:950;line-height:1;margin-top:2px}
+.nv-status{margin-top:13px;font-size:.78rem;font-weight:850}
+.nv-status.nv-chupa{color:#8a6b4a;display:inline-block;position:relative}
+.nv-rc-poops{font-size:.95rem;letter-spacing:1px;vertical-align:-1px;word-break:break-word}
+.nv-blind{display:inline-flex;align-items:center;gap:5px;background:#eaf3ee;color:var(--g);border:1px solid #cfe6da;border-radius:999px;padding:4px 12px;font-size:.76rem;font-weight:850}
+.nv-fly{position:absolute;font-size:11px;pointer-events:none;z-index:3}
+.nv-fa{top:-9px;left:18%;animation:nvfly1 1.7s ease-in-out infinite}
+.nv-fb{top:-3px;right:10%;animation:nvfly2 2.2s ease-in-out infinite}
+@keyframes nvfly1{0%{transform:translate(0,0) rotate(0)}30%{transform:translate(8px,-7px) rotate(18deg)}60%{transform:translate(-6px,5px) rotate(-12deg)}100%{transform:translate(0,0)}}
+@keyframes nvfly2{0%{transform:translate(0,0)}25%{transform:translate(-7px,6px)}55%{transform:translate(7px,-5px)}80%{transform:translate(-4px,-7px)}100%{transform:translate(0,0)}}
 #nivel-tip{position:fixed;z-index:9999;display:none;max-width:min(320px,88vw);background:#1f1f1f;color:#fff;padding:11px 14px;border-radius:12px;font-size:.82rem;line-height:1.45;box-shadow:0 12px 32px rgba(0,0,0,.3);pointer-events:none}
 #nivel-tip.show{display:block}
 #nivel-tip.center{transform:translate(-50%,-50%)}
 #nivel-tip .nivel-tip-t{font-weight:900;margin-bottom:3px;font-size:.86rem}
-#nivel-tip .nivel-tip-b{color:#e9e9e9;font-weight:600}
+#nivel-tip .nivel-tip-b{color:#e9e9e9;font-weight:600;white-space:pre-line}
 #nivel-tip-bd{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.4);display:none}
 #nivel-tip-bd.show{display:block}
 .rank-evo{margin:2px 0 16px}
@@ -5691,50 +5699,91 @@ function toggleHist(btn){
   }
 }
 
-/* ── Nivel por copa · bullet chart ──────────────── */
-// Una fila por copa. Barra verde = copas ganadas; marca negra | = veces que jugó esa copa
-// (el "techo"). Escala compartida 0..nice para comparar entre copas.
+/* ── Resultados por copa · titular + barra + palmarés (ALT A) ──────────── */
 const NIVEL_ORD = ['ORO','PLATA','BRONCE','MIMBRE'];
 const NIVEL_NAME = {ORO:'Oro', PLATA:'Plata', BRONCE:'Bronce', MIMBRE:'Mimbre'};
-// Texto del globito, en palabras simples.
-function nivelTipText(k, j, g){
-  const pct = Math.round(g/j*100);
-  const fechas = j === 1 ? '1 fecha' : j + ' fechas';
-  let gano;
-  if(g === 0) gano = 'y aún no gana ninguna';
-  else if(g === j) gano = (j === 1) ? 'y la ganó' : 'y las ganó todas';
-  else gano = 'y ganó ' + g;
-  const ef = (pct === 100) ? '¡Efectividad 100%! 🔥' : pct + '% de efectividad';
-  return {
-    tt: ICON[k] + ' ' + NIVEL_NAME[k],
-    body: 'Jugó ' + fechas + ' en la Copa ' + NIVEL_NAME[k] + ' ' + gano + '. ' + ef
-  };
+const NIVEL_ICON = {ORO:'🥇', PLATA:'🥈', BRONCE:'🥉', MIMBRE:'💩'};
+const NIVEL_COL = {
+  ORO:    {s:'#E8B23A', t:'#5a4300'},
+  PLATA:  {s:'#AEB7C1', t:'#363e48'},
+  BRONCE: {s:'#C77B41', t:'#ffffff'},
+  MIMBRE: {s:'#8A7757', t:'#ffffff'}
+};
+// Título del jugador según en qué copa juega más (≥45% = dominante; si no, El Ascensor).
+const NIVEL_CAT = {
+  ORO:    {ic:'🥇', name:'Mano de Oro',         desc:'Juega la mayoría de las veces en la copa Oro.'},
+  PLATA:  {ic:'🥈', name:'Duque de Plata',      desc:'Juega la mayoría de las veces en la copa Plata.'},
+  BRONCE: {ic:'🥉', name:'Barón de Bronce',     desc:'Juega la mayoría de las veces en la copa Bronce.'},
+  MIMBRE: {ic:'💩', name:'Señor de las Moscas', desc:'Juega la mayoría de las veces en la copa Mimbre… y huele a caca. 🪰💩'},
+  MIX:    {ic:'🛗', name:'El Ascensor',          desc:'Sube y baja de copa en copa: hoy en el Oro, mañana al sótano (Mimbre). Nunca se sabe en qué piso para.'}
+};
+const NIVEL_FLIES = '<span class="nv-fly nv-fa">🪰</span><span class="nv-fly nv-fb">🪰</span>';
+
+function nivelCategoria(player){
+  const J = player.copasJugadas || {};
+  const cups = NIVEL_ORD.filter(k => (J[k]||0) > 0);
+  const total = cups.reduce((a,k) => a + J[k], 0);
+  if(!total) return Object.assign({key:'MIX'}, NIVEL_CAT.MIX);
+  let dk = cups[0], dj = -1;
+  cups.forEach(k => { if(J[k] > dj){ dj = J[k]; dk = k; } });
+  return (dj/total >= 0.45) ? Object.assign({key:dk}, NIVEL_CAT[dk]) : Object.assign({key:'MIX'}, NIVEL_CAT.MIX);
 }
-function nivelBar(player){
+
+// Rey chupa = quedó último de la copa Mimbre (el último de todo el americano).
+function reyChupaCount(nombre){
+  const k = norm(nombre);
+  let n = 0;
+  (DATA_HIST.fechas || []).forEach(f => {
+    let maxPos = 0;
+    f.parejas.forEach(p => { if(p.pos > maxPos) maxPos = p.pos; });
+    const pair = f.parejas.find(p => p.jugadores.some(j => norm(j) === k));
+    if(pair && pair.pos === maxPos && copa(pair.pos).copa === 'MIMBRE') n++;
+  });
+  return n;
+}
+
+function nivelBar(player, nombre){
   const J = player.copasJugadas || {}, G = player.copasGanadas || {};
   const cups = NIVEL_ORD.filter(k => (J[k]||0) > 0);
-  if(!cups.length) return '';
-  const maxJ = Math.max(...cups.map(k => J[k]));
-  const nice = Math.max(10, Math.ceil(maxJ/10)*10);
-  const step = nice > 60 ? 20 : 10;
-  const rows = cups.map(k => {
-    const j = J[k], g = G[k]||0, pct = Math.round(g/j*100), tip = nivelTipText(k, j, g);
-    return `<div class="nivel-row">
-      <span class="nivel-lbl">${ICON[k]} ${NIVEL_NAME[k]}</span>
-      <span class="nivel-track" role="button" tabindex="0" aria-label="${esc(tip.body)}" data-tt="${esc(tip.tt)}" data-tip="${esc(tip.body)}">
-        <span class="nivel-meas" style="width:${g/nice*100}%"></span>
-        <span class="nivel-tick" style="left:${Math.min(100, j/nice*100)}%"></span>
-      </span>
-      <span class="nivel-val">${g}/${j}<br><small>${pct}%</small></span>
-    </div>`;
+  const total = cups.reduce((a,k) => a + J[k], 0);
+  if(!total) return '';
+  const cat = nivelCategoria(player);
+  const mosca = cat.key === 'MIMBRE';
+
+  // Barra fina de distribución (oro brilla, mimbre rayado).
+  const segs = cups.map(k => {
+    const w = J[k]/total*100;
+    if(k === 'ORO')    return `<span class="nv-seg nv-gold" style="flex:${w}"></span>`;
+    if(k === 'MIMBRE') return `<span class="nv-seg nv-mimbre" style="flex:${w}"></span>`;
+    return `<span class="nv-seg" style="flex:${w};background:${NIVEL_COL[k].s}"></span>`;
   }).join('');
-  let ax = '';
-  for(let v=0; v<=nice; v+=step) ax += `<span style="left:${v/nice*100}%">${v}</span>`;
+
+  // Palmarés: un cuadrado por copa con copas ganadas (🏆 × veces).
+  const palItems = NIVEL_ORD.filter(k => (G[k]||0) > 0).map(k => {
+    const cls = 'nv-pal' + (k === 'ORO' ? ' nv-gold' : '');
+    const bg = k === 'ORO' ? '' : `background:${NIVEL_COL[k].s};`;
+    const fl = k === 'MIMBRE' ? NIVEL_FLIES : '';
+    return `<span class="${cls}" style="${bg}color:${NIVEL_COL[k].t}">${fl}<span class="nv-pal-t">🏆</span><span class="nv-pal-n">${G[k]}</span></span>`;
+  }).join('');
+  const palBlock = palItems ? `<div class="nv-pal-lbl">Palmarés</div><div class="nv-pal-row">${palItems}</div>` : '';
+
+  // Rey chupa / Blindado (abajo del palmarés).
+  const rc = reyChupaCount(nombre);
+  const status = rc > 0
+    ? `<div class="nv-status nv-chupa nivel-track" role="button" tabindex="0" data-tt="💩 Rey chupa" data-tip="Ha salido último en la copa Mimbre ${rc} ${rc===1?'vez':'veces'}.|Rey chupa = el último de todo el americano."><span class="nv-rc-poops">${'💩'.repeat(rc)}</span> rey chupa${NIVEL_FLIES}</div>`
+    : `<div class="nv-status nivel-track" role="button" tabindex="0" data-tt="🛡️ Blindado" data-tip="¡Enhorabuena! Este jugador nunca ha terminado último en ningún americano."><span class="nv-blind">🛡️ Blindado</span></div>`;
+
+  // Hover-resumen con bullets (las líneas se separan por | y el tip las pone en saltos).
+  const lines = ['Jugó ' + total + (total===1?' fecha':' fechas')]
+    .concat(cups.map(k => '• ' + NIVEL_ICON[k] + ' ' + NIVEL_NAME[k] + ' — ' + J[k] + (J[k]===1?' jugada':' jugadas') + ' · ' + (G[k]||0) + ' ' + ((G[k]||0)===1?'ganada':'ganadas')));
+
   return `<div class="nivel">
-    <div class="nivel-hd">Nivel por copa</div>
-    ${rows}
-    <div class="nivel-row"><span></span><div class="nivel-axis">${ax}</div><span></span></div>
-    <div class="nivel-cap"><span class="nivel-cap-bar"></span> ganó · <span class="nivel-cap-tick"></span> jugó</div>
+    <div class="nv-titular nivel-track" role="button" tabindex="0" data-tt="${esc(cat.ic + ' ' + cat.name)}" data-tip="${esc(cat.desc)}">${cat.ic} ${esc(cat.name)}${mosca ? ' 🪰' + NIVEL_FLIES : ''}</div>
+    <div class="nivel-track" role="button" tabindex="0" data-tt="Resumen por copa" data-tip="${esc(lines.join('|'))}">
+      <div class="nivel-bar">${segs}</div>
+      ${palBlock}
+    </div>
+    ${status}
   </div>`;
 }
 
@@ -5800,7 +5849,7 @@ function renderDetail(nombre, currentRank){
   return `<div class="detail">
     <div class="hist-title">Historial de ${esc(nombre)} · todas las temporadas</div>
     ${statsHtml}
-    ${player ? nivelBar(player) : ''}
+    ${player ? nivelBar(player, nombre) : ''}
     ${renderRankChart(nombre, currentRank)}
     ${histHtml}
   </div>`;
@@ -6075,7 +6124,7 @@ function setupNivelTips(){
   document.body.appendChild(bd); document.body.appendChild(tip);
   const TT = tip.querySelector('.nivel-tip-t'), TB = tip.querySelector('.nivel-tip-b');
   const TOUCH = ('ontouchstart' in window) || matchMedia('(pointer: coarse)').matches;
-  function fill(el){ TT.textContent = el.getAttribute('data-tt') || ''; TB.textContent = el.getAttribute('data-tip') || ''; }
+  function fill(el){ TT.textContent = el.getAttribute('data-tt') || ''; TB.textContent = (el.getAttribute('data-tip') || '').split('|').join('\n'); }
   function center(){ tip.style.left = '50%'; tip.style.top = '50%'; tip.classList.add('center','show'); bd.classList.add('show'); }
   function anchor(el){
     tip.classList.remove('center'); bd.classList.remove('show'); tip.classList.add('show');
