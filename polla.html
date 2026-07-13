@@ -66,6 +66,7 @@ body{margin:0;background:var(--bg);color:var(--i)}
 .cta:active{transform:scale(.99)}
 .cta.ready{background:var(--gold);box-shadow:0 10px 24px #d9970f44}
 .cta.ghost{background:#fff;color:var(--g);border:2px solid var(--g);box-shadow:none}
+.streaknote{font-size:.75rem;color:#b8860b;font-weight:850;text-align:center;margin-top:11px}
 
 .locked{background:#1a7a440a;border:1px solid #1a7a4433;border-radius:15px;padding:6px 15px}
 .locked .lr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:.9rem;font-weight:850}
@@ -128,6 +129,7 @@ function nextClose(){var now=new Date(),d=new Date(now);d.setHours(21,0,0,0);var
 function roundId(){var d=nextClose();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function closed(){return Date.now()>=nextClose().getTime()}
 function cdText(){var ms=nextClose().getTime()-Date.now();if(ms<=0)return'cerrada';var h=Math.floor(ms/3.6e6),m=Math.floor(ms%3.6e6/6e4),d=Math.floor(h/24);return d>=1?('cierra en '+d+'d '+(h-d*24)+'h'):('cierra en '+h+'h '+m+'m');}
+function cdHuman(){var ms=nextClose().getTime()-Date.now();if(ms<=0)return'cerrada';var m=Math.floor(ms/6e4),h=Math.floor(m/60),d=Math.floor(h/24);if(d>=1)return'faltan '+d+(d===1?' día':' días');if(h>=1)return'faltan '+h+' h';return'faltan '+m+' min';}
 function potOf(b){if(!b)return 0;var s=0;if(b.oro)s+=b.oro.c;if(b.chupa)s+=b.chupa.c;return s;}
 function fmtBet(b){return b?b.n+' (x'+b.c.toFixed(1)+')':'—'}
 function deviceId(){var k='polla_device';var v=localStorage.getItem(k);if(!v){v='d'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem(k,v);}return v;}
@@ -214,15 +216,15 @@ async function draw(){
   CTX={player:player,round:round,myBet:myBet,roundInfo:roundInfo,cnt:cnt,lb:lb,impostor:impostor,gain:gain};
 
   var potShow=roundInfo.settled?gain:potOf(draft);
-  var potLine=roundInfo.settled
-    ? '<div class="hero-pot">'+(gain>0?('🎉 Ganaste <b>+'+r1(gain)+' pts</b>'):'Esta fecha: <b>+0 pts</b>')+'</div>'
-    : '<div class="hero-pot">Puedes ganar <b>+'+r1(potShow)+' pts</b></div>';
+  var mainLine=roundInfo.settled
+    ? (gain>0?('🎉 Ganaste +'+r1(gain)+' pts'):'Esta fecha: +0 pts')
+    : ((draft.oro&&draft.chupa)?('Puedes ganar +'+r1(potShow)+' pts'):'Elige tu campeón y tu último');
 
   var h='';
   if(impostor)h+='<div class="banner"><span>⚠️ Detectamos <b>2 personas</b> jugando como <b>'+player.name+'</b>. Si no eres tú, avisa al organizador.</span><span class="x" id="bx">✕</span></div>';
-  h+='<div class="hero"><div class="hero-t">🎟️ Polla de la fecha</div>'+potLine
-    +'<div class="hero-row"><span class="chip flame">🔥 '+player.streak+' seguidas</span><span class="chip live">🟢 '+cnt+' ya jugaron</span><span class="chip cd">⏱️ '+cdText()+'</span></div>'
-    +'<div class="hero-sub">Cierra el miércoles 21:00 · parte el americano · cuotas automáticas según ranking</div></div>';
+  h+='<div class="hero"><div class="hero-t">🎟️ Polla de la fecha</div>'
+    +'<div class="hero-pot"><b>'+mainLine+'</b></div>'
+    +'<div class="hero-sub">Cierra el miércoles 21:00 · '+cdHuman()+'</div></div>';
   if(isAdmin())h+=adminCard();
   if(!player.name)h+=nameCard();
   else if(roundInfo.settled)h+=resultCard();
@@ -235,7 +237,7 @@ async function draw(){
 function nameCard(){return '<div class="card"><div class="card-h">👋 ¿Quién eres?</div><div class="card-s">Elige tu nombre para jugar tu polla. Sin clave.</div><div class="pick-wrap"><input class="pick-in" id="pick" placeholder="🔍 escribe tu nombre…" autocomplete="off"><div class="pick-sug" id="picksug"></div></div></div>';}
 function optHTML(market,o){var sel=draft[market]&&draft[market].n===o.n?' sel':'';return '<div class="opt'+sel+'" data-n="'+o.n+'" data-c="'+o.c+'"><span class="nm">'+o.n+'</span><span class="c">x'+o.c.toFixed(1)+'</span><span class="check">✓</span></div>';}
 function mktHTML(market){var meta=MKMETA[market],M=MK[market],dr=draft[market],shown=shownOf(market);var all=M.favoritos.concat(M.bombazos);var extra='';if(dr&&!shown[dr.n])extra='<div class="seclbl">Tu elección</div><div class="opt sel" data-n="'+dr.n+'" data-c="'+dr.c+'"><span class="nm">'+dr.n+'</span><span class="c">x'+dr.c.toFixed(1)+'</span><span class="check">✓</span></div>';return '<div class="mkt" data-market="'+market+'"><div class="mkt-t">'+meta.ic+' '+meta.t+'</div><button class="otro" data-otro>🔍 Buscar otro jugador</button><div class="srch"><input placeholder="escribe un nombre…" autocomplete="off"><div class="sug"></div></div>'+extra+all.map(function(o){return optHTML(market,o)}).join('')+'</div>';}
-function betCard(){var edit=CTX.myBet?' · ✏️ puedes editar hasta las 21:00':'';return '<div class="card"><div class="card-h">Tu polla · '+CTX.player.name+'</div><div class="card-s">Elige en los 2 mercados. Cada acierto paga su cuota en puntos.'+edit+'</div>'+mktHTML('oro')+mktHTML('chupa')+'<button class="cta" id="send">✅ Enviar mi polla</button></div>';}
+function betCard(){var edit=CTX.myBet?' · ✏️ puedes editar hasta las 21:00':'';return '<div class="card"><div class="card-h">Tu polla · '+CTX.player.name+'</div><div class="card-s">Elige en los 2 mercados. Cada acierto paga su cuota en puntos.'+edit+'</div>'+mktHTML('oro')+mktHTML('chupa')+'<button class="cta" id="send">✅ Enviar mi polla</button>'+(CTX.player.streak>0?'<div class="streaknote">🔥 Llevas '+CTX.player.streak+' fechas seguidas acertando — no la cortes</div>':'')+'</div>';}
 function closedCard(){var b=CTX.myBet;return '<div class="card"><div class="card-h">⏱️ Polla cerrada</div><div class="card-s">El americano ya empezó. '+(b?'Esta fue tu polla:':'No alcanzaste a jugar esta fecha.')+'</div>'+(b?'<div class="locked"><div class="lr">🥇 Copa Oro <b>'+fmtBet(b.oro)+'</b></div><div class="lr">💩 Rey Chupa <b>'+fmtBet(b.chupa)+'</b></div></div>':'')+'<p style="font-size:.76rem;color:#888;margin:12px 0 0">Cuando carguen el resultado, se paga solo.</p></div>';}
 function resultCard(){var r=CTX.roundInfo.result,b=CTX.myBet||{},hitO=b.oro&&b.oro.n===r.oro,hitC=b.chupa&&b.chupa.n===r.chupa,g=CTX.gain,win=g>0;return '<div class="card"><div class="res '+(win?'win':'lose')+'"><div class="big">'+(win?'🎉 +'+r1(g)+' pts':'😵 +0 pts')+'</div>'+(win?'¡Acertaste!':'Esta vez no fue')+'<small>Racha: 🔥 '+CTX.player.streak+' seguidas</small></div><div class="locked"><div class="lr">🥇 Copa Oro · ganó <b>'+r.oro+'</b></div><div class="lr" style="color:#888">tu apuesta: '+fmtBet(b.oro)+' '+(hitO?'✅':'❌')+'</div><div class="lr">💩 Rey Chupa · fue <b>'+r.chupa+'</b></div><div class="lr" style="color:#888">tu apuesta: '+fmtBet(b.chupa)+' '+(hitC?'✅':'❌')+'</div></div></div>';}
 function leaderboardCard(){var list=CTX.lb.map(function(p){return [p[0],p[1]]});var top=list.slice(0,3),rest=list.slice(3,7);function isMe(n){return CTX.player.name&&n===CTX.player.name}var pod='<div class="podium">'+podCell('🥈',top[1])+podCell('👑',top[0],1)+podCell('🥉',top[2])+'</div>';var rows=rest.map(function(p,i){return '<div class="lrow'+(isMe(p[0])?' me':'')+'"><b>'+(i+4)+'. '+p[0]+'</b><span class="p">'+p[1]+' pts</span></div>'}).join('');return '<div class="card"><div class="lb-h">🏆 Polleros del año</div>'+pod+rows+'</div>';}
@@ -266,7 +268,7 @@ function wire(){
   // controles de prueba (solo modo local)
   if(STORE.mode==='local')mountDemoBar();
 }
-function updatePot(){var el=document.querySelector('.hero-pot b');if(el&&!CTX.roundInfo.settled)el.textContent='+'+r1(potOf(draft))+' pts';var send=document.getElementById('send');if(send)send.classList.toggle('ready',!!(draft.oro&&draft.chupa));}
+function updatePot(){var el=document.querySelector('.hero-pot b');if(el&&CTX.roundInfo&&!CTX.roundInfo.settled)el.textContent=(draft.oro&&draft.chupa)?('Puedes ganar +'+r1(potOf(draft))+' pts'):'Elige tu campeón y tu último';var send=document.getElementById('send');if(send)send.classList.toggle('ready',!!(draft.oro&&draft.chupa));}
 
 function mountDemoBar(){
   if(document.getElementById('demobar'))return;
@@ -280,7 +282,7 @@ function mountDemoBar(){
 }
 function pickRes(market){var M=MK[market];var pool=Math.random()<0.75?M.favoritos:M.bombazos;return pool[Math.floor(Math.random()*pool.length)].n;}
 
-setInterval(function(){var el=document.querySelector('.chip.cd');if(el)el.textContent='⏱️ '+cdText();},30000);
+setInterval(function(){var el=document.querySelector('.hero-sub');if(el)el.textContent='Cierra el miércoles 21:00 · '+cdHuman();},30000);
 window.addEventListener('hashchange',draw);
 STORE.init().then(draw).catch(function(e){app.innerHTML='<div class="loading">Error al iniciar: '+e.message+'</div>';});
 </script>
