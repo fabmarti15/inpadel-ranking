@@ -158,6 +158,9 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .date-select-wrap::after{content:"▾";position:absolute;right:14px;top:50%;translate:0 -54%;color:var(--g);font-size:1.25rem;font-weight:950;pointer-events:none}
 .date-select{width:100%;appearance:none;-webkit-appearance:none;border:1px solid #1a7a4444;border-radius:10px;background:#f8fbf9;color:var(--i);padding:12px 46px 12px 14px;font:inherit;font-size:.96rem;font-weight:900;cursor:pointer;outline:none}
 .date-select:focus{border-color:var(--g);box-shadow:0 0 0 3px #1a7a4417}
+.date-quick{display:flex;gap:8px;margin:10px 0}
+.date-quick button{flex:1;border:1px solid #1a7a4444;background:#f8fbf9;color:var(--i);border-radius:10px;padding:9px 6px;font:inherit;font-size:.8rem;font-weight:900;cursor:pointer;white-space:nowrap}
+.date-quick button.active{background:var(--g);color:#fff;border-color:var(--g)}
 
 /* Copa blocks */
 .copa-blocks{display:grid;gap:12px;margin-top:14px}
@@ -259,22 +262,15 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
     </div>
     <h1>Americanos</h1>
     <p class="hero-sub">2da Categoría</p>
-    <div style="text-align:center"><a href="#polla-section" style="display:inline-block;margin-top:12px;background:#1a7a44;color:#fff;font-weight:900;font-size:.85rem;text-decoration:none;padding:10px 18px;border-radius:22px">🎯 Polla de la fecha</a></div>
+    <div style="text-align:center"><a href="#polla-section" style="display:inline-block;margin-top:12px;background:#1a7a44;color:#fff;font-weight:900;font-size:.85rem;text-decoration:none;padding:10px 18px;border-radius:22px">🎯 Polla de la fecha <span style="background:#ffe08a;color:#7a5b00;font-size:.62rem;font-weight:950;border-radius:8px;padding:2px 6px;margin-left:4px;vertical-align:middle">NEW</span></a>
+    <div style="color:var(--m);font-size:.74rem;font-weight:800;margin-top:6px">Apuesta quién sale 1° 🥇 y quién último 💩</div></div>
   </section>
-
-  <!-- Reyes de cada copa -->
-  <section class="card panel" id="reyes-section">
-    <h2 style="text-align:center">👑 Reyes de cada copa</h2>
-    <p class="sub" id="reyes-sub" style="text-align:center;margin-top:6px">Top 10 según copas ganadas 🏆</p>
-    <div class="reyes-tabs" id="reyes-tabs"></div>
-    <div id="reyes-result" style="margin-top:12px"></div>
-  </section>
-
 
   <!-- Campeones -->
   <section class="card panel" id="champions-section">
     <div class="date-picker">
       <label for="date-select">Campeones por fecha</label>
+      <div class="date-quick" id="date-quick"></div>
       <div class="date-select-wrap">
         <select class="date-select" id="date-select" aria-label="Seleccionar fecha"><option value="2026-05-27">27 de May</option><option value="2026-05-20">20 de May</option><option value="2026-05-13">13 de May</option><option value="2026-05-06">6 de May</option><option value="2026-04-29">29 de Abr</option><option value="2026-04-22">22 de Abr</option><option value="2026-04-15">15 de Abr</option><option value="2026-04-08">8 de Abr</option><option value="2026-04-01">1 de Abr</option><option value="2026-03-25">25 de Mar</option><option value="2026-03-18">18 de Mar</option><option value="2026-03-11">11 de Mar</option><option value="2026-02-25">25 de Feb</option><option value="2026-02-18">18 de Feb</option><option value="2026-02-11">11 de Feb</option><option value="2026-02-04">4 de Feb</option><option value="2026-01-28">28 de Ene</option><option value="2026-01-21">21 de Ene</option><option value="2026-01-14">14 de Ene</option><option value="2026-01-07">7 de Ene</option><option value="2025-12-29">29 de Dic</option><option value="2025-12-22">22 de Dic</option><option value="2025-12-17">17 de Dic</option><option value="2025-03-04">4 de Mar</option></select>
       </div>
@@ -356,6 +352,15 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
           <span class="res-pts">0</span>
         </div>
     </div></div></div>
+  </section>
+
+
+  <!-- Reyes de cada copa -->
+  <section class="card panel" id="reyes-section">
+    <h2 style="text-align:center">👑 Reyes de cada copa</h2>
+    <p class="sub" id="reyes-sub" style="text-align:center;margin-top:6px">Top 10 según copas ganadas 🏆</p>
+    <div class="reyes-tabs" id="reyes-tabs"></div>
+    <div id="reyes-result" style="margin-top:12px"></div>
   </section>
 
 
@@ -5324,7 +5329,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
   <!-- Polla de la fecha -->
   <section class="card panel" id="polla-section">
     <h2 style="text-align:center">🎯 Polla de la fecha</h2>
-    <iframe id="polla-frame" src="polla-embed.html" title="Polla de la fecha" loading="lazy" scrolling="no" style="width:100%;border:0;display:block;height:1000px;overflow:hidden"></iframe>
+    <iframe id="polla-frame" src="polla-embed.html" title="Polla de la fecha" loading="lazy" scrolling="no" style="width:100%;border:0;display:block;height:640px;overflow:hidden"></iframe>
   </section>
   <script>
   addEventListener('message',function(e){if(e.data&&e.data.pollaH){var f=document.getElementById('polla-frame');if(f)f.style.height=(e.data.pollaH+8)+'px';}});
@@ -5899,6 +5904,7 @@ function renderDates(){
     el.innerHTML = '<option>Resultados cargados</option>';
     el.disabled = true;
     document.getElementById('fecha-result').innerHTML = '';
+    const q = document.getElementById('date-quick'); if(q) q.innerHTML='';
     return;
   }
   const sorted = [...DATA.fechas].reverse();
@@ -5908,6 +5914,14 @@ function renderDates(){
   // Auto-select most recent
   el.value = sorted[0].fecha;
   document.getElementById('fecha-result').innerHTML = renderFechaResult(sorted[0].fecha);
+  renderQuickDates();
+}
+function renderQuickDates(){
+  const q = document.getElementById('date-quick'); if(!q) return;
+  const el = document.getElementById('date-select');
+  if(!DATA.fechas.length){ q.innerHTML=''; return; }
+  const last3 = [...DATA.fechas].reverse().slice(0,3);
+  q.innerHTML = last3.map(f => `<button type="button" data-f="${f.fecha}" class="${el.value===f.fecha?'active':''}">${fmtDateY(f.fecha)}</button>`).join('');
 }
 
 function renderFechaResult(fechaStr){
@@ -6045,6 +6059,13 @@ document.getElementById('ranking').addEventListener('click', e => {
 
 document.getElementById('date-select').addEventListener('change', e => {
   document.getElementById('fecha-result').innerHTML = renderFechaResult(e.target.value);
+  document.querySelectorAll('#date-quick button').forEach(b => b.classList.toggle('active', b.dataset.f===e.target.value));
+});
+document.getElementById('date-quick').addEventListener('click', e => {
+  const b = e.target.closest('button[data-f]'); if(!b) return;
+  const el = document.getElementById('date-select'); el.value = b.dataset.f;
+  document.getElementById('fecha-result').innerHTML = renderFechaResult(b.dataset.f);
+  document.querySelectorAll('#date-quick button').forEach(x => x.classList.toggle('active', x===b));
 });
 
 /* ── Selector de ranking (2 vistas) ──────────── */
