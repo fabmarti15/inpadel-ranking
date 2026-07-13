@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Polla de la fecha · Inpadel</title>
+<style>
+:root{--bg:#f4f4f1;--c:#fff;--i:#171717;--m:#73706c;--l:#e4e1dc;--g:#1a7a44;--gold:#d9970f;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:transparent;color:var(--i)}
+.shell{max-width:460px;margin:0 auto;padding:4px 2px 10px}
+.loading{max-width:460px;margin:40px auto;text-align:center;color:var(--m);font-weight:800;font-size:.9rem}
+.back{max-width:460px;margin:0 auto;padding:12px 14px 0}
+.back a{color:var(--g);font-weight:900;text-decoration:none;font-size:.82rem}
+
+.banner{background:#fdeceb;border:1px solid #f3c9c6;color:#b5302a;border-radius:12px;padding:11px 13px;font-size:.8rem;font-weight:800;margin-bottom:14px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.banner b{font-weight:950}.banner .x{cursor:pointer;font-weight:900;opacity:.6}
+
+.hero{background:linear-gradient(150deg,#1a7a44,#14653a);color:#fff;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 14px 34px #1a7a4433}
+.hero-t{font-size:1.3rem;font-weight:950}
+.hero-pot{font-size:.92rem;font-weight:700;margin-top:4px;opacity:.96}
+.hero-pot b{font-size:1.15rem;font-weight:950}
+.hero-row{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+.chip{font-size:.72rem;font-weight:900;border-radius:20px;padding:6px 11px}
+.flame{background:#ffffff26;color:#ffe08a}.live{background:#ffffff1f;color:#d6ffe6}.cd{background:#ffffff1f;color:#fff}
+.hero-sub{font-size:.72rem;margin-top:12px;opacity:.82}
+
+.card{background:var(--c);border:1px solid var(--l);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 8px 22px #0000000a}
+.card-h{font-size:1.05rem;font-weight:950;margin-bottom:4px}
+.card-s{font-size:.76rem;color:var(--m);margin-bottom:14px}
+
+.pick-wrap{position:relative}
+.pick-in{width:100%;border:2px solid var(--l);border-radius:14px;padding:14px;font:inherit;font-size:.95rem;font-weight:800}
+.pick-in:focus{outline:none;border-color:var(--g)}
+.pick-sug{position:absolute;left:0;right:0;top:56px;background:#fff;border:1px solid #e0ddd5;border-radius:12px;box-shadow:0 12px 28px #00000022;z-index:8;max-height:260px;overflow-y:auto;display:none}
+.pick-sug.show{display:block}
+.pick-sug div{padding:12px 14px;font-size:.9rem;font-weight:800;border-bottom:1px solid #f3f0e9;cursor:pointer}
+.pick-sug div:last-child{border-bottom:0}
+.pick-sug div:active{background:#1a7a440a}
+
+.mkt{margin-bottom:18px}
+.mkt-t{font-size:1rem;font-weight:950;margin-bottom:6px}
+.seclbl{font-size:.68rem;font-weight:900;color:#b3b0aa;text-transform:uppercase;letter-spacing:.04em;margin:12px 0 7px}
+.opt{position:relative;display:flex;justify-content:space-between;align-items:center;background:#fff;border:2px solid var(--l);border-radius:15px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:.12s}
+.opt:active{transform:scale(.98)}
+.opt.sel{border-color:var(--g);background:#1a7a440a;box-shadow:0 6px 16px #1a7a4422}
+.opt .nm{font-size:.93rem;font-weight:900;color:#2a2a2a}
+.opt.sel .nm{color:var(--g)}
+.opt .c{font-size:1.02rem;font-weight:950;color:#777;background:#f0efe9;border-radius:9px;padding:6px 12px}
+.opt.sel .c{background:var(--g);color:#fff}
+.opt .check{position:absolute;top:-9px;right:-7px;width:24px;height:24px;border-radius:50%;background:var(--g);color:#fff;font-size:.8rem;display:none;align-items:center;justify-content:center;font-weight:900;box-shadow:0 3px 8px #1a7a4455}
+.opt.sel .check{display:flex}
+.otro{width:100%;background:#fff;border:2px solid var(--l);color:var(--g);border-radius:14px;padding:12px;font:inherit;font-weight:900;font-size:.84rem;cursor:pointer;margin:0 0 12px}
+.srch{position:relative;display:none;margin:0 0 10px}
+.srch.open{display:block}
+.srch input{width:100%;border:2px solid var(--l);border-radius:12px;padding:12px;font:inherit;font-size:.88rem}
+.srch input:focus{outline:none;border-color:var(--g)}
+.sug{position:absolute;left:0;right:0;top:52px;background:#fff;border:1px solid #e0ddd5;border-radius:12px;box-shadow:0 12px 28px #00000022;z-index:8;max-height:240px;overflow-y:auto;display:none}
+.sug.show{display:block}
+.sug div{padding:11px 13px;font-size:.86rem;font-weight:850;border-bottom:1px solid #f3f0e9;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sug div:last-child{border-bottom:0}
+.sug .mini{color:#8a8a86;font-weight:950;font-size:.74rem}
+
+.cta{width:100%;background:var(--g);color:#fff;border:0;border-radius:15px;padding:16px;font:inherit;font-weight:950;font-size:1rem;cursor:pointer;box-shadow:0 10px 24px #1a7a4433;transition:.12s;margin-top:6px}
+.cta:active{transform:scale(.99)}
+.cta.ready{background:var(--gold);box-shadow:0 10px 24px #d9970f44}
+.cta.ghost{background:#fff;color:var(--g);border:2px solid var(--g);box-shadow:none}
+.streaknote{font-size:.75rem;color:#b8860b;font-weight:850;text-align:center;margin-top:11px}
+
+.locked{background:#1a7a440a;border:1px solid #1a7a4433;border-radius:15px;padding:6px 15px}
+.locked .lr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:.9rem;font-weight:850}
+.locked .lr b{color:var(--g);font-weight:950}
+.locked .lr+.lr{border-top:1px solid #1a7a441a}
+
+.res{border-radius:15px;padding:16px;margin-bottom:12px;text-align:center;font-weight:900}
+.res.win{background:#eaf6ef;border:1px solid #bfe3cd;color:var(--g)}
+.res.lose{background:#fbeeee;border:1px solid #f0cfcc;color:#b5302a}
+.res .big{font-size:1.4rem;margin-bottom:4px}
+.res small{display:block;font-weight:700;color:#666;margin-top:6px;font-size:.78rem}
+
+.lb-h{font-size:1rem;font-weight:950;margin-bottom:14px}
+.podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:end;margin-bottom:12px}
+.pod{background:#faf8f3;border:1px solid var(--l);border-radius:12px;padding:10px 6px;text-align:center}
+.pod .medal{font-size:1.3rem}.pod .pn{font-size:.72rem;font-weight:900;margin-top:4px;line-height:1.1}
+.pod .pp{font-size:.72rem;font-weight:950;color:var(--g);margin-top:3px}
+.pod.first{background:#1a7a440d;border-color:#1a7a4433;transform:translateY(-6px)}
+.lrow{display:flex;justify-content:space-between;padding:9px 2px;border-top:1px solid #f2efe9;font-size:.84rem}
+.lrow b{font-weight:850}.lrow .p{color:var(--g);font-weight:950}
+.lrow.me{background:#fdf3dc;border-radius:9px;padding:9px 8px;border:0}
+
+.admin{background:#1d1d1b;color:#fff;border-radius:16px;padding:16px;margin-bottom:16px}
+.admin h3{margin:0 0 10px;font-size:.95rem}
+.admin input{width:100%;padding:11px;border-radius:10px;border:0;font:inherit;margin-bottom:9px}
+.admin button{width:100%;background:var(--gold);color:#fff;border:0;border-radius:11px;padding:13px;font:inherit;font-weight:900;cursor:pointer}
+.admin .note{font-size:.68rem;color:#9a9a96;margin-top:8px}
+
+.demobar{position:fixed;bottom:0;left:0;right:0;background:#1d1d1b;color:#fff;padding:9px 10px;display:flex;gap:7px;justify-content:center;align-items:center;z-index:30;flex-wrap:wrap}
+.demobar span{font-size:.64rem;color:#8a8a86;font-weight:800}
+.demobar button{background:#333;color:#fff;border:0;border-radius:9px;padding:8px 11px;font:inherit;font-size:.72rem;font-weight:850;cursor:pointer}
+.demobar button.acc{background:var(--gold)}
+</style>
+</head>
+<body>
+<div class="shell" id="app"><div class="loading">Cargando la polla…</div></div>
+
+<script>
+/* ===================================================================
+   CONFIG FIREBASE  —  pega aquí el firebaseConfig y la polla pasa a
+   modo REAL (compartida). Si queda en null, funciona en modo local
+   (cada celular guarda lo suyo) para poder probar.
+   =================================================================== */
+var FB = null;
+/* Ejemplo:
+var FB = { apiKey:"...", authDomain:"...", projectId:"...",
+           storageBucket:"...", messagingSenderId:"...", appId:"..." };
+*/
+
+/* ===== jugadores (nombre, puntaje) — del ranking en vivo ===== */
+var PLAYERS=[["Chris Zapata",8310],["Boris Zamorano",7510],["Ale Schapira",7020],["Rodrigo Cienfuegos",6570],["Ale Amaro",6210],["Joaco Oliver",5750],["Javier Arrey",4360],["Diego Huth",4130],["Emma Castillo",4120],["Martin Dubost",4060],["Sebastian Ramirez",4020],["Dani Rosales",3890],["Elias Cordova",3750],["Carlos Villanueva",3580],["Danny Salinas",3510],["Ivan Kindermann",3180],["Diego Fretz",3060],["Raul Abatte",2910],["Jose Carrasco",2900],["Ignacio de la Barra",2830],["Gustavo Torrens",2720],["Diego Gacitua",2710],["Nico Molina",2700],["Fabian Orellana",2460],["Mati Castillo",2440],["Dino Matilla",2320],["Tomas Aranda",2300],["Nico Labbe",2140],["Christian Lopez",2060],["Andres Lores",1980],["Cris Soto",1910],["Vicente Moya",1900],["Manu Maira",1870],["Fernando Orellana",1860],["Maximo Wolhein",1840],["Miguel Fuentes",1790],["Rodrigo Silva",1720],["Camilo Rosenblatt",1640],["Nacho Gallardo",1620],["Ray Urzua",1560],["Fabian Martinez",1540],["Juan Angel Cerda",1300],["Seba Labra",1200],["Charly Kraken",1120],["Pablo Pereira",1080],["Alberto Rojas",1060],["Felipe Rojas",1000],["Fer Aguilo",980],["Benja Yoshidzumi",960],["Nico Rocco",920],["Tomas Schnapp",920],["Angello Tapia",890],["Kyle Shepard",890],["Carlos Palma",880],["Nacho Garcia",880],["Seba Toledo",860],["Felipe Oyarzun",810],["Sergio Rad",800],["Cristobal Salas",780],["Yosh Gallardo",780],["Tomas Garcia",780],["Sebastian Orellana",780],["Marcelo Espinoza",720],["Nico Vielva",680],["Andres Killinger",660],["Diego Concha",640],["Benja Falcone",620],["Felipe Garcia",580],["Gonzalo Arenas",580],["Cesar Cano",580],["Felipe Gual",580],["Diego Del Rio",550],["Alonso Medel",540],["Nicolas Aranda",540],["Lucas Lee",540],["Andy Paredes",500],["Joaco Giorgi",500],["Gaspar Sanchez",460],["Esteban Ferrer",420],["Rodrigo Retamales",400],["Oscar Bentjerodt",400],["Benja Cox",360],["Maxi Dieguez",360],["Diego Mezzano",340],["Dani Saavedra",340],["Lucas Cereceda",340],["Willy Bravo",320],["Benja Hughes",300],["Ignacio Poblete",300],["Tommy Azocar",300],["Miguel Ramirez",300],["Lauti Guevara",300],["Nibaldo Sepulveda",280],["Vicente Carmona",280],["Gabo Heyne",280],["Francisco Pujado",280],["Sebastian Velarde",260],["Tomas Cunietti",260],["A Azocar",260],["Vicente Zamora",240],["Pablo Bournas",240],["Carlos Salas",240],["Silvio Scarfo",240],["Hugo Castro",240],["Seba Lagos",200],["Felipe Hermosilla",200],["Juan Pablo",200],["Fernando Alonso",200],["Gabo Guerrero",180],["Fernando Salinas",180],["Cristian Cadiz (Exotic)",160],["Jose Acosta",160],["Ignacio Requesens",160],["Ale Rabah",160],["Franco Leon",160],["Tomas Youlton",160],["Adrian Sprazzato",160],["Felipe Galvez",160],["Nico Fiol",140],["Pancho Gidi",140],["Juan Piquimil",140],["Mauro Alvarez",140],["Agustin Pavez",120],["Claudio Alvarado",100],["Diego Hernandez",100],["Vicente Ruz",80],["Carlos Zuleta",80],["Diego Olano",80],["Guille Diaz",80],["Negro Verdugo",80],["Mati Rojas",80],["Eze Aguado",80],["Ale Orellana",60],["Jorge Rojas",60],["Diego Gonzalez",60],["Seba Field",60],["Vicente Rojas",40],["Carlos Aranguiz",40],["Felipe San Martin",40],["Chelo Jofre",40],["Gonzalo Vera",40],["Tomas Vicente",40],["Fernando Fuenzalida",40],["Felipe Krebs",0],["Ignacio Labbe",0],["Bille Ormzabal",0],["Cristian Garcia",0],["Fernando Duque",0]];
+var NAMES=PLAYERS.map(function(p){return p[0]});
+var POLLEROS=[['Javier Arrey',128],['Emma Castillo',119],['Diego Huth',104],['Eze Aguado',97],['Martin Dubost',88],['Vicente Moya',80],['Seba Labra',71]];
+var BASE_JUGARON=22;
+
+/* ===== helpers ===== */
+function r1(x){return Math.round(x*10)/10;}
+function nextClose(){var now=new Date(),d=new Date(now);d.setHours(21,0,0,0);var add=(3-d.getDay()+7)%7;if(add===0&&now.getTime()>d.getTime())add=7;d.setDate(d.getDate()+add);return d;}
+function roundId(){var d=nextClose();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function closed(){return Date.now()>=nextClose().getTime()}
+function cdText(){var ms=nextClose().getTime()-Date.now();if(ms<=0)return'cerrada';var h=Math.floor(ms/3.6e6),m=Math.floor(ms%3.6e6/6e4),d=Math.floor(h/24);return d>=1?('cierra en '+d+'d '+(h-d*24)+'h'):('cierra en '+h+'h '+m+'m');}
+function cdHuman(){var ms=nextClose().getTime()-Date.now();if(ms<=0)return'cerrada';var m=Math.floor(ms/6e4),h=Math.floor(m/60),d=Math.floor(h/24);if(d>=1)return'faltan '+d+(d===1?' día':' días');if(h>=1)return'faltan '+h+' h';return'faltan '+m+' min';}
+function potOf(b){if(!b)return 0;var s=0;if(b.oro)s+=b.oro.c;if(b.chupa)s+=b.chupa.c;return s;}
+function fmtBet(b){return b?b.n+' (x'+b.c.toFixed(1)+')':'—'}
+function deviceId(){var k='polla_device';var v=localStorage.getItem(k);if(!v){v='d'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem(k,v);}return v;}
+function gainFrom(bet,result){if(!bet||!result)return 0;var g=0;if(bet.oro&&bet.oro.n===result.oro)g+=bet.oro.c;if(bet.chupa&&bet.chupa.n===result.chupa)g+=bet.chupa.c;return g;}
+
+/* ===== cuotas automáticas por ranking ===== */
+function cuotaByRank(r){return Math.min(50,Math.round(1.6*Math.pow(1.32,r)*10)/10);}
+function buildMarket(order){
+  var arr=PLAYERS.filter(function(p){return p[1]>0}).slice();
+  arr.sort(function(a,b){return order==='oro'?b[1]-a[1]:a[1]-b[1];});
+  var cu={};arr.forEach(function(p,i){cu[p[0]]=cuotaByRank(i);});
+  var fav=arr.slice(0,3).map(function(p){return {n:p[0],c:cu[p[0]]}});
+  var bomb=[6,9,13].filter(function(i){return i<arr.length}).map(function(i){return {n:arr[i][0],c:cu[arr[i][0]]}});
+  return {cuota:cu,favoritos:fav,bombazos:bomb};
+}
+var MKMETA={oro:{ic:'🥇',t:'¿Campeón Copa Oro?'},chupa:{ic:'💩',t:'¿Rey Chupa? (el último)'}};
+var MK={oro:buildMarket('oro'),chupa:buildMarket('chupa')};
+function cuotaFor(market,name){return MK[market].cuota[name]||50;}
+function shownOf(market){var s={};MK[market].favoritos.concat(MK[market].bombazos).forEach(function(o){s[o.n]=1;});return s;}
+
+/* ===================================================================
+   CAPA DE DATOS (STORE)  —  Local o Firebase, misma interfaz async
+   =================================================================== */
+var LKEY='polla_local_v1';
+var LocalStore={mode:'local',
+  async init(){this.s=JSON.parse(localStorage.getItem(LKEY)||'{}');if(this.s.points==null)this.s.points=0;if(this.s.streak==null)this.s.streak=3;},
+  _save(){localStorage.setItem(LKEY,JSON.stringify(this.s));},
+  async getPlayer(){return {name:this.s.name||null,points:this.s.points,streak:this.s.streak};},
+  async register(name){this.s.name=name;this._save();},
+  async impostorCount(name){return this.s.impostor?2:1;},
+  async getMyBet(round){return this.s.bet||null;},
+  async saveBet(round,bet){this.s.bet=bet;this.s.result=null;this._save();},
+  async counts(round){return BASE_JUGARON+(this.s.bet?1:0);},
+  async leaderboard(){var list=POLLEROS.map(function(p){return [p[0],p[1]]});var self=this.s;if(self.name){var me=null;for(var i=0;i<list.length;i++)if(list[i][0]===self.name)me=list[i];if(me)me[1]=r1(me[1]+self.points);else if(self.points>0)list.push([self.name,r1(self.points)]);}list.sort(function(a,b){return b[1]-a[1]});return list;},
+  async getRound(round){return {result:this.s.result||null,settled:!!this.s.result};},
+  async settle(round,result){var b=this.s.bet||{};var g=gainFrom(b,result);this.s.points=r1(this.s.points+g);this.s.streak=g>0?this.s.streak+1:0;this.s.result=result;this._save();},
+  async setImpostor(){this.s.impostor=true;this._save();},
+  async clearImpostor(){this.s.impostor=false;this._save();},
+  async reset(){localStorage.removeItem(LKEY);this.s={points:0,streak:3};this._save();},
+  async nextRound(){this.s.bet=null;this.s.result=null;this._save();}
+};
+
+var FbStore={mode:'fb',
+  async init(){
+    var a=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    var f=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    this.app=a.initializeApp(FB);this.db=f.getFirestore(this.app);this.f=f;
+  },
+  async getPlayer(){var f=this.f;var s=await f.getDoc(f.doc(this.db,'players',deviceId()));return s.exists()?{name:s.data().name||null,points:s.data().points||0,streak:s.data().streak||0}:{name:null,points:0,streak:0};},
+  async register(name){var f=this.f;await f.setDoc(f.doc(this.db,'players',deviceId()),{name:name,updated:Date.now()},{merge:true});},
+  async impostorCount(name){var f=this.f;var q=f.query(f.collection(this.db,'players'),f.where('name','==',name));var c=await f.getCountFromServer(q);return c.data().count;},
+  async getMyBet(round){var f=this.f;var s=await f.getDoc(f.doc(this.db,'bets',round+'__'+deviceId()));return s.exists()?s.data():null;},
+  async saveBet(round,bet){var f=this.f;var p=await this.getPlayer();await f.setDoc(f.doc(this.db,'bets',round+'__'+deviceId()),{round:round,deviceId:deviceId(),name:p.name,oro:bet.oro,chupa:bet.chupa,ts:Date.now()});},
+  async counts(round){var f=this.f;var q=f.query(f.collection(this.db,'bets'),f.where('round','==',round));var c=await f.getCountFromServer(q);return c.data().count;},
+  async leaderboard(){var f=this.f;var q=f.query(f.collection(this.db,'players'),f.orderBy('points','desc'),f.limit(20));var snap=await f.getDocs(q);var out=[];snap.forEach(function(d){var x=d.data();if(x.name)out.push([x.name,r1(x.points||0)]);});return out.length?out:POLLEROS.map(function(p){return[p[0],p[1]]});},
+  async getRound(round){var f=this.f;var s=await f.getDoc(f.doc(this.db,'rounds',round));return s.exists()?{result:s.data().result||null,settled:!!s.data().settled}:{result:null,settled:false};},
+  async settle(round,result){var f=this.f,db=this.db;
+    var snap=await f.getDocs(f.query(f.collection(db,'bets'),f.where('round','==',round)));
+    var arr=[];snap.forEach(function(d){arr.push(d.data());});
+    for(var i=0;i<arr.length;i++){var b=arr[i],g=gainFrom(b,result);
+      var pref=f.doc(db,'players',b.deviceId);var ps=await f.getDoc(pref);var pd=ps.exists()?ps.data():{points:0,streak:0};
+      await f.setDoc(pref,{points:r1((pd.points||0)+g),streak:g>0?((pd.streak||0)+1):0},{merge:true});}
+    await f.setDoc(f.doc(db,'rounds',round),{result:result,settled:true,closesAt:nextClose().toISOString()},{merge:true});
+  }
+};
+var STORE = FB ? FbStore : LocalStore;
+
+/* ===================================================================
+   UI
+   =================================================================== */
+var app=document.getElementById('app'),draft={},CTX={};
+function isAdmin(){return location.hash==='#admin';}
+
+async function draw(){
+  var player=await STORE.getPlayer();
+  var round=roundId();
+  var myBet=player.name?await STORE.getMyBet(round):null;
+  var roundInfo=await STORE.getRound(round);
+  var cnt=await STORE.counts(round);
+  var lb=await STORE.leaderboard();
+  var impostor=player.name?((await STORE.impostorCount(player.name))>1):false;
+  if(myBet)draft={oro:myBet.oro,chupa:myBet.chupa};
+  var gain=(roundInfo.settled&&myBet)?gainFrom(myBet,roundInfo.result):0;
+  CTX={player:player,round:round,myBet:myBet,roundInfo:roundInfo,cnt:cnt,lb:lb,impostor:impostor,gain:gain};
+
+  var potShow=roundInfo.settled?gain:potOf(draft);
+  var mainLine=roundInfo.settled
+    ? (gain>0?('🎉 Ganaste +'+r1(gain)+' pts'):'Esta fecha: +0 pts')
+    : ((draft.oro&&draft.chupa)?('Si aciertas ambos: +'+r1(potShow)+' pts'):'Elige tu campeón y tu último');
+
+  var h='';
+  if(impostor)h+='<div class="banner"><span>⚠️ Detectamos <b>2 personas</b> jugando como <b>'+player.name+'</b>. Si no eres tú, avisa al organizador.</span><span class="x" id="bx">✕</span></div>';
+  h+='<div class="hero"><div class="hero-t">🎟️ Polla de la fecha</div>'
+    +'<div class="hero-pot"><b>'+mainLine+'</b></div>'
+    +'<div class="hero-sub">Cierra el miércoles 21:00 · '+cdHuman()+'</div></div>';
+  if(isAdmin())h+=adminCard();
+  if(!player.name)h+=nameCard();
+  else if(roundInfo.settled)h+=resultCard();
+  else if(closed())h+=closedCard();
+  else h+=betCard();
+  h+=leaderboardCard();
+  app.innerHTML=h;
+  wire();
+}
+function nameCard(){return '<div class="card"><div class="card-h">👋 ¿Quién eres?</div><div class="card-s">Elige tu nombre para jugar tu polla. Sin clave.</div><div class="pick-wrap"><input class="pick-in" id="pick" placeholder="🔍 escribe tu nombre…" autocomplete="off"><div class="pick-sug" id="picksug"></div></div></div>';}
+function optHTML(market,o){var sel=draft[market]&&draft[market].n===o.n?' sel':'';return '<div class="opt'+sel+'" data-n="'+o.n+'" data-c="'+o.c+'"><span class="nm">'+o.n+'</span><span class="c">x'+o.c.toFixed(1)+'</span><span class="check">✓</span></div>';}
+function mktHTML(market){var meta=MKMETA[market],M=MK[market],dr=draft[market],shown=shownOf(market);var all=M.favoritos.concat(M.bombazos);var extra='';if(dr&&!shown[dr.n])extra='<div class="seclbl">Tu elección</div><div class="opt sel" data-n="'+dr.n+'" data-c="'+dr.c+'"><span class="nm">'+dr.n+'</span><span class="c">x'+dr.c.toFixed(1)+'</span><span class="check">✓</span></div>';return '<div class="mkt" data-market="'+market+'"><div class="mkt-t">'+meta.ic+' '+meta.t+'</div><button class="otro" data-otro>🔍 Buscar otro jugador</button><div class="srch"><input placeholder="escribe un nombre…" autocomplete="off"><div class="sug"></div></div>'+extra+all.map(function(o){return optHTML(market,o)}).join('')+'</div>';}
+function betCard(){var edit=CTX.myBet?' · ✏️ puedes editar hasta las 21:00':'';return '<div class="card"><div class="card-h">Tu polla · '+CTX.player.name+'</div><div class="card-s">Elige en los 2 mercados. Cada acierto paga su cuota en puntos.'+edit+'</div>'+mktHTML('oro')+mktHTML('chupa')+'<button class="cta" id="send">✅ Enviar mi polla</button>'+(CTX.player.streak>0?'<div class="streaknote">🔥 Llevas '+CTX.player.streak+' fechas seguidas acertando — no la cortes</div>':'')+'</div>';}
+function closedCard(){var b=CTX.myBet;return '<div class="card"><div class="card-h">⏱️ Polla cerrada</div><div class="card-s">El americano ya empezó. '+(b?'Esta fue tu polla:':'No alcanzaste a jugar esta fecha.')+'</div>'+(b?'<div class="locked"><div class="lr">🥇 Copa Oro <b>'+fmtBet(b.oro)+'</b></div><div class="lr">💩 Rey Chupa <b>'+fmtBet(b.chupa)+'</b></div></div>':'')+'<p style="font-size:.76rem;color:#888;margin:12px 0 0">Cuando carguen el resultado, se paga solo.</p></div>';}
+function resultCard(){var r=CTX.roundInfo.result,b=CTX.myBet||{},hitO=b.oro&&b.oro.n===r.oro,hitC=b.chupa&&b.chupa.n===r.chupa,g=CTX.gain,win=g>0;return '<div class="card"><div class="res '+(win?'win':'lose')+'"><div class="big">'+(win?'🎉 +'+r1(g)+' pts':'😵 +0 pts')+'</div>'+(win?'¡Acertaste!':'Esta vez no fue')+'<small>Racha: 🔥 '+CTX.player.streak+' seguidas</small></div><div class="locked"><div class="lr">🥇 Copa Oro · ganó <b>'+r.oro+'</b></div><div class="lr" style="color:#888">tu apuesta: '+fmtBet(b.oro)+' '+(hitO?'✅':'❌')+'</div><div class="lr">💩 Rey Chupa · fue <b>'+r.chupa+'</b></div><div class="lr" style="color:#888">tu apuesta: '+fmtBet(b.chupa)+' '+(hitC?'✅':'❌')+'</div></div></div>';}
+function leaderboardCard(){var list=CTX.lb.map(function(p){return [p[0],p[1]]});var top=list.slice(0,3),rest=list.slice(3,7);function isMe(n){return CTX.player.name&&n===CTX.player.name}var pod='<div class="podium">'+podCell('🥈',top[1])+podCell('👑',top[0],1)+podCell('🥉',top[2])+'</div>';var rows=rest.map(function(p,i){return '<div class="lrow'+(isMe(p[0])?' me':'')+'"><b>'+(i+4)+'. '+p[0]+'</b><span class="p">'+p[1]+' pts</span></div>'}).join('');return '<div class="card"><div class="lb-h">🏆 Polleros del año</div>'+pod+rows+'</div>';}
+function podCell(medal,p,first){if(!p)return'<div class="pod"></div>';return '<div class="pod'+(first?' first':'')+'"><div class="medal">'+medal+'</div><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div></div>';}
+function adminCard(){return '<div class="admin"><h3>⚙️ Organizador · cargar resultado</h3><input id="a-oro" list="a-names" placeholder="Campeón Copa Oro"><input id="a-chupa" list="a-names" placeholder="Rey Chupa (último)"><datalist id="a-names">'+NAMES.map(function(n){return '<option value="'+n+'">'}).join('')+'</datalist><button id="a-settle">💰 Liquidar la fecha</button><div class="note">Paga solo a todos según su cuota, actualiza puntos y racha, y revela los resultados.</div></div>';}
+
+/* ===== eventos ===== */
+function wire(){
+  var bx=document.getElementById('bx');if(bx)bx.addEventListener('click',async function(){if(STORE.clearImpostor)await STORE.clearImpostor();draw();});
+  var pick=document.getElementById('pick');
+  if(pick){var ps=document.getElementById('picksug');
+    pick.addEventListener('input',function(){var q=pick.value.trim().toLowerCase();if(!q){ps.classList.remove('show');return;}var ms=NAMES.filter(function(n){return n.toLowerCase().indexOf(q)>=0}).slice(0,10);ps.innerHTML=ms.length?ms.map(function(n){return '<div data-n="'+n+'">'+n+'</div>'}).join(''):'<div style="color:#aaa">Sin resultados</div>';ps.classList.add('show');});
+    ps.addEventListener('click',async function(e){var d=e.target.closest('div[data-n]');if(!d)return;await STORE.register(d.dataset.n);draw();});
+  }
+  document.querySelectorAll('[data-market]').forEach(function(group){
+    var market=group.dataset.market;
+    group.addEventListener('click',function(e){var opt=e.target.closest('.opt');if(!opt||!group.contains(opt))return;draft[market]={n:opt.dataset.n,c:parseFloat(opt.dataset.c)};group.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel')});opt.classList.add('sel');updatePot();});
+    var otro=group.querySelector('[data-otro]'),srch=group.querySelector('.srch');
+    if(otro)otro.addEventListener('click',function(){srch.classList.toggle('open');if(srch.classList.contains('open'))srch.querySelector('input').focus();});
+    var inp=srch&&srch.querySelector('input'),sg=srch&&srch.querySelector('.sug');
+    if(inp)inp.addEventListener('input',function(){var q=inp.value.trim().toLowerCase();if(!q){sg.classList.remove('show');return;}var shown=shownOf(market);var ms=NAMES.filter(function(n){return !shown[n]&&n.toLowerCase().indexOf(q)>=0}).slice(0,8);sg.innerHTML=ms.length?ms.map(function(n){return '<div data-n="'+n+'">'+n+'<span class="mini">x'+cuotaFor(market,n).toFixed(1)+'</span></div>'}).join(''):'<div style="color:#aaa">Sin resultados</div>';sg.classList.add('show');});
+    if(sg)sg.addEventListener('click',function(e){var d=e.target.closest('div[data-n]');if(!d)return;draft[market]={n:d.dataset.n,c:cuotaFor(market,d.dataset.n)};draw();});
+  });
+  var send=document.getElementById('send');
+  if(send)send.addEventListener('click',async function(){if(!draft.oro||!draft.chupa){alert('Elige en los 2 mercados 😉');return;}send.textContent='Guardando…';await STORE.saveBet(CTX.round,{oro:draft.oro,chupa:draft.chupa});alert('¡Polla enviada! 🎟️ Hasta +'+r1(potOf(draft))+' pts');draw();});
+  var as=document.getElementById('a-settle');
+  if(as)as.addEventListener('click',async function(){var o=document.getElementById('a-oro').value.trim(),c=document.getElementById('a-chupa').value.trim();if(!o||!c){alert('Completa Oro y Rey Chupa');return;}if(!confirm('¿Liquidar con Oro='+o+' / Rey Chupa='+c+'?'))return;as.textContent='Liquidando…';await STORE.settle(CTX.round,{oro:o,chupa:c});alert('Fecha liquidada ✅');draw();});
+  // controles de prueba (solo modo local)
+  if(STORE.mode==='local')mountDemoBar();
+}
+function updatePot(){var el=document.querySelector('.hero-pot b');if(el&&CTX.roundInfo&&!CTX.roundInfo.settled)el.textContent=(draft.oro&&draft.chupa)?('Si aciertas ambos: +'+r1(potOf(draft))+' pts'):'Elige tu campeón y tu último';var send=document.getElementById('send');if(send)send.classList.toggle('ready',!!(draft.oro&&draft.chupa));}
+
+function mountDemoBar(){
+  if(document.getElementById('demobar'))return;
+  var bar=document.createElement('div');bar.className='demobar';bar.id='demobar';
+  bar.innerHTML='<span>prueba local:</span><button class="acc" id="d-sim">🎲 Simular</button><button id="d-imp">👥 Impostor</button><button id="d-next">➡️ Próxima</button><button id="d-reset">↺ Reiniciar</button>';
+  document.body.appendChild(bar);
+  document.getElementById('d-sim').addEventListener('click',async function(){var p=await STORE.getPlayer();if(!STORE.s.bet){alert('Primero envía una polla 🙂');return;}var ro=(Math.random()<0.5)?STORE.s.bet.oro.n:pickRes('oro');var rc=(Math.random()<0.4)?STORE.s.bet.chupa.n:pickRes('chupa');await STORE.settle(CTX.round,{oro:ro,chupa:rc});draw();window.scrollTo(0,0);});
+  document.getElementById('d-imp').addEventListener('click',async function(){var p=await STORE.getPlayer();if(!p.name){alert('Primero elige tu nombre 🙂');return;}await STORE.setImpostor();draw();window.scrollTo(0,0);});
+  document.getElementById('d-next').addEventListener('click',async function(){await STORE.nextRound();draw();});
+  document.getElementById('d-reset').addEventListener('click',async function(){if(confirm('¿Reiniciar la prueba?')){await STORE.reset();draft={};draw();}});
+}
+function pickRes(market){var M=MK[market];var pool=Math.random()<0.75?M.favoritos:M.bombazos;return pool[Math.floor(Math.random()*pool.length)].n;}
+
+setInterval(function(){var el=document.querySelector('.hero-sub');if(el)el.textContent='Cierra el miércoles 21:00 · '+cdHuman();},30000);
+window.addEventListener('hashchange',draw);
+STORE.init().then(draw).catch(function(e){app.innerHTML='<div class="loading">Error al iniciar: '+e.message+'</div>';});
+</script>
+<script>
+(function(){var last=0;function h(){var v=document.documentElement.scrollHeight;if(v!==last){last=v;parent.postMessage({pollaH:v},'*');}}
+new MutationObserver(h).observe(document.documentElement,{childList:true,subtree:true,attributes:true});
+addEventListener('load',h);addEventListener('resize',h);setInterval(h,700);})();
+</script>
+</body>
+</html>
