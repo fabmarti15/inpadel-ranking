@@ -95,6 +95,19 @@ body{margin:0;background:transparent;color:var(--i)}
 .admin button{width:100%;background:var(--gold);color:#fff;border:0;border-radius:11px;padding:13px;font:inherit;font-weight:900;cursor:pointer}
 .admin .note{font-size:.68rem;color:#9a9a96;margin-top:8px}
 
+.dwrap{margin-top:2px}
+.dmk{font-size:.9rem;font-weight:950;margin:2px 0 10px}
+.drow{margin-bottom:10px}
+.dtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.dn{font-size:.86rem;font-weight:900}
+.dc{font-size:.66rem;font-weight:900;color:#8a8a86;background:#f0efe9;border-radius:7px;padding:2px 7px;margin-left:6px}
+.dp{font-size:.88rem;font-weight:950;color:var(--g)}
+.dtrack{height:9px;background:#eeece7;border-radius:6px;overflow:hidden}
+.dfill{height:100%;background:var(--g);border-radius:6px}
+.drow.chupa .dp{color:#a06a2c}.drow.chupa .dfill{background:#a06a2c}
+.drow.other .dp{color:#a5a29c}.drow.other .dfill{background:#cfccc5}
+.dsep{height:1px;background:#eeece7;margin:16px 0}
+
 </style>
 </head>
 <body>
@@ -120,7 +133,7 @@ var FB = { apiKey:"...", authDomain:"...", projectId:"...",
 */
 
 /* ===== jugadores (nombre, puntaje) — del ranking en vivo ===== */
-var PLAYERS=[["Chris Zapata",8310],["Boris Zamorano",7510],["Ale Schapira",7020],["Rodrigo Cienfuegos",6570],["Ale Amaro",6210],["Joaco Oliver",5750],["Javier Arrey",4360],["Diego Huth",4130],["Emma Castillo",4120],["Martin Dubost",4060],["Sebastian Ramirez",4020],["Dani Rosales",3890],["Elias Cordova",3750],["Carlos Villanueva",3580],["Danny Salinas",3510],["Ivan Kindermann",3180],["Diego Fretz",3060],["Raul Abatte",2910],["Jose Carrasco",2900],["Ignacio de la Barra",2830],["Gustavo Torrens",2720],["Diego Gacitua",2710],["Nico Molina",2700],["Fabian Orellana",2460],["Mati Castillo",2440],["Dino Matilla",2320],["Tomas Aranda",2300],["Nico Labbe",2140],["Christian Lopez",2060],["Andres Lores",1980],["Cris Soto",1910],["Vicente Moya",1900],["Manu Maira",1870],["Fernando Orellana",1860],["Maximo Wolhein",1840],["Miguel Fuentes",1790],["Rodrigo Silva",1720],["Camilo Rosenblatt",1640],["Nacho Gallardo",1620],["Ray Urzua",1560],["Fabian Martinez",1540],["Juan Angel Cerda",1300],["Seba Labra",1200],["Charly Kraken",1120],["Pablo Pereira",1080],["Alberto Rojas",1060],["Felipe Rojas",1000],["Fer Aguilo",980],["Benja Yoshidzumi",960],["Nico Rocco",920],["Tomas Schnapp",920],["Angello Tapia",890],["Kyle Shepard",890],["Carlos Palma",880],["Nacho Garcia",880],["Seba Toledo",860],["Felipe Oyarzun",810],["Sergio Rad",800],["Cristobal Salas",780],["Yosh Gallardo",780],["Tomas Garcia",780],["Sebastian Orellana",780],["Marcelo Espinoza",720],["Nico Vielva",680],["Andres Killinger",660],["Diego Concha",640],["Benja Falcone",620],["Felipe Garcia",580],["Gonzalo Arenas",580],["Cesar Cano",580],["Felipe Gual",580],["Diego Del Rio",550],["Alonso Medel",540],["Nicolas Aranda",540],["Lucas Lee",540],["Andy Paredes",500],["Joaco Giorgi",500],["Gaspar Sanchez",460],["Esteban Ferrer",420],["Rodrigo Retamales",400],["Oscar Bentjerodt",400],["Benja Cox",360],["Maxi Dieguez",360],["Diego Mezzano",340],["Dani Saavedra",340],["Lucas Cereceda",340],["Willy Bravo",320],["Benja Hughes",300],["Ignacio Poblete",300],["Tommy Azocar",300],["Miguel Ramirez",300],["Lauti Guevara",300],["Nibaldo Sepulveda",280],["Vicente Carmona",280],["Gabo Heyne",280],["Francisco Pujado",280],["Sebastian Velarde",260],["Tomas Cunietti",260],["A Azocar",260],["Vicente Zamora",240],["Pablo Bournas",240],["Carlos Salas",240],["Silvio Scarfo",240],["Hugo Castro",240],["Seba Lagos",200],["Felipe Hermosilla",200],["Juan Pablo",200],["Fernando Alonso",200],["Gabo Guerrero",180],["Fernando Salinas",180],["Cristian Cadiz (Exotic)",160],["Jose Acosta",160],["Ignacio Requesens",160],["Ale Rabah",160],["Franco Leon",160],["Tomas Youlton",160],["Adrian Sprazzato",160],["Felipe Galvez",160],["Nico Fiol",140],["Pancho Gidi",140],["Juan Piquimil",140],["Mauro Alvarez",140],["Agustin Pavez",120],["Claudio Alvarado",100],["Diego Hernandez",100],["Vicente Ruz",80],["Carlos Zuleta",80],["Diego Olano",80],["Guille Diaz",80],["Negro Verdugo",80],["Mati Rojas",80],["Eze Aguado",80],["Ale Orellana",60],["Jorge Rojas",60],["Diego Gonzalez",60],["Seba Field",60],["Vicente Rojas",40],["Carlos Aranguiz",40],["Felipe San Martin",40],["Chelo Jofre",40],["Gonzalo Vera",40],["Tomas Vicente",40],["Fernando Fuenzalida",40],["Felipe Krebs",0],["Ignacio Labbe",0],["Bille Ormzabal",0],["Cristian Garcia",0],["Fernando Duque",0]];
+var PLAYERS=[["Chris Zapata",8310,22,83.9],["Boris Zamorano",7510,26,64.2],["Ale Schapira",7020,17,91.8],["Rodrigo Cienfuegos",6570,24,60.8],["Ale Amaro",6210,23,60],["Joaco Oliver",5750,19,67.3],["Javier Arrey",4360,24,40.4],["Diego Huth",4130,18,51],["Emma Castillo",4120,19,48.2],["Martin Dubost",4060,24,37.6],["Sebastian Ramirez",4020,12,74.4],["Dani Rosales",3890,13,66.5],["Elias Cordova",3750,19,43.9],["Carlos Villanueva",3580,17,46.8],["Danny Salinas",3510,12,65],["Ivan Kindermann",3180,25,28.3],["Diego Fretz",3060,16,42.5],["Raul Abatte",2910,13,49.7],["Jose Carrasco",2900,23,28],["Ignacio de la Barra",2830,13,48.4],["Gustavo Torrens",2720,18,33.6],["Diego Gacitua",2710,13,46.3],["Nico Molina",2700,20,30],["Fabian Orellana",2460,16,34.2],["Mati Castillo",2440,19,28.5],["Dino Matilla",2320,22,23.4],["Tomas Aranda",2300,11,46.5],["Nico Labbe",2140,15,31.7],["Christian Lopez",2060,16,28.6],["Andres Lores",1980,19,23.2],["Cris Soto",1910,6,70.7],["Vicente Moya",1900,12,35.2],["Manu Maira",1870,9,46.2],["Fernando Orellana",1860,11,37.6],["Maximo Wolhein",1840,12,34.1],["Miguel Fuentes",1790,8,49.7],["Rodrigo Silva",1720,8,47.8],["Camilo Rosenblatt",1640,13,28],["Nacho Gallardo",1620,10,36],["Ray Urzua",1560,9,38.5],["Fabian Martinez",1540,10,34.2],["Juan Angel Cerda",1300,7,41.3],["Seba Labra",1200,7,38.1],["Charly Kraken",1120,5,49.8],["Pablo Pereira",1080,10,24],["Alberto Rojas",1060,3,78.5],["Felipe Rojas",1000,4,55.6],["Fer Aguilo",980,7,31.1],["Benja Yoshidzumi",960,7,30.5],["Nico Rocco",920,8,25.6],["Tomas Schnapp",920,6,34.1],["Angello Tapia",890,6,33],["Kyle Shepard",890,5,39.6],["Carlos Palma",880,7,27.9],["Nacho Garcia",880,7,27.9],["Seba Toledo",860,3,63.7],["Felipe Oyarzun",810,3,60],["Sergio Rad",800,4,44.4],["Cristobal Salas",780,5,34.7],["Yosh Gallardo",780,5,34.7],["Tomas Garcia",780,4,43.3],["Sebastian Orellana",780,4,43.3],["Marcelo Espinoza",720,3,53.3],["Nico Vielva",680,7,21.6],["Andres Killinger",660,7,21],["Diego Concha",640,4,35.6],["Benja Falcone",620,4,34.4],["Felipe Garcia",580,6,21.5],["Gonzalo Arenas",580,4,32.2],["Cesar Cano",580,4,32.2],["Felipe Gual",580,3,43],["Diego Del Rio",550,2,61.1],["Alonso Medel",540,4,30],["Nicolas Aranda",540,2,60],["Lucas Lee",540,2,60],["Andy Paredes",500,5,22.2],["Joaco Giorgi",500,3,37],["Gaspar Sanchez",460,4,25.6],["Esteban Ferrer",420,2,46.7],["Rodrigo Retamales",400,1,88.9],["Oscar Bentjerodt",400,1,88.9],["Benja Cox",360,4,20],["Maxi Dieguez",360,2,40],["Diego Mezzano",340,4,18.9],["Dani Saavedra",340,3,25.2],["Lucas Cereceda",340,2,37.8],["Willy Bravo",320,2,35.6],["Benja Hughes",300,4,16.7],["Ignacio Poblete",300,1,66.7],["Tommy Azocar",300,1,66.7],["Miguel Ramirez",300,1,66.7],["Lauti Guevara",300,1,66.7],["Nibaldo Sepulveda",280,3,20.7],["Vicente Carmona",280,3,20.7],["Gabo Heyne",280,2,31.1],["Francisco Pujado",280,2,31.1],["Sebastian Velarde",260,3,19.3],["Tomas Cunietti",260,1,57.8],["A Azocar",260,1,57.8],["Vicente Zamora",240,2,26.7],["Pablo Bournas",240,2,26.7],["Carlos Salas",240,1,53.3],["Silvio Scarfo",240,1,53.3],["Hugo Castro",240,1,53.3],["Seba Lagos",200,3,14.8],["Felipe Hermosilla",200,2,22.2],["Juan Pablo",200,1,44.4],["Fernando Alonso",200,1,44.4],["Gabo Guerrero",180,2,20],["Fernando Salinas",180,1,40],["Cristian Cadiz (Exotic)",160,6,5.9],["Jose Acosta",160,4,8.9],["Ignacio Requesens",160,2,17.8],["Ale Rabah",160,2,17.8],["Franco Leon",160,1,35.6],["Tomas Youlton",160,1,35.6],["Adrian Sprazzato",160,1,35.6],["Felipe Galvez",160,1,35.6],["Nico Fiol",140,2,15.6],["Pancho Gidi",140,2,15.6],["Juan Piquimil",140,2,15.6],["Mauro Alvarez",140,1,31.1],["Agustin Pavez",120,1,26.7],["Claudio Alvarado",100,1,22.2],["Diego Hernandez",100,1,22.2],["Vicente Ruz",80,2,8.9],["Carlos Zuleta",80,1,17.8],["Diego Olano",80,1,17.8],["Guille Diaz",80,1,17.8],["Negro Verdugo",80,1,17.8],["Mati Rojas",80,1,17.8],["Eze Aguado",80,1,17.8],["Ale Orellana",60,2,6.7],["Jorge Rojas",60,1,13.3],["Diego Gonzalez",60,1,13.3],["Seba Field",60,1,13.3],["Vicente Rojas",40,2,4.4],["Carlos Aranguiz",40,2,4.4],["Felipe San Martin",40,2,4.4],["Chelo Jofre",40,1,8.9],["Gonzalo Vera",40,1,8.9],["Tomas Vicente",40,1,8.9],["Fernando Fuenzalida",40,1,8.9],["Felipe Krebs",0,2,0],["Ignacio Labbe",0,1,0],["Bille Ormzabal",0,1,0],["Cristian Garcia",0,1,0],["Fernando Duque",0,1,0]];
 var NAMES=PLAYERS.map(function(p){return p[0]});
 var POLLEROS=[];
 var BASE_JUGARON=0;
@@ -137,12 +150,17 @@ function fmtBet(b){return b?b.n+' (x'+b.c.toFixed(1)+')':'—'}
 function deviceId(){var k='polla_device';var v=localStorage.getItem(k);if(!v){v='d'+Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem(k,v);}return v;}
 function gainFrom(bet,result){if(!bet||!result)return 0;var g=0;if(bet.oro&&bet.oro.n===result.oro)g+=bet.oro.c;if(bet.chupa&&bet.chupa.n===result.chupa)g+=bet.chupa.c;return g;}
 
-/* ===== cuotas automáticas por ranking ===== */
-function cuotaByRank(r){return Math.min(50,Math.round(1.6*Math.pow(1.32,r)*10)/10);}
+/* ===== cuotas automáticas por EFECTIVIDAD histórica =====
+   Orden por efectividad ajustada (shrinkage para pocas fechas, K_EF).
+   Curva suave: piso x1.6, techo x50 solo para ~10% del fondo. */
+var _EFS=PLAYERS.filter(function(p){return p[2]>=1}).map(function(p){return p[3]});
+var PRIOR_EF=_EFS.reduce(function(a,b){return a+b},0)/(_EFS.length||1), K_EF=4;
+function adjEf(ef,fj){return (ef*fj+PRIOR_EF*K_EF)/(fj+K_EF);}
+function makeCuota(n){var MIN=1.6,MAX=50,F=0.10,cap=Math.max(1,Math.floor(n*(1-F))),g=Math.pow(MAX/MIN,1/cap);return function(r){return Math.min(MAX,Math.round(MIN*Math.pow(g,r)*10)/10);};}
 function buildMarket(order){
-  var arr=PLAYERS.filter(function(p){return p[1]>0}).slice();
-  arr.sort(function(a,b){return order==='oro'?b[1]-a[1]:a[1]-b[1];});
-  var cu={};arr.forEach(function(p,i){cu[p[0]]=cuotaByRank(i);});
+  var arr=PLAYERS.filter(function(p){return p[2]>=1}).slice();
+  arr.sort(function(a,b){var aa=adjEf(a[3],a[2]),bb=adjEf(b[3],b[2]);return order==='oro'?bb-aa:aa-bb;});
+  var cuota=makeCuota(arr.length),cu={};arr.forEach(function(p,i){cu[p[0]]=cuota(i);});
   var fav=arr.slice(0,3).map(function(p){return {n:p[0],c:cu[p[0]]}});
   var bomb=[6,9,13].filter(function(i){return i<arr.length}).map(function(i){return {n:arr[i][0],c:cu[arr[i][0]]}});
   return {cuota:cu,favoritos:fav,bombazos:bomb};
@@ -165,6 +183,7 @@ var LocalStore={mode:'local',
   async getMyBet(round){return this.s.bet||null;},
   async saveBet(round,bet){this.s.bet=bet;this.s.result=null;this._save();},
   async counts(round){return BASE_JUGARON+(this.s.bet?1:0);},
+  async distribution(round){var b=this.s.bet,o={},c={};if(b){if(b.oro&&b.oro.n)o[b.oro.n]=1;if(b.chupa&&b.chupa.n)c[b.chupa.n]=1;}return {oro:o,chupa:c,total:BASE_JUGARON+(b?1:0)};},
   async leaderboard(){var list=POLLEROS.map(function(p){return [p[0],p[1]]});var self=this.s;if(self.name){var me=null;for(var i=0;i<list.length;i++)if(list[i][0]===self.name)me=list[i];if(me)me[1]=r1(me[1]+self.points);else if(self.points>0)list.push([self.name,r1(self.points)]);}list.sort(function(a,b){return b[1]-a[1]});return list;},
   async getRound(round){return {result:this.s.result||null,settled:!!this.s.result};},
   async settle(round,result){var b=this.s.bet||{};var g=gainFrom(b,result);this.s.points=r1(this.s.points+g);this.s.streak=g>0?this.s.streak+1:0;this.s.result=result;this._save();},
@@ -186,6 +205,7 @@ var FbStore={mode:'fb',
   async getMyBet(round){var f=this.f;var s=await f.getDoc(f.doc(this.db,'bets',round+'__'+deviceId()));return s.exists()?s.data():null;},
   async saveBet(round,bet){var f=this.f;var p=await this.getPlayer();await f.setDoc(f.doc(this.db,'bets',round+'__'+deviceId()),{round:round,deviceId:deviceId(),name:p.name,oro:bet.oro,chupa:bet.chupa,ts:Date.now()});},
   async counts(round){var f=this.f;var q=f.query(f.collection(this.db,'bets'),f.where('round','==',round));var c=await f.getCountFromServer(q);return c.data().count;},
+  async distribution(round){var f=this.f;var snap=await f.getDocs(f.query(f.collection(this.db,'bets'),f.where('round','==',round)));var o={},c={},t=0;snap.forEach(function(d){var x=d.data();t++;if(x.oro&&x.oro.n)o[x.oro.n]=(o[x.oro.n]||0)+1;if(x.chupa&&x.chupa.n)c[x.chupa.n]=(c[x.chupa.n]||0)+1;});return {oro:o,chupa:c,total:t};},
   async leaderboard(){var f=this.f;var q=f.query(f.collection(this.db,'players'),f.orderBy('points','desc'),f.limit(20));var snap=await f.getDocs(q);var out=[];snap.forEach(function(d){var x=d.data();if(x.name)out.push([x.name,r1(x.points||0)]);});return out;},
   async getRound(round){var f=this.f;var s=await f.getDoc(f.doc(this.db,'rounds',round));return s.exists()?{result:s.data().result||null,settled:!!s.data().settled}:{result:null,settled:false};},
   async settle(round,result){var f=this.f,db=this.db;
@@ -210,12 +230,13 @@ async function draw(){
   var round=roundId();
   var myBet=player.name?await STORE.getMyBet(round):null;
   var roundInfo=await STORE.getRound(round);
-  var cnt=await STORE.counts(round);
+  var dist=await STORE.distribution(round);
+  var cnt=dist.total;
   var lb=await STORE.leaderboard();
   var impostor=player.name?((await STORE.impostorCount(player.name))>1):false;
   if(myBet)draft={oro:myBet.oro,chupa:myBet.chupa};
   var gain=(roundInfo.settled&&myBet)?gainFrom(myBet,roundInfo.result):0;
-  CTX={player:player,round:round,myBet:myBet,roundInfo:roundInfo,cnt:cnt,lb:lb,impostor:impostor,gain:gain};
+  CTX={player:player,round:round,myBet:myBet,roundInfo:roundInfo,cnt:cnt,dist:dist,lb:lb,impostor:impostor,gain:gain};
 
   var mainLine=roundInfo.settled
     ? (gain>0?('🎉 Ganaste +'+r1(gain)+' pts'):'Esta fecha: +0 pts')
@@ -233,6 +254,7 @@ async function draw(){
   else if(roundInfo.settled)h+=resultCard();
   else if(closed())h+=closedCard();
   else h+=betCard();
+  h+=distCard();
   h+=leaderboardCard();
   app.innerHTML=h;
   wire();
@@ -246,6 +268,18 @@ function resultCard(){var r=CTX.roundInfo.result,b=CTX.myBet||{},hitO=b.oro&&b.o
 function leaderboardCard(){var list=CTX.lb.map(function(p){return [p[0],p[1]]});if(!list.length)return '<div class="card"><div class="lb-h">🏆 Ranking de la Polla</div><div class="card-s" style="margin-top:6px">Aún no hay puntos — se suman cuando se cargue el resultado de la primera fecha.</div></div>';var top=list.slice(0,3),rest=list.slice(3,7);function isMe(n){return CTX.player.name&&n===CTX.player.name}var pod='<div class="podium">'+podCell('🥈',top[1])+podCell('👑',top[0],1)+podCell('🥉',top[2])+'</div>';var rows=rest.map(function(p,i){return '<div class="lrow'+(isMe(p[0])?' me':'')+'"><b>'+(i+4)+'. '+p[0]+'</b><span class="p">'+p[1]+' pts</span></div>'}).join('');return '<div class="card"><div class="lb-h">🏆 Ranking de la Polla</div>'+pod+rows+'</div>';}
 function podCell(medal,p,first){if(!p)return'<div class="pod"></div>';return '<div class="pod'+(first?' first':'')+'"><div class="medal">'+medal+'</div><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div></div>';}
 function adminCard(){return '<div class="admin"><h3>⚙️ Organizador · cargar resultado</h3><input id="a-oro" list="a-names" placeholder="Campeón Copa Oro"><input id="a-chupa" list="a-names" placeholder="Rey Chupa (último)"><datalist id="a-names">'+NAMES.map(function(n){return '<option value="'+n+'">'}).join('')+'</datalist><button id="a-settle">💰 Liquidar la fecha</button><div class="note">Paga solo a todos según su cuota, actualiza puntos y racha, y revela los resultados.</div></div>';}
+
+function distBars(dist,market){
+  var obj=dist[market]||{},total=dist.total||0,cls=market==='chupa'?' chupa':'';
+  var rows=Object.keys(obj).map(function(n){return {n:n,ct:obj[n],c:cuotaFor(market,n)}});
+  rows.sort(function(a,b){return b.ct-a.ct});
+  var top=rows.slice(0,6),rest=rows.slice(6),restCt=rest.reduce(function(s,r){return s+r.ct},0);
+  var html='<div class="dwrap"><div class="dmk">'+(market==='oro'?'🥇 Copa Oro':'💩 Rey Chupa')+'</div>';
+  html+=top.map(function(r){var pct=Math.round(r.ct/total*100);return '<div class="drow'+cls+'"><div class="dtop"><span><span class="dn">'+r.n+'</span><span class="dc">x'+r.c.toFixed(1)+'</span></span><span class="dp">'+pct+'%</span></div><div class="dtrack"><div class="dfill" style="width:'+pct+'%"></div></div></div>';}).join('');
+  if(restCt){var pr=Math.round(restCt/total*100);html+='<div class="drow other'+cls+'"><div class="dtop"><span class="dn">otros</span><span class="dp">'+pr+'%</span></div><div class="dtrack"><div class="dfill" style="width:'+pr+'%"></div></div></div>';}
+  return html+'</div>';
+}
+function distCard(){var d=CTX.dist;if(!d||!d.total)return '';return '<div class="card"><div class="card-h">📊 Cómo va la polla</div><div class="card-s">'+d.total+(d.total===1?' apuesta':' apuestas')+' hasta ahora · 🔒 sin nombres</div>'+distBars(d,'oro')+'<div class="dsep"></div>'+distBars(d,'chupa')+'</div>';}
 
 /* ===== eventos ===== */
 function wire(){
