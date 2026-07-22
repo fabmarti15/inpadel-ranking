@@ -113,6 +113,8 @@ body{margin:0;background:transparent;color:var(--i)}
 .tz-ic{font-size:1.9rem;line-height:1}
 .tz-t{font-size:1rem;font-weight:950;margin:8px 0 6px}
 .tz-s{font-size:.8rem;color:var(--m);line-height:1.45}
+.datos{text-align:center;color:var(--m);font-size:.8rem;font-weight:800;line-height:1.7;margin:8px 0 2px}
+.lb-sub{font-size:.74rem;color:var(--m);font-weight:700;margin:-2px 0 12px}
 </style>
 </head>
 <body>
@@ -245,24 +247,16 @@ async function draw(){
   var gain=(roundInfo.settled&&myBet)?gainFrom(myBet,roundInfo.result):0;
   CTX={player:player,round:round,myBet:myBet,roundInfo:roundInfo,cnt:cnt,dist:dist,lb:lb,impostor:impostor,gain:gain};
 
-  var mainLine=roundInfo.settled
-    ? (gain>0?('🎉 Ganaste +'+r1(gain)+' pts'):'Esta fecha: +0 pts')
-    : 'Apuesta quién gana 🥇 y quién sale último 💩';
-  var cntTxt=cnt===0?'Nadie ha apostado aún — sé el primero':(cnt===1?'1 ya apostó esta fecha':cnt+' ya apostaron esta fecha');
-
   var h='';
   if(impostor)h+='<div class="banner"><span>⚠️ Detectamos <b>2 personas</b> jugando como <b>'+player.name+'</b>. Si no eres tú, avisa al organizador.</span><span class="x" id="bx">✕</span></div>';
-  h+='<div class="hero"><div class="hero-t">🎟️ Polla de la fecha</div>'
-    +'<div class="hero-pot"><b>'+mainLine+'</b></div>'
-    +'<div class="hero-sub">🎟️ '+cntTxt+'</div>'
-    +'<div class="hero-sub" id="cd-line">Cierra el miércoles 21:00 · '+cdHuman()+'</div></div>';
   if(isAdmin())h+=adminCard();
-  if(!player.name){h+=nameCard();h+=lockedTeaser();}
-  else if(roundInfo.settled){h+=resultCard();h+=distCard();}
-  else if(closed()){h+=closedCard();h+=distCard();}
+  if(!player.name)h+=nameCard();
+  else if(roundInfo.settled){h+=distCard();h+=resultCard();}
+  else if(closed()){h+=distCard();h+=closedCard();}
   else if(myBet){h+=distCard();h+=betCard();}
-  else {h+=betCard();h+=lockedTeaser();}
+  else {h+=lockedTeaser();h+=betCard();}
   h+=leaderboardCard();
+  h+=datosStrip();
   app.innerHTML=h;
   wire();
 }
@@ -272,7 +266,7 @@ function mktHTML(market){var meta=MKMETA[market],M=MK[market],dr=draft[market],s
 function betCard(){var edit=CTX.myBet?' · ✏️ puedes editar hasta las 21:00':'';return '<div class="card"><div class="card-h">Tu polla · '+CTX.player.name+'</div><div class="card-s">Elige en los 2 mercados. Cada acierto paga su cuota en puntos.'+edit+'</div>'+mktHTML('oro')+mktHTML('chupa')+'<div class="anon">🔒 Tu apuesta es anónima — nadie sabrá nunca a quién le apostaste.</div><button class="cta" id="send">✅ Enviar mi polla</button>'+(CTX.player.streak>0?'<div class="streaknote">🔥 Llevas '+CTX.player.streak+' fechas seguidas acertando — no la cortes</div>':'')+'</div>';}
 function closedCard(){var b=CTX.myBet;return '<div class="card"><div class="card-h">⏱️ Polla cerrada</div><div class="card-s">El americano ya empezó. '+(b?'Esta fue tu polla:':'No alcanzaste a jugar esta fecha.')+'</div>'+(b?'<div class="locked"><div class="lr">🥇 Copa Oro <b>'+fmtBet(b.oro)+'</b></div><div class="lr">💩 Rey Chupa <b>'+fmtBet(b.chupa)+'</b></div></div>':'')+'<p style="font-size:.76rem;color:#888;margin:12px 0 0">Cuando carguen el resultado, se paga solo.</p></div>';}
 function resultCard(){var r=CTX.roundInfo.result,b=CTX.myBet||{},hitO=b.oro&&b.oro.n===r.oro,hitC=b.chupa&&b.chupa.n===r.chupa,g=CTX.gain,win=g>0;return '<div class="card"><div class="res '+(win?'win':'lose')+'"><div class="big">'+(win?'🎉 +'+r1(g)+' pts':'😵 +0 pts')+'</div>'+(win?'¡Acertaste!':'Esta vez no fue')+'<small>Racha: 🔥 '+CTX.player.streak+' seguidas</small></div><div class="locked"><div class="lr">🥇 Copa Oro · ganó <b>'+r.oro+'</b></div><div class="lr" style="color:#888">tu apuesta: '+fmtBet(b.oro)+' '+(hitO?'✅':'❌')+'</div><div class="lr">💩 Rey Chupa · fue <b>'+r.chupa+'</b></div><div class="lr" style="color:#888">tu apuesta: '+fmtBet(b.chupa)+' '+(hitC?'✅':'❌')+'</div></div></div>';}
-function leaderboardCard(){var list=CTX.lb.map(function(p){return [p[0],p[1]]});if(!list.length)return '<div class="card"><div class="lb-h">🏆 Ranking de la Polla</div><div class="card-s" style="margin-top:6px">Aún no hay puntos — se suman cuando se cargue el resultado de la primera fecha.</div></div>';var top=list.slice(0,3),rest=list.slice(3,7);function isMe(n){return CTX.player.name&&n===CTX.player.name}var pod='<div class="podium">'+podCell('🥈',top[1])+podCell('👑',top[0],1)+podCell('🥉',top[2])+'</div>';var rows=rest.map(function(p,i){return '<div class="lrow'+(isMe(p[0])?' me':'')+'"><b>'+(i+4)+'. '+p[0]+'</b><span class="p">'+p[1]+' pts</span></div>'}).join('');return '<div class="card"><div class="lb-h">🏆 Ranking de la Polla</div>'+pod+rows+'</div>';}
+function leaderboardCard(){var list=CTX.lb.map(function(p){return [p[0],p[1]]});if(!list.length)return '<div class="card"><div class="lb-h">🏆 Ranking de la Polla</div><div class="card-s" style="margin-top:6px">Aquí van a brillar los mejores apostadores 🔮 — los que le ven el futuro. Aún no hay puntos: se suman cuando se cargue el resultado de la primera fecha.</div></div>';var top=list.slice(0,3),rest=list.slice(3,7);function isMe(n){return CTX.player.name&&n===CTX.player.name}var pod='<div class="podium">'+podCell('🥈',top[1])+podCell('👑',top[0],1)+podCell('🥉',top[2])+'</div>';var rows=rest.map(function(p,i){return '<div class="lrow'+(isMe(p[0])?' me':'')+'"><b>'+(i+4)+'. '+p[0]+'</b><span class="p">'+p[1]+' pts</span></div>'}).join('');return '<div class="card"><div class="lb-h">🏆 Ranking de la Polla</div><div class="lb-sub">Los mejores apostadores · los que le ven el futuro 🔮</div>'+pod+rows+'</div>';}
 function podCell(medal,p,first){if(!p)return'<div class="pod"></div>';return '<div class="pod'+(first?' first':'')+'"><div class="medal">'+medal+'</div><div class="pn">'+p[0]+'</div><div class="pp">'+p[1]+'</div></div>';}
 function adminCard(){return '<div class="admin"><h3>⚙️ Organizador · cargar resultado</h3><input id="a-oro" list="a-names" placeholder="Campeón Copa Oro"><input id="a-chupa" list="a-names" placeholder="Rey Chupa (último)"><datalist id="a-names">'+NAMES.map(function(n){return '<option value="'+n+'">'}).join('')+'</datalist><button id="a-settle">💰 Liquidar la fecha</button><div class="note">Paga solo a todos según su cuota, actualiza puntos y racha, y revela los resultados.</div></div>';}
 
@@ -289,6 +283,8 @@ function distBars(dist,market){
 function distCard(){var d=CTX.dist;if(!d||!d.total)return '';return '<div class="card"><div class="card-h">📊 Cómo va la polla</div><div class="card-s">'+d.total+(d.total===1?' apuesta':' apuestas')+' hasta ahora · 🔒 nadie sabe quién apostó a quién</div>'+distBars(d,'oro')+'<div class="dsep"></div>'+distBars(d,'chupa')+'</div>';}
 
 function lockedTeaser(){return '<div class="card teaser"><div class="tz-ic">🔒</div><div class="tz-t">Pon tu apuesta para ver cómo va la polla</div><div class="tz-s">Primero apuestas, después ves el ranking de apuestas.<br>Y tranquilo: es <b>100% anónimo</b> — nadie sabrá nunca a quién le apostaste.</div></div>';}
+
+function datosStrip(){var c=CTX.cnt,t=c===0?'Nadie ha apostado aún — sé el primero':(c===1?'1 ya apostó esta fecha':c+' ya apostaron esta fecha');return '<div class="datos"><div>🎟️ '+t+'</div><div id="cd-line">Cierra el miércoles 21:00 · '+cdHuman()+'</div></div>';}
 
 /* ===== eventos ===== */
 function wire(){

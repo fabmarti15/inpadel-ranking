@@ -5702,7 +5702,7 @@ function renderRanking(){
     list = list.map(it => ({p:it.p, elo: ratings[norm(it.p.nombre)] != null ? ratings[norm(it.p.nombre)] : 1000}))
                .sort((a,b) => b.elo - a.elo);
   }
-  el.innerHTML = list.map((it,i) => {
+  const _rows = list.map((it,i) => {
     const p = it.p, rankNum = i + 1;
     const bigVal = RANKTYPE === 'elo' ? it.elo : p.puntaje.toLocaleString('es-CL');
     const copaMeta = [
@@ -5713,7 +5713,7 @@ function renderRanking(){
     ].filter(c => (p.copasJugadas||{})[c.k] > 0)
      .map(c => `<span class="copa-tag" title="${c.label}: copas ganadas / jugadas">${c.icon} <b>${(p.copasGanadas||{})[c.k]||0}/${(p.copasJugadas||{})[c.k]}</b></span>`)
      .join('<span class="sep">·</span>');
-    return `<details class="player-wrap">
+    return `<details class="player-wrap${i>=10?' rk-extra':''}"${i>=10?' style="display:none"':''}>
     <summary class="player" data-n="${esc(p.nombre)}">
       <span class="rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${rankNum}</span>
       <span>
@@ -5725,6 +5725,10 @@ function renderRanking(){
     ${renderDetail(p.nombre, rankNum)}
   </details>`;
   }).join('');
+  var _more = list.length>10 ? '<button type="button" class="rk-more" style="display:block;width:100%;margin:12px 0 2px;padding:13px;border:2px solid #1a7a44;background:#fff;color:#1a7a44;border-radius:12px;font-weight:900;font-size:.92rem;cursor:pointer">Cargar todos ('+list.length+') \u25be</button>' : '';
+  el.innerHTML = _rows + _more;
+  var _mb = el.querySelector('.rk-more');
+  if(_mb) _mb.addEventListener('click', function(){ el.querySelectorAll('.rk-extra').forEach(function(x){x.style.display='';}); _mb.remove(); });
 }
 
 /* ── Botón "ver más / ver menos" de las fechas ── */
@@ -6141,6 +6145,7 @@ function setupPlayerSearch(){
   }
 
   function openPlayer(player){
+    var _rk=document.getElementById('ranking'); if(_rk){_rk.querySelectorAll('.rk-extra').forEach(function(x){x.style.display='';}); var _mb=_rk.querySelector('.rk-more'); if(_mb)_mb.remove();}
     document.querySelectorAll('.player-wrap.search-hit').forEach(x => x.classList.remove('search-hit'));
     getPlayers().forEach(x => { if(x !== player) x.open = false; });
     player.open = true;
