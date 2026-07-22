@@ -5329,11 +5329,11 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
   <!-- Polla de la fecha -->
   <section class="card panel" id="polla-section">
     <h2 style="text-align:center">🎯 Polla de la fecha</h2>
-    <iframe id="polla-frame" src="polla-embed.html" title="Polla de la fecha" loading="lazy" scrolling="no" style="width:100%;border:0;display:block;height:640px;overflow:hidden"></iframe>
+    <iframe id="polla-frame" src="polla-embed.html?v=3" title="Polla de la fecha" loading="lazy" scrolling="no" style="width:100%;border:0;display:block;height:640px;overflow:hidden"></iframe>
   </section>
   <script>
   addEventListener('message',function(e){if(e.data&&e.data.pollaH){var f=document.getElementById('polla-frame');if(f)f.style.height=(e.data.pollaH+8)+'px';}});
-  (function(){function sa(){if(location.hash==='#admin'){var f=document.getElementById('polla-frame');if(f&&f.src.indexOf('#admin')<0){f.src='polla-embed.html#admin';document.getElementById('polla-section').scrollIntoView();}}}
+  (function(){function sa(){if(location.hash==='#admin'){var f=document.getElementById('polla-frame');if(f&&f.src.indexOf('#admin')<0){f.src='polla-embed.html?v=3#admin';document.getElementById('polla-section').scrollIntoView();}}}
   addEventListener('hashchange',sa);sa();})();
   </script>
 
