@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup · Polla de la fecha</title>
+<style>
+  :root{--g:#1a7a44}
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f4f1;color:#1d1d1b;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:500px;margin:0 auto;padding:22px 16px 60px}
+  .card{background:#fff;border:1px solid #e7e7e2;border-radius:18px;padding:20px 22px;margin-bottom:18px}
+  .h{font-size:1.15rem;font-weight:950;display:flex;align-items:center;gap:8px}
+  .sub{font-size:.78rem;color:#888;margin:2px 0 16px}
+  .mkt{background:#fafaf8;border:1px solid #eee;border-radius:13px;padding:14px 15px;margin-bottom:12px}
+  .mkt-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+  .mkt-t{font-size:.92rem;font-weight:950}
+  .mkt-tag{font-size:.64rem;color:#aaa;font-weight:800}
+  .opts{display:grid;gap:7px}
+  .opt{display:flex;justify-content:space-between;align-items:center;border:1.5px solid #e0ddd5;background:#fff;border-radius:11px;padding:10px 14px;cursor:pointer;user-select:none;transition:.1s}
+  .opt:active{transform:scale(.99)}
+  .opt.sel{border-color:var(--g);background:#1a7a440d}
+  .opt .nm{font-size:.86rem;font-weight:850;color:#333;display:flex;align-items:center;gap:7px}
+  .opt.sel .nm{color:var(--g)}
+  .cuota{font-weight:950;font-size:1rem;color:#222;background:#f0efe9;border-radius:8px;padding:5px 11px;min-width:58px;text-align:center}
+  .opt.sel .cuota{background:var(--g);color:#fff}
+  .cuota.hot{color:#fff;background:#d9970f}
+  .opt.sel .cuota.hot{background:#b8860b}
+  .srch{position:relative;margin-top:8px}
+  .srch input{width:100%;border:1px solid #e0ddd5;border-radius:10px;padding:9px 12px;font:inherit;font-size:.84rem;background:#fff;color:#333}
+  .srch input:focus{outline:none;border-color:var(--g)}
+  .sug{position:absolute;left:0;right:0;top:44px;background:#fff;border:1px solid #e0ddd5;border-radius:10px;box-shadow:0 10px 26px rgba(0,0,0,.14);z-index:5;overflow:hidden;display:none;max-height:230px;overflow-y:auto}
+  .sug.show{display:block}
+  .sug div{padding:9px 12px;font-size:.84rem;font-weight:800;cursor:pointer;border-bottom:1px solid #f3f0e9;display:flex;justify-content:space-between;align-items:center}
+  .sug div:last-child{border-bottom:0}
+  .sug div:hover{background:#1a7a440a}
+  .sug .mini{font-size:.72rem;font-weight:900;color:#d9970f}
+  .pot{display:flex;justify-content:space-between;align-items:center;background:#1a7a440d;border:1px dashed #1a7a4455;border-radius:11px;padding:11px 14px;margin:4px 0 10px;font-weight:900;font-size:.86rem;color:var(--g)}
+  .send{width:100%;background:var(--g);color:#fff;border:0;border-radius:11px;padding:13px;font-size:.92rem;font-weight:900;font-family:inherit;cursor:pointer}
+  .send:active{transform:scale(.99)}
+  .foot{font-size:.7rem;color:#aaa;text-align:center;margin-top:8px}
+  .ok{display:none;margin-top:10px;border-radius:11px;padding:11px;font-size:.82rem;font-weight:850;text-align:center}
+  .lb-h{padding:2px 0 11px;font-size:1rem;font-weight:950}
+  .lb-h small{font-size:.72rem;color:#999;font-weight:700}
+  .row{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid #f0ede6}
+  .row:last-child{border-bottom:0}
+  .row.k{background:#1a7a440a;border-radius:9px;padding:9px 8px}
+  .rk{text-align:center;font-size:.85rem;font-weight:900;color:#999}
+  .row.k .rk{font-size:1.05rem;color:var(--g)}
+  .rn{font-weight:800;font-size:.88rem}
+  .row.k .rn{font-weight:950}
+  .rp{font-weight:950;color:var(--g);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="h">🎟️ Polla de la fecha</div>
+    <div class="sub">Próximo americano · Mié 25 Jun · cierra a las 19:00 ⏱️ · cada acierto paga su cuota en puntos 💰</div>
+    <div id="markets"></div>
+    <div class="pot"><span>Si aciertas las 2</span><span id="pot">+0.0 pts</span></div>
+    <button class="send" id="send">✅ Enviar mi polla</button>
+    <div class="foot">Mientras menos probable, más paga · el bombazo paga x30 🤑</div>
+    <div class="ok" id="ok"></div>
+  </div>
+  <div class="card">
+    <div class="lb-h">🏆 Ranking de polleros <small>· temporada</small></div>
+    <div id="lb"></div>
+  </div>
+</div>
+<script>
+  var MARKETS=[
+    {ic:'🥇',t:'Campeón Copa Oro',opts:[
+      {n:'Chris Zapata',c:1.7},{n:'Ale Schapira',c:2.2},{n:'Boris Zamorano',c:3.5},{n:'Dino Matilla',c:30.0}]},
+    {ic:'💩',t:'Rey Chupa (último)',opts:[
+      {n:'Dino Matilla',c:1.8},{n:'Nico Molina',c:3.0},{n:'Cristian Cadiz',c:4.5},{n:'Chris Zapata',c:30.0}]}
+  ];
+  var POOL=['Chris Zapata','Ale Schapira','Boris Zamorano','Raul Abatte','Sebastian Ramirez','Joaco Oliver','Dani Rosales','Ale Amaro','Eze Aguado','Rodrigo Cienfuegos','Javier Arrey','Emma Castillo','Martin Dubost','Diego Huth','Dino Matilla','Nico Molina','Cristian Cadiz','Andres Killinger','Ivan Kindermann','Juan Vignand','Vicente Moya','Seba Labra','Diego Hernandez','Eduardo Moya'];
+  var pick={};
+  function cuotaCls(c){return 'cuota'+(c>=10?' hot':'');}
+  document.getElementById('markets').innerHTML=MARKETS.map(function(m,i){
+    var opts=m.opts.map(function(o){
+      return '<div class="opt" data-m="'+i+'" data-n="'+o.n+'" data-c="'+o.c+'"><span class="nm">'+o.n+(o.c>=10?' 🤑':'')+'</span><span class="'+cuotaCls(o.c)+'">x'+o.c.toFixed(1)+'</span></div>';
+    }).join('');
+    return '<div class="mkt"><div class="mkt-h"><span class="mkt-t">'+m.ic+' '+m.t+'</span><span class="mkt-tag">cuota</span></div>'
+      +'<div class="opts" data-m="'+i+'">'+opts+'</div>'
+      +'<div class="srch"><input placeholder="🔍 ¿Otro? escribe un nombre… (paga x30)" data-m="'+i+'"><div class="sug" data-m="'+i+'"></div></div></div>';
+  }).join('');
+
+  function refresh(){
+    var pot=Object.keys(pick).reduce(function(a,k){return a+pick[k].c},0);
+    document.getElementById('pot').textContent='+'+pot.toFixed(1)+' pts';
+  }
+  function selectOpt(box,opt){
+    box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel')});
+    opt.classList.add('sel');
+    pick[box.dataset.m]={n:opt.dataset.n,c:parseFloat(opt.dataset.c)};
+    refresh();
+  }
+  document.querySelectorAll('.opts').forEach(function(box){
+    box.addEventListener('click',function(e){ var o=e.target.closest('.opt'); if(o) selectOpt(box,o); });
+  });
+  // Buscador por mercado
+  document.querySelectorAll('.srch input').forEach(function(inp){
+    var i=inp.dataset.m, sug=document.querySelector('.sug[data-m="'+i+'"]');
+    inp.addEventListener('input',function(){
+      var q=inp.value.trim().toLowerCase();
+      if(!q){ sug.classList.remove('show'); return; }
+      var matches=POOL.filter(function(n){return n.toLowerCase().indexOf(q)>=0}).slice(0,6);
+      if(!matches.length){ sug.innerHTML='<div style="color:#aaa;font-weight:700">Sin resultados</div>'; sug.classList.add('show'); return; }
+      sug.innerHTML=matches.map(function(n){return '<div data-n="'+n+'">'+n+'<span class="mini">x30.0 🤑</span></div>'}).join('');
+      sug.classList.add('show');
+    });
+    sug.addEventListener('click',function(e){
+      var d=e.target.closest('div[data-n]'); if(!d) return;
+      var box=document.querySelector('.opts[data-m="'+i+'"]');
+      box.querySelectorAll('.opt').forEach(function(x){x.classList.remove('sel')});
+      box.querySelectorAll('.opt.outsider').forEach(function(x){x.remove()});
+      var el=document.createElement('div');
+      el.className='opt outsider sel'; el.dataset.m=i; el.dataset.n=d.dataset.n; el.dataset.c='30';
+      el.innerHTML='<span class="nm">'+d.dataset.n+' 🤑 <span style="font-size:.6rem;font-weight:900;color:#d9970f">BOMBAZO</span></span><span class="cuota hot">x30.0</span>';
+      box.insertBefore(el,box.firstChild);
+      pick[i]={n:d.dataset.n,c:30.0}; refresh();
+      inp.value=''; sug.classList.remove('show');
+    });
+  });
+
+  document.getElementById('send').addEventListener('click',function(){
+    var ok=document.getElementById('ok'), n=Object.keys(pick).length;
+    if(n<2){ ok.style.display='block'; ok.style.background='#fdeceb'; ok.style.borderColor='#f3c9c6'; ok.style.color='#b5302a'; ok.textContent='Elige en los 2 mercados ('+n+'/2)'; return; }
+    var pot=(pick[0].c+pick[1].c).toFixed(1);
+    ok.style.display='block'; ok.style.background='#eaf3ee'; ok.style.borderColor='#cfe6da'; ok.style.color='#1a7a44';
+    ok.innerHTML='¡Polla enviada! 🎟️ Oro: <b>'+pick[0].n+'</b> (x'+pick[0].c.toFixed(1)+') · Rey Chupa: <b>'+pick[1].n+'</b> (x'+pick[1].c.toFixed(1)+') → hasta <b>+'+pot+' pts</b> 💰';
+  });
+
+  var POLL=[['Javier Arrey',128,'👑'],['Emma Castillo',119,'2'],['Diego Huth',104,'3'],['Eze Aguado',97,'4'],['Martin Dubost',88,'5']];
+  document.getElementById('lb').innerHTML=POLL.map(function(p,i){
+    return '<div class="row'+(i===0?' k':'')+'"><span class="rk">'+p[2]+'</span><span class="rn">'+p[0]+'</span><span class="rp">'+p[1]+' pts</span></div>';
+  }).join('');
+</script>
+</body>
+</html>
