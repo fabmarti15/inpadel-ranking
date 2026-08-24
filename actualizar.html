@@ -310,6 +310,24 @@ $('publish-btn').onclick = async () => {
     const getJson = await getRes.json();
     const html = b64decode(getJson.content);
 
+    // 1b) Guardia: no pisar fechas que la página ya tiene y el Excel no trae
+    const curM = html.match(/^let DATA = (.*);\s*$/m);
+    if(curM){
+      try{
+        const cur = JSON.parse(curM[1]);
+        const curFechas = cur.fechas.map(f=>f.fecha).sort();
+        const newFechas = NEW_DATA.fechas.map(f=>f.fecha);
+        const faltan = curFechas.filter(f=>!newFechas.includes(f));
+        if(faltan.length){
+          const lista = faltan.map(fmtDate).join(', ');
+          const ok1 = window.confirm(`⚠️ OJO: la página ya tiene ${faltan.length} fecha(s) que tu Excel NO trae:\n\n${lista}\n\nSi publicas igual, esas fechas se BORRAN de la página.\n\n¿Quieres seguir?`);
+          if(!ok1) throw new Error('Publicación cancelada: el Excel trae menos fechas que la página. Agrega esas fechas al Excel (o súbelas por subir-fecha.html) y vuelve a intentarlo.');
+          const ok2 = window.confirm(`¿Seguro? Se borrarán de la página: ${lista}.\n\nEsta es la última confirmación.`);
+          if(!ok2) throw new Error('Publicación cancelada.');
+        }
+      }catch(e){ if(e instanceof Error && /cancelada/.test(e.message)) throw e; }
+    }
+
     // 2) Reemplazar SOLO la línea `let DATA = {...};` (diseño intacto)
     const newLine = 'let DATA = ' + JSON.stringify(NEW_DATA) + ';';
     if(!/^let DATA = .*;\s*$/m.test(html)) throw new Error('No encontré la línea de datos en index.html. ¿Cambió el formato?');

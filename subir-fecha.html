@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Subir Fecha · Inpadel</title>
+<style>
+:root{
+  --bg:#f4f4f1;--c:#fff;--i:#171717;--m:#73706c;--l:#e4e1dc;
+  --g:#1a7a44;--r:#c0392b;--s:0 18px 45px #1111;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--i);background:radial-gradient(circle at 0 0,#1a7a4412,transparent 30rem),var(--bg)}
+.app{width:min(680px,100%);margin:auto;padding:14px}
+.card{background:var(--c);border:1px solid var(--l);border-radius:16px;box-shadow:var(--s);padding:clamp(18px,4vw,30px);margin-top:16px}
+h1{font-size:1.6rem;margin:0;text-align:center}
+h2{font-size:1.1rem;margin:0 0 10px}
+.sub{color:var(--m);font-size:.9rem;text-align:center;margin:8px 0 0}
+label{display:block;font-weight:800;font-size:.85rem;margin:14px 0 6px}
+input[type=password],input[type=text],input[type=date],textarea{width:100%;border:1px solid var(--l);border-radius:12px;background:#fafaf8;color:var(--i);font:inherit;font-size:1rem;font-weight:700;padding:13px 14px;outline:none}
+textarea{font-weight:600;font-size:.92rem;min-height:230px;resize:vertical;line-height:1.5}
+input:focus,textarea:focus{border-color:var(--g);box-shadow:0 0 0 3px #1a7a4417}
+.btn{display:block;width:100%;border:0;border-radius:14px;color:#fff;font:inherit;font-size:1.05rem;font-weight:950;padding:16px;cursor:pointer;margin-top:16px;-webkit-tap-highlight-color:transparent}
+.btn-g{background:var(--g)}
+.btn-d{background:#222}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hidden{display:none}
+.muted{color:var(--m);font-size:.82rem;margin-top:8px;line-height:1.5}
+.note{background:#1a7a440d;border:1px solid #1a7a4433;border-radius:12px;padding:12px 14px;font-size:.85rem;line-height:1.55;margin-top:14px}
+.err{background:#c0392b12;border:1px solid #c0392b44;color:#922;border-radius:12px;padding:12px 14px;font-size:.88rem;margin-top:14px;font-weight:700;white-space:pre-wrap}
+.ok{background:#1a7a4416;border:1px solid #1a7a4455;color:var(--g);border-radius:12px;padding:14px;font-size:1rem;margin-top:14px;font-weight:900;text-align:center}
+.copa{border:1px solid var(--l);border-radius:12px;padding:10px 14px;margin-top:10px}
+.copa-h{font-weight:950;font-size:.95rem;margin-bottom:4px}
+.copa-w{font-size:.9rem;font-weight:700;line-height:1.7}
+.copa-w small{color:var(--m);font-weight:600}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid #fff6;border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.row{display:flex;align-items:center;gap:8px}
+.toggle{font-size:.78rem;color:var(--g);font-weight:800;background:none;border:0;cursor:pointer;padding:0;margin-top:6px}
+pre.ejemplo{background:#fafaf8;border:1px dashed var(--l);border-radius:12px;padding:12px 14px;font-size:.8rem;line-height:1.6;overflow-x:auto;margin:8px 0 0}
+.dudas .duda{border:1px solid #c0392b44;background:#c0392b08;border-radius:12px;padding:12px 14px;margin-top:10px}
+.duda b{font-size:.95rem}
+.duda .ops{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.duda label{display:flex;align-items:center;gap:8px;margin:0;font-weight:700;font-size:.9rem;cursor:pointer}
+.duda input[type=radio]{width:auto}
+.fecha-big{text-align:center;font-size:1.15rem;font-weight:950;color:var(--g);margin:12px 0 0}
+.nuevo-tag{color:var(--r);font-weight:800;font-size:.78rem}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <section class="card">
+    <h1>📋 Subir Fecha</h1>
+    <p class="sub">Copia los resultados del último americano desde el Excel y pégalos aquí. La página calcula los puntos y actualiza el ranking sola.</p>
+
+    <div id="token-section">
+      <label for="token">Token de GitHub <span style="color:var(--m);font-weight:600">(se guarda en este equipo; es el mismo de siempre)</span></label>
+      <div class="row">
+        <input type="password" id="token" placeholder="github_pat_..." autocomplete="off">
+        <button class="btn btn-d" style="width:auto;margin:0;padding:13px 18px" id="save-token">Guardar</button>
+      </div>
+      <button class="toggle" id="token-toggle" type="button">¿Cómo creo el token? ▾</button>
+      <div class="note hidden" id="token-help">
+        1. Abre <b>github.com/settings/personal-access-tokens</b> → <b>Generate new token (fine-grained)</b>.<br>
+        2. En <b>Repository access</b> elige <b>Only select repositories</b> → <b>inpadel-ranking</b>.<br>
+        3. En <b>Permissions → Repository → Contents</b> elige <b>Read and write</b>.<br>
+        4. Genera el token (empieza con <code>github_pat_</code>), cópialo y pégalo aquí. Solo lo pegas una vez.
+      </div>
+    </div>
+
+    <label for="fecha">Fecha del americano</label>
+    <input type="date" id="fecha">
+
+    <label for="texto">Resultados (pega aquí el texto del Excel)</label>
+    <textarea id="texto" placeholder="RESULTADO FINAL GRUPO ORO
+PRIMERO    Fabian Martinez - Boris Zamorano
+SEGUNDO    Chris Zapata - Ale Amaro
+TERCERO    ...
+CUARTO     ...
+
+RESULTADO FINAL GRUPO PLATA
+PRIMERO    ...
+(y así con BRONCE y MIMBRE)"></textarea>
+    <button class="toggle" id="ej-toggle" type="button">Ver ejemplo completo ▾</button>
+    <pre class="ejemplo hidden" id="ejemplo">RESULTADO FINAL GRUPO ORO
+PRIMERO    Fabian Martinez - Boris Zamorano
+SEGUNDO    Chris Zapata - Ale Amaro
+TERCERO    Diego Concha - Tomas Schnapp
+CUARTO     Benja Hughes - Martin Dubost
+
+RESULTADO FINAL GRUPO PLATA
+PRIMERO    Fabian Orellana - Carlos Villanueva
+SEGUNDO    Sebastian Ramirez - Cris Soto
+TERCERO    Ivan Kindermann - Nico Molina
+CUARTO     Felipe Galvez - Seba Labra
+
+RESULTADO FINAL GRUPO BRONCE
+PRIMERO    Diego Huth - Miguel Fuentes
+SEGUNDO    Mati Calderon - Chino Hernandez
+TERCERO    Edu Moya - Guille Diaz
+CUARTO     Manu Maira - Gustavo Torrens
+
+RESULTADO FINAL GRUPO MIMBRE
+PRIMERO    Mati Castillo - Camilo Rosenblatt
+SEGUNDO    Dino Matilla - Charly Kraken
+TERCERO    Jose Carrasco - Christian Lopez
+CUARTO     Javier Arrey - Fernando Orellana</pre>
+    <p class="muted">Sirve tal cual queda al copiar desde el Excel: con GRUPO u COPA, con guion, punto o coma entre los nombres da lo mismo.</p>
+
+    <button class="btn btn-g" id="leer-btn">🔎 Leer resultados</button>
+    <div class="err hidden" id="panel-err"></div>
+
+    <div id="dudas-box" class="dudas hidden">
+      <hr style="border:0;border-top:1px solid var(--l);margin:22px 0">
+      <h2>Nombres por confirmar</h2>
+      <p class="muted" style="margin-top:0">Estos nombres no calzan exactos con el ranking. Elige qué hacer con cada uno para no crear jugadores repetidos.</p>
+      <div id="dudas"></div>
+      <button class="btn btn-g" id="resolver-btn">Continuar →</button>
+    </div>
+
+    <div id="preview" class="hidden">
+      <hr style="border:0;border-top:1px solid var(--l);margin:22px 0">
+      <h2>Vista previa</h2>
+      <p class="fecha-big" id="pv-fecha"></p>
+      <div id="pv-copas"></div>
+      <div class="note" id="pv-nuevos" style="display:none"></div>
+      <button class="btn btn-g" id="publish-btn">✅ Publicar fecha</button>
+    </div>
+
+    <div class="ok hidden" id="success"></div>
+  </section>
+
+  <p class="muted" style="text-align:center">Inpadel · Ranking 2026 · <a href="actualizar.html" style="color:var(--m)">subir Excel completo</a></p>
+</main>
+
+<script>
+/* ═══════════════ CONFIG ═══════════════ */
+const CONFIG = { OWNER:"fabmarti15", REPO:"inpadel-ranking", BRANCH:"main", PATH:"index.html" };
+const $ = id => document.getElementById(id);
+
+/* ═══════════════ Token (mismo que actualizar.html) ═══════════════ */
+const TOKEN_KEY = 'inpadel_gh_token';
+function loadToken(){ const t = localStorage.getItem(TOKEN_KEY); if(t) $('token').value = t; }
+$('save-token').onclick = () => {
+  const t = $('token').value.trim();
+  if(t){ localStorage.setItem(TOKEN_KEY,t); $('save-token').textContent='✓ Guardado'; setTimeout(()=>$('save-token').textContent='Guardar',1500); }
+};
+$('token-toggle').onclick = () => $('token-help').classList.toggle('hidden');
+$('ej-toggle').onclick = () => $('ejemplo').classList.toggle('hidden');
+
+/*CORE-START*/
+/* ═══════════════ Lógica pura (parser + cálculo) ═══════════════ */
+const PUNTOS = { ORO:[450,400,300,260], PLATA:[240,220,200,180], BRONCE:[160,140,120,100], MIMBRE:[80,60,40,0] };
+const COPAS_ORDEN = ['ORO','PLATA','BRONCE','MIMBRE'];
+const POSICIONES = { PRIMERO:1, SEGUNDO:2, TERCERO:3, CUARTO:4 };
+function norm(s){ return String(s||'').trim().toLowerCase()
+  .normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' '); }
+
+/* Parsea el texto pegado → [{copa, rel, jugadores:[a,b]}] o lanza Error */
+function parseTexto(txt){
+  const lineas = String(txt||'').split(/\r?\n/);
+  let copa = null;
+  const filas = [];
+  for(const raw of lineas){
+    const l = raw.trim();
+    if(!l) continue;
+    const posM = l.match(/^\s*(PRIMERO|SEGUNDO|TERCERO|CUARTO)S?\b[.:\-–]?\s*(.*)$/i);
+    if(posM){
+      if(!copa) throw new Error('Hay resultados antes del primer título de grupo. Parte cada bloque con "GRUPO ORO", "GRUPO PLATA", etc.');
+      const rel = POSICIONES[posM[1].toUpperCase()];
+      const resto = posM[2].trim();
+      const jugadores = resto.split(/\s*(?:[-–—·•,;\/]|\t| {2,})\s*/).map(s=>s.trim()).filter(Boolean);
+      if(jugadores.length !== 2)
+        throw new Error(`No pude separar la pareja en la línea:\n"${raw.trim()}"\nDeben ser 2 nombres separados por guion, por ejemplo: "Fabian Martinez - Boris Zamorano".`);
+      filas.push({copa, rel, jugadores});
+      continue;
+    }
+    const copaM = l.match(/\b(ORO|PLATA|BRONCE|MIMBRE)\b/i);
+    if(copaM && /GRUPO|COPA|RESULTADO/i.test(l)){ copa = copaM[1].toUpperCase(); continue; }
+  }
+  // Validación: 4 copas × 4 posiciones, sin repetidos
+  const err = [];
+  for(const c of COPAS_ORDEN){
+    for(let r=1;r<=4;r++){
+      const n = filas.filter(f=>f.copa===c && f.rel===r).length;
+      if(n===0) err.push(`Falta ${Object.keys(POSICIONES)[r-1]} del grupo ${c}`);
+      if(n>1)  err.push(`${Object.keys(POSICIONES)[r-1]} del grupo ${c} está repetido`);
+    }
+  }
+  if(err.length) throw new Error(err.join('\n'));
+  const vistos = {};
+  filas.forEach(f=>f.jugadores.forEach(j=>{
+    const k=norm(j);
+    if(vistos[k]) err.push(`"${j}" aparece dos veces (en ${vistos[k]} y en ${f.copa})`);
+    vistos[k]=f.copa;
+  }));
+  if(err.length) throw new Error(err.join('\n'));
+  return filas.map(f=>({ pos:COPAS_ORDEN.indexOf(f.copa)*4 + f.rel,
+    jugadores:f.jugadores, puntos:PUNTOS[f.copa][f.rel-1] }))
+    .sort((a,b)=>a.pos-b.pos);
+}
+
+/* Distancia de edición simple para sugerencias */
+function lev(a,b){
+  a=norm(a); b=norm(b);
+  const m=a.length,n=b.length;
+  if(!m) return n; if(!n) return m;
+  let prev=[...Array(n+1).keys()];
+  for(let i=1;i<=m;i++){
+    const cur=[i];
+    for(let j=1;j<=n;j++)
+      cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=cur;
+  }
+  return prev[n];
+}
+
+/* Sugerencias del roster para un nombre no exacto */
+function sugerir(nombre, roster){
+  const n = norm(nombre);
+  const toks = n.split(' ');
+  const cand = roster.map(r=>{
+    const rn = norm(r);
+    const rtoks = rn.split(' ');
+    const shared = toks.filter(t=>rtoks.some(rt=>rt===t||rt.startsWith(t)||t.startsWith(rt))).length;
+    return {r, d:lev(n,rn), shared};
+  }).filter(c=>c.d<=3 || c.shared>=Math.min(2,toks.length))
+    .sort((a,b)=>(b.shared-a.shared)||(a.d-b.d));
+  return cand.slice(0,2).map(c=>c.r);
+}
+
+/* Aplica la fecha al DATA (mutación incremental, misma lógica del sitio) */
+function aplicarFecha(data, fechaStr, parejas){
+  if(data.fechas.some(f=>f.fecha===fechaStr))
+    throw new Error(`La fecha ${fechaStr} ya está en la página. Si hay que corregirla, avísale a Fabián.`);
+  const copaDe = p => p<=4?'ORO':p<=8?'PLATA':p<=12?'BRONCE':'MIMBRE';
+  const idx = {};
+  data.players.forEach(p=>idx[norm(p.nombre)]=p);
+  const nuevos = [];
+  parejas.forEach(pa=>{
+    const c = copaDe(pa.pos), won = [1,5,9,13].includes(pa.pos);
+    pa.jugadores.forEach(j=>{
+      let p = idx[norm(j)];
+      if(!p){
+        p = {rank:0,nombre:j,puntaje:0,fechasJugadas:0,efectividad:0,
+          copas:{ORO:0,PLATA:0,BRONCE:0,MIMBRE:0},
+          copasJugadas:{ORO:0,PLATA:0,BRONCE:0,MIMBRE:0},
+          copasGanadas:{ORO:0,PLATA:0,BRONCE:0,MIMBRE:0}};
+        idx[norm(j)] = p; data.players.push(p); nuevos.push(j);
+      }
+      p.puntaje += pa.puntos; p.fechasJugadas++;
+      p.copas[c]++; p.copasJugadas[c]++; if(won) p.copasGanadas[c]++;
+    });
+  });
+  data.fechas.push({fecha:fechaStr, parejas});
+  data.fechas.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  data.players.forEach(p=>{ p.efectividad = p.fechasJugadas ? Math.round(p.puntaje/(p.fechasJugadas*450)*1000)/10 : 0; });
+  data.players.sort((a,b)=>b.puntaje-a.puntaje);
+  data.players.forEach((p,i)=>p.rank=i+1);
+  return nuevos;
+}
+/*CORE-END*/
+
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+function fmtDate(str){ const [,m,d]=str.split('-').map(Number); return `${d} de ${MESES[m-1]}`; }
+
+/* Fecha por defecto: el último miércoles (hoy incluido) */
+(function(){
+  const d = new Date();
+  const back = (d.getDay()-3+7)%7;
+  d.setDate(d.getDate()-back);
+  $('fecha').value = d.toISOString().slice(0,10);
+})();
+
+/* ═══════════════ GitHub helpers ═══════════════ */
+function b64encode(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b));
+  return btoa(bin);
+}
+function b64decode(b64){
+  const bin = atob(b64.replace(/\n/g,''));
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+async function ghError(res, accion){
+  let detail=''; try{ const j=await res.json(); detail=j.message||''; }catch{}
+  if(res.status===401) return 'Token inválido o vencido al '+accion+'. Revisa el token de GitHub.';
+  if(res.status===403) return 'El token no tiene permiso de escritura (Contents: Read and write) sobre el repo.';
+  if(res.status===404) return 'No encontré el repositorio o el archivo. Revisa OWNER/REPO/PATH.';
+  if(res.status===409) return 'Conflicto: alguien cambió el archivo. Vuelve a tocar "Leer resultados" e intenta de nuevo.';
+  return `Error al ${accion} (HTTP ${res.status}). ${detail}`;
+}
+async function fetchIndex(token){
+  const api = `https://api.github.com/repos/${CONFIG.OWNER}/${CONFIG.REPO}/contents/${CONFIG.PATH}?ref=${CONFIG.BRANCH}`;
+  const headers = {'Accept':'application/vnd.github+json'};
+  if(token) headers['Authorization'] = 'Bearer '+token;
+  const res = await fetch(api, {headers, cache:'no-store'});
+  if(!res.ok) throw new Error(await ghError(res,'leer la página actual'));
+  const j = await res.json();
+  const html = b64decode(j.content);
+  const m = html.match(/^let DATA = (.*);\s*$/m);
+  if(!m) throw new Error('No encontré la línea de datos en index.html. ¿Cambió el formato?');
+  return {sha:j.sha, html, data:JSON.parse(m[1])};
+}
+
+/* ═══════════════ Flujo ═══════════════ */
+let ST = null;   // {sha, html, data, parejas, fechaStr, resueltos}
+
+$('leer-btn').onclick = async () => {
+  resetMsgs(); $('dudas-box').classList.add('hidden'); $('preview').classList.add('hidden');
+  const btn = $('leer-btn'); const orig = btn.innerHTML;
+  try{
+    const fechaStr = $('fecha').value;
+    if(!fechaStr) throw new Error('Falta la fecha del americano.');
+    const parejas = parseTexto($('texto').value);
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Revisando nombres…';
+    const token = (localStorage.getItem(TOKEN_KEY) || $('token').value).trim();
+    const cur = await fetchIndex(token);
+    ST = {...cur, parejas, fechaStr, resueltos:{}};
+    const roster = cur.data.players.map(p=>p.nombre);
+    const rosterN = {}; roster.forEach(r=>rosterN[norm(r)]=r);
+    const dudas = [];
+    parejas.forEach(pa=>pa.jugadores.forEach(j=>{
+      if(!rosterN[norm(j)] && !dudas.some(d=>norm(d.nombre)===norm(j)))
+        dudas.push({nombre:j, sugerencias:sugerir(j, roster)});
+    }));
+    if(dudas.length){ renderDudas(dudas); }
+    else{ showPreview(); }
+  }catch(err){ showErr(err.message); }
+  finally{ btn.disabled=false; btn.innerHTML=orig; }
+};
+
+function renderDudas(dudas){
+  $('dudas').innerHTML = dudas.map((d,i)=>{
+    const ops = d.sugerencias.map((s,k)=>
+      `<label><input type="radio" name="duda${i}" value="${encodeURIComponent(s)}" ${k===0?'checked':''}> Es <b>${s}</b> (ya está en el ranking)</label>`).join('');
+    return `<div class="duda" data-nombre="${encodeURIComponent(d.nombre)}">
+      <b>"${d.nombre}"</b> no está en el ranking.
+      <div class="ops">${ops}
+        <label><input type="radio" name="duda${i}" value="__NUEVO__" ${d.sugerencias.length?'':'checked'}> Es un <b>jugador nuevo</b>, crearlo</label>
+      </div></div>`;
+  }).join('');
+  $('dudas-box').classList.remove('hidden');
+}
+
+$('resolver-btn').onclick = () => {
+  const cajas = [...document.querySelectorAll('#dudas .duda')];
+  for(const caja of cajas){
+    const nombre = decodeURIComponent(caja.dataset.nombre);
+    const sel = caja.querySelector('input[type=radio]:checked');
+    if(!sel){ showErr(`Falta decidir qué hacer con "${nombre}".`); return; }
+    if(sel.value!=='__NUEVO__') ST.resueltos[norm(nombre)] = decodeURIComponent(sel.value);
+  }
+  resetMsgs();
+  ST.parejas.forEach(pa=>{ pa.jugadores = pa.jugadores.map(j=>ST.resueltos[norm(j)]||j); });
+  $('dudas-box').classList.add('hidden');
+  showPreview();
+};
+
+function showPreview(){
+  $('pv-fecha').textContent = '📅 Americano del ' + fmtDate(ST.fechaStr);
+  const byPos = {}; ST.parejas.forEach(p=>byPos[p.pos]=p);
+  const grupos = [
+    {k:'🏆 Copa Oro', base:0}, {k:'🥈 Copa Plata', base:4},
+    {k:'🥉 Copa Bronce', base:8}, {k:'💩 Copa Mimbre', base:12}
+  ];
+  const rosterN = {}; ST.data.players.forEach(p=>rosterN[norm(p.nombre)]=1);
+  $('pv-copas').innerHTML = grupos.map(g=>{
+    const filas = [1,2,3,4].map(r=>{
+      const p = byPos[g.base+r];
+      const nom = p.jugadores.map(j=>rosterN[norm(j)]?j:j+' <span class="nuevo-tag">NUEVO</span>').join(' · ');
+      return `${r}° ${nom} <small>+${p.puntos}</small>`;
+    }).join('<br>');
+    return `<div class="copa"><div class="copa-h">${g.k}</div><div class="copa-w">${filas}</div></div>`;
+  }).join('');
+  const nuevos = [...new Set(ST.parejas.flatMap(p=>p.jugadores))].filter(j=>!rosterN[norm(j)]);
+  $('pv-nuevos').style.display = nuevos.length?'block':'none';
+  $('pv-nuevos').innerHTML = nuevos.length ? '👤 Se crearán como jugadores nuevos: <b>'+nuevos.join(', ')+'</b>' : '';
+  $('preview').classList.remove('hidden');
+}
+
+$('publish-btn').onclick = async () => {
+  const token = (localStorage.getItem(TOKEN_KEY) || $('token').value).trim();
+  if(!token){ showErr('Falta el token de GitHub. Pégalo arriba y toca Guardar.'); return; }
+  if(!ST){ showErr('Primero toca "Leer resultados".'); return; }
+  resetMsgs();
+  const btn = $('publish-btn'); btn.disabled = true;
+  const orig = btn.innerHTML; btn.innerHTML = '<span class="spin"></span>Publicando…';
+  try{
+    // Releer para tomar el sha más fresco
+    const cur = await fetchIndex(token);
+    const data = cur.data;
+    aplicarFecha(data, ST.fechaStr, ST.parejas);
+    const newLine = 'let DATA = ' + JSON.stringify(data) + ';';
+    if(!/^let DATA = .*;\s*$/m.test(cur.html)) throw new Error('No encontré la línea de datos en index.html.');
+    const updated = cur.html.replace(/^let DATA = .*;\s*$/m, newLine);
+    const api = `https://api.github.com/repos/${CONFIG.OWNER}/${CONFIG.REPO}/contents/${CONFIG.PATH}`;
+    const putRes = await fetch(api, {
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'},
+      body: JSON.stringify({
+        message:`Agregar fecha — ${fmtDate(ST.fechaStr)} (subir-fecha)`,
+        content: b64encode(updated), sha: cur.sha, branch: CONFIG.BRANCH
+      })
+    });
+    if(!putRes.ok) throw new Error(await ghError(putRes,'publicar'));
+    $('preview').classList.add('hidden');
+    $('success').classList.remove('hidden');
+    $('success').innerHTML = '✅ Fecha publicada<br><span style="font-weight:600;font-size:.85rem;color:var(--m)">La página se actualiza en ~1 minuto.</span><br><a href="https://fabmarti15.github.io/inpadel-ranking/?v='+Date.now()+'" target="_blank" style="color:var(--g);font-size:.9rem">Ver página pública →</a>';
+  }catch(err){ showErr(err.message); }
+  finally{ btn.disabled=false; btn.innerHTML=orig; }
+};
+
+/* ═══════════════ UI utils ═══════════════ */
+function showErr(m){ const e=$('panel-err'); e.textContent='⚠️ '+m; e.classList.remove('hidden'); }
+function resetMsgs(){ $('panel-err').classList.add('hidden'); $('success').classList.add('hidden'); }
+loadToken();
+</script>
+</body>
+</html>
