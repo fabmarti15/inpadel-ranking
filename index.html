@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Inpadel · Ranking Americanos 2da Categoría</title>
-<meta name="description" content="Ranking, palmarés y estadísticas de los Americanos 2da Categoría. Mira tu categoría: Mano de Oro, Señor del Mimbre y más.">
+<meta name="description" content="Ranking, palmarés y estadísticas de los Americanos 2da Categoría. Mira tus copas, tus fechas y tu historial completo.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fabmarti15.github.io/inpadel-ranking/">
 <meta property="og:title" content="Inpadel · Ranking Americanos 2da Categoría">
-<meta property="og:description" content="Mira tu categoría: Mano de Oro, Señor del Mimbre y más. Ranking, palmarés y estadísticas de cada jugador.">
+<meta property="og:description" content="Mira tus copas, tus fechas y tu historial completo. Ranking, palmarés y estadísticas de cada jugador.">
 <meta property="og:image" content="https://fabmarti15.github.io/inpadel-ranking/og.png?v=1">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="1200">
 <meta property="og:image:type" content="image/png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Inpadel · Ranking Americanos 2da Categoría">
-<meta name="twitter:description" content="Mira tu categoría: Mano de Oro, Señor del Mimbre y más.">
+<meta name="twitter:description" content="Mira tus copas, tus fechas y tu historial completo.">
 <meta name="twitter:image" content="https://fabmarti15.github.io/inpadel-ranking/og.png?v=1">
 <style>
 summary.player{list-style:none;-webkit-tap-highlight-color:transparent}
@@ -107,10 +107,17 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .nv-mimbre{background:repeating-linear-gradient(45deg,#8A7757,#8A7757 5px,#7b6a4c 5px,#7b6a4c 10px)}
 @keyframes nvshine{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .nv-pal-lbl{font-size:.58rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:var(--m);margin:13px 0 7px}
-.nv-pal-row{display:flex;flex-wrap:wrap;gap:7px}
+.nv-pal-row{display:flex;flex-wrap:wrap;gap:7px;align-items:flex-start}
 .nv-pal{position:relative;width:46px;height:46px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 2px 7px rgba(0,0,0,.13)}
 .nv-pal-t{font-size:14px;line-height:1}
 .nv-pal-n{font-size:.95rem;font-weight:950;line-height:1;margin-top:2px}
+.nv-palcol{display:flex;flex-direction:column;align-items:center}
+.nv-bars{display:grid;grid-template-columns:repeat(10,1fr);gap:1.6px;width:46px;margin-top:6px}
+.nv-bar{height:10px;border-radius:2px;background:#dcdfdd}
+.visitas{margin-top:10px;font-size:.7rem;font-weight:700;color:var(--m);letter-spacing:.01em;min-height:1em}
+.visitas .vs-live{color:var(--g);font-weight:850}
+.visitas .vs-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--g);margin-right:4px;vertical-align:1px;animation:vspulse 2s ease-in-out infinite}
+@keyframes vspulse{0%,100%{opacity:1}50%{opacity:.35}}
 .nv-status{margin-top:13px;font-size:.78rem;font-weight:850}
 .nv-status.nv-chupa{color:#8a6b4a;display:inline-block;position:relative}
 .nv-rc-poops{font-size:.95rem;letter-spacing:1px;vertical-align:-1px;word-break:break-word}
@@ -262,8 +269,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
     </div>
     <h1>Americanos</h1>
     <p class="hero-sub">2da Categoría</p>
-    <div style="text-align:center"><a href="#polla-section" style="display:inline-block;margin-top:12px;background:#1a7a44;color:#fff;font-weight:900;font-size:.85rem;text-decoration:none;padding:10px 18px;border-radius:22px">🎯 Polla de la fecha <span style="background:#ffe08a;color:#7a5b00;font-size:.62rem;font-weight:950;border-radius:8px;padding:2px 6px;margin-left:4px;vertical-align:middle">NEW</span></a>
-    <div style="color:var(--m);font-size:.74rem;font-weight:800;margin-top:6px">Apuesta quién sale 1° 🥇 y quién último 🧺</div></div>
+    <!-- Botón de la polla eliminado el 24-08-2026: nadie lo usó. La sección #polla-section sigue existiendo. -->
   </section>
 
   <!-- Campeones -->
@@ -5339,6 +5345,7 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 
   <footer class="brand-logo brand-logo-bottom">
     <img src="./inpadel-center.svg" alt="Inpadel Center">
+    <div id="visitas" class="visitas"></div>
   </footer>
 </main>
 
@@ -5755,26 +5762,9 @@ const NIVEL_COL = {
   BRONCE: {s:'#C77B41', t:'#ffffff'},
   MIMBRE: {s:'#8A7757', t:'#ffffff'}
 };
-// Título del jugador según en qué copa juega más (≥45% = dominante; si no, El Ascensor).
-const NIVEL_CAT = {
-  ORO:    {ic:'🥇', name:'Mano de Oro',         desc:'Juega la mayoría de las veces en la copa Oro.'},
-  PLATA:  {ic:'🥈', name:'Duque de Plata',      desc:'Juega la mayoría de las veces en la copa Plata.'},
-  BRONCE: {ic:'🥉', name:'Barón de Bronce',     desc:'Juega la mayoría de las veces en la copa Bronce.'},
-  MIMBRE: {ic:'🧺', name:'Señor del Mimbre', desc:'Juega la mayoría de las veces en la copa Mimbre, la del sótano. 🧺'},
-  MIX:    {ic:'🛗', name:'El Ascensor',          desc:'Sube y baja de copa en copa: hoy en el Oro, mañana al sótano (Mimbre). Nunca se sabe en qué piso para.'}
-};
-// Moscas fuera: Fabián las sacó (24-08-2026). Se deja vacío para no tocar los 4 puntos que la usan.
-const NIVEL_FLIES = '';
-
-function nivelCategoria(player){
-  const J = player.copasJugadas || {};
-  const cups = NIVEL_ORD.filter(k => (J[k]||0) > 0);
-  const total = cups.reduce((a,k) => a + J[k], 0);
-  if(!total) return Object.assign({key:'MIX'}, NIVEL_CAT.MIX);
-  let dk = cups[0], dj = -1;
-  cups.forEach(k => { if(J[k] > dj){ dj = J[k]; dk = k; } });
-  return (dj/total >= 0.45) ? Object.assign({key:dk}, NIVEL_CAT[dk]) : Object.assign({key:'MIX'}, NIVEL_CAT.MIX);
-}
+// Los títulos por nivel (Mano de Oro, Duque de Plata, Barón de Bronce, Señor del Mimbre
+// y El Ascensor) se eliminaron el 24-08-2026: no aportaban y El Ascensor se comía 54 de
+// los 191 jugadores. La barra de distribución ya cuenta lo mismo sin ponerle nombre.
 
 // Rey chupa = quedó último de la copa Mimbre (el último de todo el americano).
 function reyChupaCount(nombre){
@@ -5794,8 +5784,6 @@ function nivelBar(player, nombre){
   const cups = NIVEL_ORD.filter(k => (J[k]||0) > 0);
   const total = cups.reduce((a,k) => a + J[k], 0);
   if(!total) return '';
-  const cat = nivelCategoria(player);
-  const mosca = cat.key === 'MIMBRE';
 
   // Barra fina de distribución (oro brilla, mimbre rayado).
   const segs = cups.map(k => {
@@ -5805,14 +5793,26 @@ function nivelBar(player, nombre){
     return `<span class="nv-seg" style="flex:${w};background:${NIVEL_COL[k].s}"></span>`;
   }).join('');
 
-  // Palmarés: un cuadrado por copa con copas ganadas (🏆 × veces).
-  const palItems = NIVEL_ORD.filter(k => (G[k]||0) > 0).map(k => {
+  // Copas y fechas (24-08-2026): un cuadrado por copa JUGADA — con 🏆 0 si nunca la ganó —
+  // y debajo una tira de barritas con sus fechas: rellena = la ganó, apagada = la jugó y no.
+  // Las barritas van en filas de 10 y las cuatro tiras reservan las filas del que más jugó,
+  // así los cuadrados nunca quedan descuadrados entre sí.
+  const palKeys = NIVEL_ORD.filter(k => (J[k]||0) > 0);
+  const palRows = palKeys.length ? Math.max(...palKeys.map(k => Math.ceil(J[k]/10))) : 0;
+  const palItems = palKeys.map(k => {
     const cls = 'nv-pal' + (k === 'ORO' ? ' nv-gold' : '');
-    const bg = k === 'ORO' ? '' : `background:${NIVEL_COL[k].s};`;
-    const fl = k === 'MIMBRE' ? NIVEL_FLIES : '';
-    return `<span class="${cls}" style="${bg}color:${NIVEL_COL[k].t}">${fl}<span class="nv-pal-t">🏆</span><span class="nv-pal-n">${G[k]}</span></span>`;
+    const bg  = k === 'ORO' ? '' : `background:${NIVEL_COL[k].s};`;
+    const won = G[k] || 0, played = J[k];
+    let cells = '';
+    for(let i = 0; i < palRows*10; i++){
+      if(i >= played){ cells += '<span></span>'; continue; }
+      cells += i < won
+        ? `<span class="nv-bar" style="background:${NIVEL_COL[k].s}"></span>`
+        : '<span class="nv-bar"></span>';
+    }
+    return `<span class="nv-palcol"><span class="${cls}" style="${bg}color:${NIVEL_COL[k].t}"><span class="nv-pal-t">🏆</span><span class="nv-pal-n">${won}</span></span><span class="nv-bars">${cells}</span></span>`;
   }).join('');
-  const palBlock = palItems ? `<div class="nv-pal-lbl">Palmarés</div><div class="nv-pal-row">${palItems}</div>` : '';
+  const palBlock = palItems ? `<div class="nv-pal-lbl">Copas y fechas</div><div class="nv-pal-row">${palItems}</div>` : '';
 
   // Rey chupa (abajo del palmarés).
   const rc = reyChupaCount(nombre);
@@ -5827,7 +5827,6 @@ function nivelBar(player, nombre){
     .concat(cups.map(k => '• ' + NIVEL_ICON[k] + ' ' + NIVEL_NAME[k] + ' — ' + J[k] + (J[k]===1?' jugada':' jugadas') + ' · ' + (G[k]||0) + ' ' + ((G[k]||0)===1?'ganada':'ganadas')));
 
   return `<div class="nivel">
-    <div class="nv-titular nivel-track" role="button" tabindex="0" data-tt="${esc(cat.ic + ' ' + cat.name)}" data-tip="${esc(cat.desc)}">${cat.ic} ${esc(cat.name)}</div>
     <div class="nivel-track" role="button" tabindex="0" data-tt="Resumen por copa" data-tip="${esc(lines.join('|'))}">
       <div class="nivel-bar">${segs}</div>
       ${palBlock}
@@ -6008,7 +6007,6 @@ function renderReyesCopa(c){
       ? list.map((p,i) => {
           const king = i === 0;
           return `<div class="rc-row${king?' rc-king':''}">
-            ${king ? NIVEL_FLIES : ''}
             <span class="rc-pos">${king ? '👑🧺' : '🧺'}</span>
             <span class="rc-name">${plink(p.nombre)}${king ? ' <span class="rc-tag">Rey Chupa</span>' : ''}</span>
             <span class="rc-pts">${p.won} ${p.won===1?'vez':'veces'} último<span class="reyes-pts-sub"> · ${p.played} ${p.played===1?'fecha':'fechas'}</span></span>
@@ -6263,6 +6261,99 @@ renderReyes();
 setView('hist');     // render inicial: Ranking Histórico por defecto (setea DATA + renderRanking + renderDates)
 setupPlayerSearch();
 setupNivelTips();
+</script>
+
+<script>
+/* ── Contador de visitas y "viendo ahora" ─────────────────────────────
+   Reusa el proyecto Firebase `inpadel-polla` que ya existe para la polla.
+
+   VISITAS_BASE: GitHub Pages no guarda ni expone estadísticas de visitas, así que
+   todo lo anterior al 24-08-2026 es irrecuperable. 300 es el estimado de Fabián,
+   no un dato medido. El contador real es lo que se suma encima.
+
+   Cuenta cada carga de la página (decisión de Fabián), no visitantes únicos: si
+   alguien recarga cinco veces, suma cinco.
+
+   Cuidado con las cuotas del plan gratis: el latido y la lectura corren solo con la
+   pestaña visible y cada 45s. No usar onSnapshot acá — con N pestañas abiertas cada
+   escritura dispara una lectura en todas y el gasto crece al cuadrado.
+
+   Si Firebase falla o las reglas bloquean, no se muestra nada y la página sigue igual.
+─────────────────────────────────────────────────────────────────────── */
+(function(){
+  var VISITAS_BASE = 300, FRESCO = 100000, LATIDO = 45000;
+  var CFG = {
+    apiKey: "AIzaSyBu51blkj3FhhX4gdwNC-H0nW5IEcHaqBc",
+    authDomain: "inpadel-polla.firebaseapp.com",
+    projectId: "inpadel-polla",
+    storageBucket: "inpadel-polla.firebasestorage.app",
+    messagingSenderId: "909774766360",
+    appId: "1:909774766360:web:4df07d1419b5d6a7dfde6d"
+  };
+  var el = document.getElementById('visitas');
+  if(!el) return;
+  var total = null, viendo = 0;
+
+  function pintar(){
+    if(total == null) return;
+    var h = '👁 ' + total.toLocaleString('es-CL') + (total === 1 ? ' visita' : ' visitas');
+    if(viendo > 1) h += ' · <span class="vs-live"><span class="vs-dot"></span>' + viendo + ' viendo ahora</span>';
+    el.innerHTML = h;
+  }
+
+  // Un id por pestaña: si abre dos, cuenta dos, que es lo que uno ve en la pantalla.
+  function miId(){
+    var k = 'inpadel_sid', v = null;
+    try { v = sessionStorage.getItem(k); } catch(e){}
+    if(!v){
+      v = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      try { sessionStorage.setItem(k, v); } catch(e){}
+    }
+    return v;
+  }
+
+  (async function(){
+    var a, f, db;
+    try {
+      a  = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+      f  = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      db = f.getFirestore(a.initializeApp(CFG, 'visitas'));
+    } catch(e){ return; }
+
+    // ── Total ──
+    var refTotal = f.doc(db, 'stats', 'visitas');
+    try {
+      await f.setDoc(refTotal, { n: f.increment(1) }, { merge: true });
+      var snap = await f.getDoc(refTotal);
+      total = VISITAS_BASE + (((snap.data() || {}).n) || 0);
+      pintar();
+    } catch(e){ return; }   // reglas bloqueadas: no mostramos nada
+
+    // ── Viendo ahora ──
+    // Todos los latidos viven en un solo documento (1 lectura por ronda, no N).
+    // Cada latido poda los vencidos: si dos pestañas escriben al mismo tiempo una
+    // puede perder su entrada, pero se repone sola en el siguiente latido.
+    var ID = miId(), refPres = f.doc(db, 'stats', 'presencia');
+    async function latir(){
+      if(document.hidden) return;
+      try {
+        var s = await f.getDoc(refPres);
+        var p = (s.exists() ? (s.data().p || {}) : {}), out = {}, ahora = Date.now(), n = 0;
+        Object.keys(p).forEach(function(k){
+          if(ahora - p[k] < FRESCO){ out[k] = p[k]; n++; }
+        });
+        if(!out[ID]) n++;
+        out[ID] = ahora;
+        viendo = n;
+        pintar();
+        await f.setDoc(refPres, { p: out });
+      } catch(e){}
+    }
+    latir();
+    setInterval(latir, LATIDO);
+    document.addEventListener('visibilitychange', function(){ if(!document.hidden) latir(); });
+  })();
+})();
 </script>
 </body>
 </html>
