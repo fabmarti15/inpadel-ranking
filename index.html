@@ -5377,28 +5377,26 @@ table.elo-t tr:last-child td{border-bottom:0}
   <section class="card panel" id="elo-section">
     <h2 style="text-align:center">📊 Cómo funciona el puntaje</h2>
 
-    <p class="elo-p">Los dos rankings usan el mismo cálculo, que se llama <b>ELO</b>. Es el mismo sistema del ajedrez y del fútbol FIFA.</p>
+    <div class="elo-idea">El <b>Elo</b> estima tu nivel con un solo número. Cada fecha lo corrige según cómo te fue contra los que estaban ese día.</div>
 
-    <div class="elo-idea">El puntaje del Excel mide <b>cuánto sumaste</b>. El ELO mide <b>qué tan bueno eres</b>. Son dos preguntas distintas y por eso dan dos rankings distintos.</div>
+    <h3 class="elo-h3">Qué es el Elo</h3>
 
-    <h3 class="elo-h3">Qué es el ELO</h3>
-
-    <p class="elo-p" style="text-align:left">Un <b>rating</b>: un número que estima tu nivel y se corrige cada fecha. No se acumula, se ajusta. Si rendiste mejor de lo que el sistema esperaba, sube; si rendiste peor, baja. Nada más.</p>
+    <p class="elo-p" style="text-align:left">Un <b>rating</b>: un número que estima tu nivel y se corrige cada fecha. Cada vez que juegas, el sistema compara lo que hiciste con lo que esperaba de ti. Si te fue mejor, sube. Si te fue peor, baja.</p>
 
     <div class="elo-reglas">
       <div class="elo-regla"><span class="elo-num">1</span><span>Todos parten en <b>1000</b>. Ese es el punto neutro.</span></div>
       <div class="elo-regla"><span class="elo-num">2</span><span>En cada fecha le ganas a las parejas que quedaron <b>abajo</b> tuyo y pierdes con las que quedaron <b>arriba</b>.</span></div>
-      <div class="elo-regla"><span class="elo-num">3</span><span>Antes de jugar, el sistema ya <b>espera algo de ti</b> según tu número y el de los demás. Lo que mueve tu ELO es la <b>diferencia</b> entre lo que hiciste y lo que se esperaba.</span></div>
+      <div class="elo-regla"><span class="elo-num">3</span><span>Antes de jugar, el sistema ya <b>espera algo de ti</b> según tu número y el de los demás. Lo que te mueve es la <b>diferencia</b> entre lo que hiciste y lo que se esperaba.</span></div>
       <div class="elo-regla"><span class="elo-num">4</span><span>Cuánto ganas o pierdes depende de <b>contra quién</b>. Superar a alguien mejor rankeado que tú paga más que superar a uno peor.</span></div>
       <div class="elo-regla"><span class="elo-num">5</span><span>No importa cuántas fechas juegues. Importa <b>cómo te va</b> en cada una.</span></div>
       <div class="elo-regla"><span class="elo-num">6</span><span>Mientras más alto estés, <b>más difícil de mantener</b>. El puesto que te deja igual va subiendo contigo.</span></div>
     </div>
 
-    <h3 class="elo-h3">La analogía: la balanza</h3>
+    <h3 class="elo-h3">La alcancía y la balanza</h3>
 
-    <p class="elo-p" style="text-align:left">El puntaje del Excel es una <b>alcancía</b>: cada fecha echas monedas y nunca sacas. Juega 60 fechas y vas a estar arriba, aunque nunca hayas sido bueno.</p>
+    <p class="elo-p" style="text-align:left">Un ranking que acumula puntos es una <b>alcancía</b>. Cada fecha echas monedas y nunca sacas. Juega 60 fechas y vas a estar arriba aunque nunca hayas sido bueno.</p>
 
-    <p class="elo-p" style="text-align:left">El ELO es una <b>balanza</b>: cada fecha te pesa de nuevo contra los que estaban ahí. Puedes subirte 60 veces, pero si pesas 80 kilos vas a marcar 80 las 60 veces. Jugar más no te hace pesar más: solo hace que el número sea más confiable.</p>
+    <p class="elo-p" style="text-align:left">El Elo es una <b>balanza</b>. Cada fecha te pesa de nuevo contra los que estaban ese día. Te puedes subir 60 veces, si pesas 80 kilos vas a marcar 80 las 60 veces. Jugar más no te hace pesar más, solo hace que el número sea más confiable.</p>
 
     <h3 class="elo-h3">Lo que paga cada puesto</h3>
 
@@ -5415,13 +5413,13 @@ table.elo-t tr:last-child td{border-bottom:0}
         </tbody>
       </table>
     </div>
-    <p class="elo-cap">Promedios reales de las 75 fechas del histórico. La línea de agua está entre el 8° y el 9°: de ahí para arriba casi siempre subes, del 11° para abajo <b>nunca</b> se ha subido. Y fíjate en el rango: el mismo puesto puede darte +5 o +14 según a quién superaste.</p>
+    <p class="elo-cap">Promedios reales de las 75 fechas del histórico. La línea de agua está entre el 8° y el 9°: de ahí para arriba casi siempre subes, del 11° para abajo <b>nunca</b> nadie ha subido. Y fíjate en el rango: el mismo puesto te puede dar +5 o +14 según a quién le ganaste.</p>
 
     <h3 class="elo-h3">La vara sube contigo</h3>
 
     <div class="elo-tw">
       <table class="elo-t">
-        <thead><tr><th>Si tu ELO es…</th><th>Ganar paga</th><th>Empiezas a restar en</th></tr></thead>
+        <thead><tr><th>Si tu Elo es…</th><th>Ganar paga</th><th>Empiezas a restar en</th></tr></thead>
         <tbody>
           <tr><td>bajo 950</td><td class="elo-up">—</td><td>11°</td></tr>
           <tr><td>950 – 1050</td><td class="elo-up">+11</td><td>9°</td></tr>
@@ -5430,7 +5428,7 @@ table.elo-t tr:last-child td{border-bottom:0}
         </tbody>
       </table>
     </div>
-    <p class="elo-cap">Esta es la parte que más confunde. Con 930, salir 10° te deja igual. Con 1200, salir 6° ya te hace bajar y ganar la fecha apenas te paga +6. Nadie está haciendo trampa: el sistema simplemente le exige más al que ya demostró más. <span style="opacity:.8">(Bajo 950 nunca nadie ganó una fecha, por eso el guion.)</span></p>
+    <p class="elo-cap">Esta es la parte que más confunde. Con 930, salir 10° te deja igual. Con 1200, salir 6° ya te hace bajar y ganar la fecha te paga apenas +6. El sistema le exige más al que ya demostró más. <span style="opacity:.8">(Bajo 950 nunca nadie ganó una fecha, por eso el guion.)</span></p>
 
     <h3 class="elo-h3">Ejemplos de verdad, sacados del ranking</h3>
 
@@ -5442,18 +5440,18 @@ table.elo-t tr:last-child td{border-bottom:0}
       <div class="elo-ej-b">
         <span>Chris Zapata · <b>4°</b> · 8 de julio · venía en 1199</span><span class="elo-up">+1</span>
       </div>
-      <p class="elo-ej-x">Los dos salieron 4° en la misma fecha. Iván se llevó diez veces más. El ELO no mira tu puesto: mira si el puesto era mejor o peor de lo que se esperaba de ti.</p>
+      <p class="elo-ej-x">Los dos salieron 4° en la misma fecha. Iván se llevó diez veces más. Lo que cuenta es si ese 4° quedó arriba o abajo de lo que se esperaba de ti.</p>
     </div>
 
     <div class="elo-ej">
-      <div class="elo-ej-t">El mismo 6° lugar suma o resta según quién eres</div>
+      <div class="elo-ej-t">El mismo 6° suma o resta según quién eres</div>
       <div class="elo-ej-b">
         <span>Iván Kindermann · <b>6°</b> · 24 de junio · venía en 928</span><span class="elo-up">+7</span>
       </div>
       <div class="elo-ej-b">
         <span>Boris Zamorano · <b>6°</b> · 24 de junio · venía en 1164</span><span class="elo-down">−1</span>
       </div>
-      <p class="elo-ej-x">Para Iván, meterse en Plata fue una hazaña. Para Boris, quedar 6° fue quedarse corto. Misma posición, signos opuestos.</p>
+      <p class="elo-ej-x">Para Iván meterse en Plata fue una hazaña. Para Boris quedar 6° fue quedarse corto. Mismo puesto, signos opuestos.</p>
     </div>
 
     <div class="elo-ej">
@@ -5464,7 +5462,7 @@ table.elo-t tr:last-child td{border-bottom:0}
       <div class="elo-ej-b">
         <span>Ale Schapira · <b>1°</b> · 8 de julio · venía en 1217</span><span class="elo-up">+5</span>
       </div>
-      <p class="elo-ej-x">El +14 de Diego es la mayor subida en una fecha de todo el histórico. Schapira ganó lo mismo, pero desde 1217 ganar ya era lo esperado.</p>
+      <p class="elo-ej-x">El +14 de Diego es la mayor subida en una fecha de todo el histórico. Schapira ganó lo mismo, pero desde 1217 ganar ya era lo que se esperaba.</p>
     </div>
 
     <div class="elo-ej">
@@ -5475,7 +5473,7 @@ table.elo-t tr:last-child td{border-bottom:0}
       <div class="elo-ej-b">
         <span>Ale Schapira · Copa Oro <b>1° lugar</b> · 29 de julio</span><span class="elo-up">+6</span>
       </div>
-      <p class="elo-ej-x">Andrés no tenía nada que hacer en la copa Oro y aguantó. Schapira ganó lo que se esperaba que ganara. El ELO paga la sorpresa.</p>
+      <p class="elo-ej-x">Andrés no tenía nada que hacer en la copa Oro y aguantó. Schapira ganó lo que se esperaba que ganara. El Elo paga la sorpresa.</p>
     </div>
 
     <div class="elo-ej">
@@ -5486,7 +5484,7 @@ table.elo-t tr:last-child td{border-bottom:0}
       <div class="elo-ej-b">
         <span>Sebastián Ramírez · Copa Mimbre <b>1° lugar</b> · 15 de julio</span><span class="elo-down">−11</span>
       </div>
-      <p class="elo-ej-x">Salir 1° de Mimbre es salir 13° de 16: le ganaste a 3 parejas y perdiste con 12. En las 75 fechas del histórico eso pasó 148 veces y las <b>148 veces bajó el rating</b>. A Sebastián le costó más porque venía en 1113 y ese día se esperaba mucho más de él. Te llevas el canasto, no el rating.</p>
+      <p class="elo-ej-x">Salir 1° de Mimbre es salir 13° de 16: le ganaste a 3 parejas y perdiste con 12. En las 75 fechas del histórico eso pasó 148 veces y las <b>148 veces bajó el rating</b>. A Sebastián le costó más porque venía en 1113 y ese día se esperaba mucho más de él. Te llevas el canasto igual.</p>
     </div>
 
     <div class="elo-ej">
@@ -5497,30 +5495,30 @@ table.elo-t tr:last-child td{border-bottom:0}
       <div class="elo-ej-b">
         <span>Lo máximo que se ha bajado <span style="color:var(--m)">(Boris, 15° el 1 de julio)</span></span><span class="elo-down">−15</span>
       </div>
-      <p class="elo-ej-x">Una fecha sola casi nunca te cambia la vida: el movimiento máximo es de unos 15 puntos. Lo que te mueve de verdad son 10 fechas seguidas en la misma dirección.</p>
+      <p class="elo-ej-x">Una fecha sola casi nunca te mueve mucho. Lo que te mueve son 10 fechas seguidas para el mismo lado.</p>
     </div>
 
     <div class="elo-ej">
       <div class="elo-ej-t">Jugar poco no te sube, solo te esconde</div>
       <div class="elo-ej-b"><span>Andrés Killinger · 24 fechas</span><span class="elo-neu">896</span></div>
       <div class="elo-ej-b"><span>Cristian Cádiz (Exotic) · 6 fechas</span><span class="elo-neu">947</span></div>
-      <p class="elo-ej-x">Exotic está arriba con peores resultados, pero pierde <b>8,8 por fecha</b> contra los <b>4,3</b> de Andrés: cae el doble de rápido. Le faltan fechas para llegar donde le corresponde.</p>
+      <p class="elo-ej-x">Exotic está arriba con peores resultados, pero va bajando <b>8,8 por fecha</b> contra los <b>4,3</b> de Andrés. Cae al doble de velocidad. Le faltan fechas para llegar donde le corresponde.</p>
     </div>
 
     <div class="elo-ej">
-      <div class="elo-ej-t">Sumar fechas no es lo mismo que jugar bien</div>
+      <div class="elo-ej-t">Más fechas no significa mejor ranking</div>
       <div class="elo-ej-b"><span>Boris Zamorano · 64 fechas · 74% de efectividad</span><span class="elo-neu">1155</span></div>
       <div class="elo-ej-b"><span>Ale Schapira · 37 fechas · 94% de efectividad</span><span class="elo-neu">1238</span></div>
-      <p class="elo-ej-x">Boris tiene casi el doble de fechas y más puntos acumulados en el Excel. Pero Schapira nunca bajó de la copa Plata, y eso el ELO lo premia.</p>
+      <p class="elo-ej-x">Boris tiene casi el doble de fechas. Schapira nunca bajó de la copa Plata, y eso el Elo lo premia.</p>
     </div>
 
     <h3 class="elo-h3">Preguntas típicas</h3>
     <div class="elo-reglas">
-      <div class="elo-regla"><span class="elo-num">?</span><span><b>¿Jugar más fechas me sube el ELO?</b> No. Solo hace que tu número sea más creíble. Si juegas mal, jugar más te baja más.</span></div>
-      <div class="elo-regla"><span class="elo-num">?</span><span><b>¿Por qué gané la fecha y subí poco?</b> Porque se esperaba que ganaras. El ELO paga la sorpresa, no el trofeo.</span></div>
-      <div class="elo-regla"><span class="elo-num">?</span><span><b>Estoy bajo 1000, ¿voy mal?</b> 1000 es de dónde partiste, no el promedio de hoy. Estar en 950 con 40 fechas es un dato sólido; estar en 1010 con 3 fechas no dice casi nada.</span></div>
-      <div class="elo-regla"><span class="elo-num">?</span><span><b>¿Sirve para armar parejas parejas?</b> Sí, es para lo que se inventó. Dos parejas con ELO promedio parecido deberían darse una fecha entretenida.</span></div>
-      <div class="elo-regla"><span class="elo-num">?</span><span><b>¿Y si falto un mes?</b> Nada. El ELO no caduca ni te castiga por no ir. Te espera donde lo dejaste.</span></div>
+      <div class="elo-regla"><span class="elo-num">?</span><span><b>Jugar más fechas me sube el Elo?</b> No. Solo hace que tu número sea más creíble. Si te va mal, jugar más te baja más.</span></div>
+      <div class="elo-regla"><span class="elo-num">?</span><span><b>Por qué gané la fecha y subí poco?</b> Porque se esperaba que ganaras. El Elo paga la sorpresa.</span></div>
+      <div class="elo-regla"><span class="elo-num">?</span><span><b>Estoy bajo 1000, voy mal?</b> 1000 es de dónde partiste. Estar en 950 con 40 fechas es un dato sólido. Estar en 1010 con 3 fechas no dice casi nada.</span></div>
+      <div class="elo-regla"><span class="elo-num">?</span><span><b>Sirve para armar parejas parejas?</b> Sí, para eso se inventó. Dos parejas con Elo promedio parecido deberían darse una fecha entretenida.</span></div>
+      <div class="elo-regla"><span class="elo-num">?</span><span><b>Y si falto un mes?</b> Nada. El Elo no caduca ni te castiga por no ir. Te espera donde lo dejaste.</span></div>
     </div>
 
     <h3 class="elo-h3">Las dos pestañas</h3>
@@ -5529,7 +5527,7 @@ table.elo-t tr:last-child td{border-bottom:0}
       <div class="elo-regla"><span class="elo-num">🏆</span><span><b>2026</b> — solo las fechas de este año. Mismo cálculo, empezando de nuevo en 1000.</span></div>
     </div>
 
-    <p class="elo-p elo-nota">En tu ficha, cada fecha muestra cuánto subiste o bajaste ese día. Todo eso sumado al 1000 del principio te da el número grande. Si te da 1 de diferencia, es el redondeo.</p>
+    <p class="elo-p elo-nota">En tu ficha cada fecha muestra cuánto subiste o bajaste ese día. Todo eso sumado al 1000 del principio te da el número grande. Si te da 1 de diferencia, es el redondeo.</p>
   </section>
 
   <footer class="brand-logo brand-logo-bottom">
