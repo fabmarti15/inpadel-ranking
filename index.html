@@ -149,6 +149,8 @@ h2{font-size:clamp(1.6rem,5vw,2.5rem);line-height:.95;letter-spacing:-.04em}
 .entry-title{font-size:.82rem;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .entry-sub{font-size:.72rem;color:var(--m);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .entry-pts{font-size:.85rem;font-weight:950;color:var(--g);white-space:nowrap}
+.entry-pts.ep-up{color:#1a7a44}
+.entry-pts.ep-down{color:#c0392b}
 .eORO{border-color:#ffe97c55;background:#fffdf0}
 .ePLATA{border-color:#ddd;background:#f8f8f8}
 .eBRONCE{border-color:#e8c9a055;background:#fdf6ee}
@@ -5571,9 +5573,13 @@ function posEff(fechas, nombre){
 // Cada fecha, cada jugador se compara con todo el resto (gana a los de abajo, pierde con los de
 // arriba). Sube más si le gana a jugadores con mejor ELO. Todos parten en 1000.
 const _eloCache = {};
+// `deltas[jugador][fecha]` guarda cuánto ganó o perdió de rating ese día. Se agregó el
+// 24-08-2026: el historial mostraba "+140 pts" (escala de puntos) junto a un rating Elo
+// de 896, dos monedas distintas que nunca cuadran. Ahora en la vista Histórico el
+// historial muestra el cambio de Elo, que sí suma hasta el número de arriba.
 function eloData(key, fechas){
   if(_eloCache[key]) return _eloCache[key];
-  const R = {}, rankHist = {}, K = 24, BASE = 1000;
+  const R = {}, rankHist = {}, deltas = {}, K = 24, BASE = 1000;
   const sorted = [...fechas].sort((a,b) => a.fecha.localeCompare(b.fecha));
   sorted.forEach(f => {
     const arr = [];
@@ -5595,14 +5601,17 @@ function eloData(key, fechas){
         }
         return K/(N-1)*d;
       });
-      arr.forEach((a,i) => { R[a.k] += delta[i]; });
+      arr.forEach((a,i) => {
+        R[a.k] += delta[i];
+        (deltas[a.k] = deltas[a.k] || {})[f.fecha] = delta[i];
+      });
     }
     const order = Object.keys(R).sort((a,b) => R[b] - R[a]);
     order.forEach((k,i) => { (rankHist[k] = rankHist[k]||[]).push({fecha:f.fecha, rank:i+1}); });
   });
   const ratings = {};
   Object.keys(R).forEach(k => ratings[k] = Math.round(R[k]));
-  return (_eloCache[key] = {ratings, rankHist});
+  return (_eloCache[key] = {ratings, rankHist, deltas});
 }
 
 /* ── Historial de puesto (puntaje acumulado) ───── */
@@ -5837,13 +5846,19 @@ function nivelBar(player, nombre){
 
 /* ── Render player detail ────────────────────── */
 function renderDetail(nombre, currentRank){
-  // Stats y fechas siempre del histórico total, sin importar la temporada elegida.
-  const hist = playerHistory(nombre);
+  // Cada vista muestra SOLO las fechas que cuentan para ella (24-08-2026). Antes el
+  // historial era siempre el total: en la vista 2026 salían las fechas de 2025 sin
+  // cambio de rating (un "—" por cada una), y las stats decían 9 fechas mientras la
+  // lista mostraba 24. Ahora la ficha completa —fechas, efectividad y lista— se filtra
+  // por la temporada activa, así el número de arriba y el detalle siempre cuadran.
+  const fechasVista = DATA.fechas;
+  const enVista = new Set(fechasVista.map(f => f.fecha));
+  const hist = playerHistory(nombre).filter(e => enVista.has(e.fecha));
   const player = DATA_HIST.players.find(p => norm(p.nombre) === norm(nombre));
+  const nFechas = hist.length;
 
-  // Stats summary — sin "Puntos" (ya sale en la fila de arriba) y sin copas (también arriba).
-  // Efectividad = promedio de posición (1°=100% ... último=0%), histórico total.
-  const efPos = posEff(DATA_HIST.fechas, nombre);
+  // Efectividad = promedio de posición (1°=100% ... último=0%) en las fechas de la vista.
+  const efPos = posEff(fechasVista, nombre);
 
   // Mejor puesto: del ranking activo, coherente con el gráfico de evolución de abajo.
   const _rs = rankSeriesFor(nombre).slice();
@@ -5857,7 +5872,7 @@ function renderDetail(nombre, currentRank){
   Object.keys(_pc).forEach(nm => { if(_pc[nm] > topN){ topN = _pc[nm]; topPartner = nm; } });
 
   const statsHtml = player ? `<div class="sum">
-    <div class="box"><small>Fechas</small><b>${player.fechasJugadas}</b></div>
+    <div class="box"><small>Fechas</small><b>${nFechas}</b></div>
     <div class="box"><small>Efectividad</small><b>${efPos}%</b></div>
     <div class="box"><small>📈 Mejor puesto</small><b>${mejorPuesto ? mejorPuesto + '°' : '—'}</b></div>
     <div class="box"><small>🤝 Compañero top</small>${topPartner ? `<b class="box-name">${plink(topPartner)}</b><span class="box-sub">${topN} fecha${topN>1?'s':''} juntos</span>` : '<b>—</b>'}</div>
@@ -5866,6 +5881,21 @@ function renderDetail(nombre, currentRank){
   // Group by date
   const byDate = {};
   hist.forEach(e => (byDate[e.fecha] = byDate[e.fecha]||[]).push(e));
+
+  // En la vista Histórico el número grande es un rating Elo, así que el historial tiene
+  // que mostrar el cambio de Elo de esa fecha y no los puntos: si no, la suma no cuadra
+  // con el número de arriba y la gente reclama (con razón).
+  const eloDeltas = RANKTYPE === 'elo'
+    ? (eloData(SEASON, DATA.fechas).deltas[norm(nombre)] || {})
+    : null;
+  function pintaPts(e){
+    if(!eloDeltas) return `<span class="entry-pts">+${e.puntos} pts</span>`;
+    const d = eloDeltas[e.fecha];
+    if(d == null) return '<span class="entry-pts">—</span>';
+    const r = Math.round(d);
+    const cls = r > 0 ? ' ep-up' : r < 0 ? ' ep-down' : '';
+    return `<span class="entry-pts${cls}">${r > 0 ? '+' : ''}${r}</span>`;
+  }
 
   const dayGroups = Object.entries(byDate).map(([fecha, entries]) =>
     `<div class="day-label">${fmtDate(fecha)} ${fecha.slice(0,4)}</div>
@@ -5876,7 +5906,7 @@ function renderDetail(nombre, currentRank){
           <div class="entry-title">${LABEL[e.copa]} · ${POS_LABEL[e.rel-1]||e.rel+'°'} lugar</div>
           ${e.partner ? `<div class="entry-sub">con ${plink(e.partner)}</div>` : ''}
         </span>
-        <span class="entry-pts">+${e.puntos} pts</span>
+        ${pintaPts(e)}
       </div>`).join('')}`
   );
 
@@ -5895,7 +5925,7 @@ function renderDetail(nombre, currentRank){
   }
 
   return `<div class="detail">
-    <div class="hist-title">Historial de ${esc(nombre)} · todas las temporadas</div>
+    <div class="hist-title">Historial de ${esc(nombre)} · ${SEASON === 'hist' ? 'todas las temporadas' : SEASON}</div>
     ${statsHtml}
     ${player ? nivelBar(player, nombre) : ''}
     ${renderRankChart(nombre, currentRank)}
@@ -6079,8 +6109,8 @@ document.getElementById('date-quick').addEventListener('click', e => {
 // "2026" = puntos Inpadel de la temporada. "hist" = ranking acumulado de todas las
 // temporadas, calculado por desempeño (sube/baja según a quién le ganas; ver descripción).
 const VIEWS = {
-  '2026': {season:'2026', type:'inpadel', title:'Ranking 2026',
-    desc:'🏆 Ranking oficial: suma de puntos según tu posición en cada fecha. Premia jugar y acumular.'},
+  '2026': {season:'2026', type:'elo', title:'Ranking 2026',
+    desc:'🏆 Solo las fechas de 2026. Mismo cálculo que el Histórico: subes o bajas según a quién le ganas.'},
   'hist': {season:'hist', type:'elo', title:'Ranking Histórico',
     desc:'📊 Sube o baja según a quién le ganas o pierdes cada fecha (le ganas a quien quedó debajo). Subes más si superas a jugadores con mejor ranking. No depende de cuántas fechas juegues.'}
 };
