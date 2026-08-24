@@ -141,6 +141,16 @@ table.elo-t td+td{padding-left:10px}
 table.elo-t tr:last-child td{border-bottom:0}
 .elo-agua td{background:#fff8e6}
 .elo-cap{font-size:.75rem;line-height:1.45;color:var(--m);margin:2px 0 0}
+/* Ayuda del puntaje: hover en desktop, tap en móvil, y lleva a la explicación */
+.pts-help{cursor:pointer;border-bottom:1px dotted rgba(26,122,68,.5)}
+.pts-help::after{content:'?';font-size:.62em;vertical-align:super;margin-left:1px;opacity:.5;font-weight:900}
+.pts-help:hover,.pts-help:focus-visible{border-bottom-color:var(--g);outline:none}
+.pts-help:hover::after,.pts-help:focus-visible::after{opacity:1}
+#pts-tip{position:fixed;z-index:9999;max-width:238px;background:#12211a;color:#fff;font-size:.74rem;font-weight:600;line-height:1.4;padding:9px 11px;border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.28);opacity:0;transform:translateY(4px);transition:opacity .13s,transform .13s;pointer-events:none;text-align:left;letter-spacing:.005em}
+#pts-tip.on{opacity:1;transform:translateY(0)}
+#pts-tip i{display:block;margin-top:5px;font-style:normal;font-weight:800;color:#7fd6a4;font-size:.7rem}
+@keyframes eloflash{0%{box-shadow:0 0 0 0 rgba(26,122,68,.55)}100%{box-shadow:0 0 0 14px rgba(26,122,68,0)}}
+#elo-section.elo-flash{animation:eloflash 1.1s ease-out 1}
 .visitas{margin-top:10px;font-size:.7rem;font-weight:700;color:var(--m);letter-spacing:.01em;min-height:1em}
 .visitas .vs-live{color:var(--g);font-weight:850}
 .visitas .vs-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--g);margin-right:4px;vertical-align:1px;animation:vspulse 2s ease-in-out infinite}
@@ -5479,12 +5489,12 @@ table.elo-t tr:last-child td{border-bottom:0}
     <div class="elo-ej">
       <div class="elo-ej-t">Ganar la copa Mimbre siempre resta</div>
       <div class="elo-ej-b">
-        <span>Andrés Killinger · Copa Mimbre <b>1° lugar</b> · 15 de julio</span><span class="elo-down">−3</span>
+        <span>Nico Molina · Copa Mimbre <b>1° lugar</b> · 11 de junio 2025 · venía en 992</span><span class="elo-down">−7</span>
       </div>
       <div class="elo-ej-b">
-        <span>Sebastián Ramírez · Copa Mimbre <b>1° lugar</b> · 15 de julio</span><span class="elo-down">−11</span>
+        <span>Boris Zamorano · Copa Mimbre <b>1° lugar</b> · 11 de junio 2025 · venía en 1054</span><span class="elo-down">−9</span>
       </div>
-      <p class="elo-ej-x">Salir 1° de Mimbre es salir 13° de 16: le ganaste a 3 parejas y perdiste con 12. En las 75 fechas del histórico eso pasó 148 veces y las <b>148 veces bajó el rating</b>. A Sebastián le costó más porque venía en 1113 y ese día se esperaba mucho más de él. Te llevas el canasto igual.</p>
+      <p class="elo-ej-x">Salir 1° de Mimbre es salir 13° de 16: le ganaste a 3 parejas y perdiste con 12. En las 75 fechas del histórico eso pasó 148 veces y las <b>148 veces bajó el rating</b>. A Boris le costó más porque venía más arriba y ese día se esperaba mucho más de él. Te llevas el canasto igual.</p>
     </div>
 
     <div class="elo-ej">
@@ -5499,10 +5509,10 @@ table.elo-t tr:last-child td{border-bottom:0}
     </div>
 
     <div class="elo-ej">
-      <div class="elo-ej-t">Jugar poco no te sube, solo te esconde</div>
-      <div class="elo-ej-b"><span>Andrés Killinger · 24 fechas</span><span class="elo-neu">896</span></div>
-      <div class="elo-ej-b"><span>Cristian Cádiz (Exotic) · 6 fechas</span><span class="elo-neu">947</span></div>
-      <p class="elo-ej-x">Exotic está arriba con peores resultados, pero va bajando <b>8,8 por fecha</b> contra los <b>4,3</b> de Andrés. Cae al doble de velocidad. Le faltan fechas para llegar donde le corresponde.</p>
+      <div class="elo-ej-t">Con pocas fechas el número todavía no dice mucho</div>
+      <div class="elo-ej-b"><span>Manu Maira · 29 fechas</span><span class="elo-neu">1047</span></div>
+      <div class="elo-ej-b"><span>Rodrigo Retamales · 7 fechas</span><span class="elo-neu">1049</span></div>
+      <p class="elo-ej-x">Están empatados, pero Manu llegó ahí con 29 fechas y Rodrigo con 7. El de Manu ya es un número asentado. El de Rodrigo se puede mover harto para cualquier lado con dos o tres fechas más. Mientras menos fechas tengas, más manda el <b>1000</b> del principio y menos manda tu juego.</p>
     </div>
 
     <div class="elo-ej">
@@ -5921,7 +5931,9 @@ function renderRanking(){
         <span class="p-name">${esc(p.nombre)}</span>
         <span class="p-meta"><span class="bar"><span style="width:${posEff(DATA.fechas, p.nombre)}%"></span></span>${copaMeta || '<span style="color:var(--m);font-size:.72rem">Sin copas aún</span>'}</span>
       </span>
-      <span class="pts"><b>${bigVal}</b></span>
+      <span class="pts">${RANKTYPE === 'elo'
+        ? `<b class="pts-help" tabindex="0" role="button" aria-label="Cómo se calcula el Elo">${bigVal}</b>`
+        : `<b>${bigVal}</b>`}</span>
     </summary>
     ${renderDetail(p.nombre, rankNum)}
   </details>`;
@@ -6568,6 +6580,82 @@ setupNivelTips();
     setInterval(latir, LATIDO);
     document.addEventListener('visibilitychange', function(){ if(!document.hidden) latir(); });
   })();
+})();
+
+/* ── Ayuda del puntaje ─────────────────────────
+   El número grande del ranking Elo explica de qué se trata al pasar el mouse
+   (desktop) y al tocarlo lleva a la sección "Cómo funciona el puntaje". En el
+   celular no hay hover, así que el tap hace las dos cosas: el scroll es la
+   explicación. El `?` chico existe para que se note que se puede tocar.
+   Los listeners van delegados en document porque las filas se re-renderizan
+   completas cada vez que se cambia de vista o de temporada.            */
+(function(){
+  var TXT = 'El Elo parte en 1000 y se corrige cada fecha, según cómo te fue contra los que jugaron ese día. Sube si te fue mejor de lo esperado y baja si te fue peor.';
+  var tip;
+
+  function elTip(){
+    if(!tip){
+      tip = document.createElement('div');
+      tip.id = 'pts-tip';
+      tip.innerHTML = TXT + '<i>Toca el número para ver cómo se calcula →</i>';
+      document.body.appendChild(tip);
+    }
+    return tip;
+  }
+
+  function mostrar(el){
+    var t = elTip(), r = el.getBoundingClientRect();
+    t.classList.add('on');
+    var w = t.offsetWidth, h = t.offsetHeight;
+    var x = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
+    var y = r.top - h - 9;
+    if(y < 8) y = r.bottom + 9;              // si no cabe arriba, va abajo
+    t.style.left = x + 'px';
+    t.style.top  = y + 'px';
+  }
+
+  function ocultar(){ if(tip) tip.classList.remove('on'); }
+
+  function irAExplicacion(){
+    var s = document.getElementById('elo-section');
+    if(!s) return;
+    s.scrollIntoView({behavior:'smooth', block:'start'});
+    s.classList.remove('elo-flash');
+    void s.offsetWidth;                       // reinicia la animación
+    s.classList.add('elo-flash');
+    setTimeout(function(){ s.classList.remove('elo-flash') }, 1300);
+  }
+
+  document.addEventListener('mouseover', function(e){
+    var el = e.target.closest && e.target.closest('.pts-help');
+    if(el) mostrar(el);
+  });
+  document.addEventListener('mouseout', function(e){
+    if(e.target.closest && e.target.closest('.pts-help')) ocultar();
+  });
+  document.addEventListener('focusin', function(e){
+    var el = e.target.closest && e.target.closest('.pts-help');
+    if(el) mostrar(el);
+  });
+  document.addEventListener('focusout', ocultar);
+  window.addEventListener('scroll', ocultar, {passive:true});
+
+  // El número vive dentro de un <summary>: sin preventDefault el tap abriría la ficha.
+  document.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('.pts-help');
+    if(!el) return;
+    e.preventDefault();
+    e.stopPropagation();
+    ocultar();
+    irAExplicacion();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key !== 'Enter' && e.key !== ' ') return;
+    var el = e.target.closest && e.target.closest('.pts-help');
+    if(!el) return;
+    e.preventDefault();
+    irAExplicacion();
+  });
 })();
 </script>
 </body>
